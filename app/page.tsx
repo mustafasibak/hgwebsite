@@ -47,10 +47,17 @@ export default async function HomePage() {
                 {site.phone}
               </a>
             </div>
-            <div className="info-box" style={{ minWidth: 200, textAlign: 'left' }}>
-              <strong>Adresse</strong>
-              {site.address}<br />{site.city}
-            </div>
+            <a
+              href={`https://www.google.com/maps/place/HHanse+GRILL/@53.4887957,10.2021563,17z/data=!4m15!1m8!3m7!1s0x47b1f291cda2013b:0x19c1434f574e61ef!2sKurt-A.-K%C3%B6rber-Chaussee+3,+21033+Bergedorf!3b1!8m2!3d53.4887957!4d10.2021563!16s%2Fg%2F11rg65ycmd!3m5!1s0x4163987b8b84231b:0x5ba04e6bb0185aba!8m2!3d53.4887842!4d10.2028378!16s%2Fg%2F11bbwml63f?entry=ttu&g_ep=EgoyMDI2MDYxMC4wIKXMDSoASAFQAw%3D%3D`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <div className="info-box" style={{ minWidth: 200, textAlign: 'left' }}>
+                <strong>Adresse</strong>
+                {site.address}<br />{site.city}
+              </div>
+            </a>
           </div>
 
           <div style={{ marginTop: 28, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>

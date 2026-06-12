@@ -22,11 +22,11 @@ export default async function MittagstischPage() {
 
       <div className="info-box" style={{ borderTop: 'none', marginBottom: 24 }}>
         <p style={{ fontSize: '0.95rem', lineHeight: 1.8 }}>
-          Unser Mittagstisch wechselt wöchentlich – jeden Tag vier frisch zubereitete
+          Unser Mittagstisch wechselt täglich – jeden Tag vier frisch zubereitete
           Gerichte zum günstigen Preis.
         </p>
         <p style={{ marginTop: 10, fontWeight: 700, color: 'var(--accent-dark)' }}>
-          Mo – So · immer ab 11:00 Uhr · solange der Vorrat reicht
+          Mo – So · ab 11:30 Uhr · solange der Vorrat reicht
         </p>
         {!live && (
           <p style={{ marginTop: 8, fontSize: '0.8rem', color: 'var(--muted)' }}>
