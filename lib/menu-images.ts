@@ -1,7 +1,13 @@
 import type { MenuCategory, MenuItem } from '@/lib/menu-data'
 import { menuItemPhotos } from '@/lib/menu-item-photos'
+import { menuItemPhotoVersions } from '@/lib/menu-item-photo-versions'
 
 const PLACEHOLDER_DIR = '/placeholders'
+
+function withPhotoCacheBust(src: string): string {
+  const version = menuItemPhotoVersions[src]
+  return version ? `${src}?v=${version}` : src
+}
 
 export function categoryShowsImage(cat: MenuCategory): boolean {
   return cat.showImage !== false
@@ -20,7 +26,7 @@ export function itemShowsImage(item: MenuItem, cat: MenuCategory): boolean {
 export function getItemImage(item: MenuItem, cat: MenuCategory): string | null {
   if (!itemShowsImage(item, cat)) return null
   if (item.image) return item.image
-  if (menuItemPhotos[item.id]) return menuItemPhotos[item.id]
+  if (menuItemPhotos[item.id]) return withPhotoCacheBust(menuItemPhotos[item.id])
   return `${PLACEHOLDER_DIR}/${cat.slug}.svg`
 }
 

@@ -164,6 +164,7 @@ const descPhrasePairs: [string, string][] = [
   ['überbacken', 'gratinated'],
   ['Überbacken', 'gratinated'],
   ['mit Pommes', 'with fries'],
+  ['(Pommes/Reis)', '(fries/rice)'],
   ['Pommes', 'fries'],
   ['Getränk', 'drink'],
   ['Softgetränke', 'soft drinks'],

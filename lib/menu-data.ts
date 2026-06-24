@@ -59,7 +59,7 @@ export const menuCategories: MenuCategory[] = [
       { id: '17', name: 'Crispy Hähnchen Filet Hot', desc: '5 (Stk) Chicken Filet, Pommes Sauce Nachwahl', price: 9.0 },
       { id: '9', name: 'Gyros Fleisch(250 g)', price: 6.0 },
       { id: '10', name: 'Gyros Teller', desc: '(Hähnchen)Krautsalat und Tzatziki', price: 8.0, tags: ['Milch'] },
-      { id: '110', name: 'Gyros Teller', desc: '(Hähnchen) Krautsalat, Pommes,Tzatziki', price: 11.0, tags: ['Milch'] },
+      { id: '110', name: 'Gyros Teller', desc: '(Hähnchen) Krautsalat, (Pommes/Reis), Tzatziki', price: 11.0, tags: ['Milch'] },
       { id: '510', name: 'Gyros Überbacken', desc: '(Hähnchen)Schafskäse o. Gouda', price: 8.5, tags: ['Milch'] },
       { id: '400', name: 'Putensteak', desc: '(Pute)', price: 6.5 },
       { id: '54', name: 'Putensteak', desc: 'Folienkartoffel,Sour Cream, Knoblauchbrot', price: 9.9 },
