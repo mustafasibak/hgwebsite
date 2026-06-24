@@ -1,38 +1,135 @@
 'use client'
-import { useState, useRef } from 'react'
-import { menuCategories, type MenuItem } from '@/lib/menu-data'
+import { useState, useRef, useEffect, useMemo } from 'react'
+import Image from 'next/image'
+import { menuCategories, type MenuCategory, type MenuItem } from '@/lib/menu-data'
+import { getItemImage } from '@/lib/menu-images'
+import { isCutoutPhoto } from '@/lib/menu-item-photos'
+import {
+  VEGGIE_TAB,
+  categoryLabel,
+  formatItemPrice,
+  isVeggieItem,
+  sortVeggieEntries,
+  itemAltText,
+  itemLabel,
+  t,
+  translateTag,
+  type MenuTab,
+} from '@/lib/menu-i18n'
+import { useMenuLocale } from '@/components/MenuLocaleContext'
 import { site } from '@/lib/site'
 
+type MenuMode = 'website' | 'kiosk'
+
 type MenuEmbedProps = {
+  mode?: MenuMode
   showSearch?: boolean
   showAllCategories?: boolean
 }
 
 type CartLine = { id: string; name: string; price: number; qty: number }
+type DetailSelection = { item: MenuItem; cat: MenuCategory }
+type DisplayEntry = { item: MenuItem; cat: MenuCategory }
 
 const fmt = (n: number) => n.toFixed(2).replace('.', ',') + ' €'
 
-export default function MenuEmbed({ showSearch = true, showAllCategories = false }: MenuEmbedProps) {
-  const [active, setActive] = useState(0)
+function normalizeIdQuery(q: string): string | null {
+  const stripped = q.replace(/^#/, '').trim()
+  if (!/^\d+$/.test(stripped)) return null
+  return String(parseInt(stripped, 10))
+}
+
+function itemMatchesSearch(item: MenuItem, q: string, locale: 'de' | 'en'): boolean {
+  const idNorm = normalizeIdQuery(q)
+  if (idNorm && item.id === idNorm) return true
+
+  const { name, desc } = itemLabel(item, locale)
+  return name.toLowerCase().includes(q) ||
+    (desc || '').toLowerCase().includes(q) ||
+    item.name.toLowerCase().includes(q) ||
+    (item.desc || '').toLowerCase().includes(q)
+}
+
+function displayPrice(item: MenuItem, locale: 'de' | 'en'): string {
+  const tbd = formatItemPrice(item, locale)
+  if (tbd) return tbd
+  return fmt(item.price)
+}
+
+export default function MenuEmbed({
+  mode = 'website',
+  showSearch = true,
+  showAllCategories = false,
+}: MenuEmbedProps) {
+  const isKiosk = mode === 'kiosk'
+  const { locale } = useMenuLocale()
+  const [activeTab, setActiveTab] = useState<MenuTab>(0)
   const [search, setSearch] = useState('')
   const [cart, setCart] = useState<CartLine[]>([])
   const [flash, setFlash] = useState<string | null>(null)
-  const [open, setOpen] = useState(false) // mobile bottom-sheet
+  const [open, setOpen] = useState(false)
+  const [detail, setDetail] = useState<DetailSelection | null>(null)
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const filtered = search.trim()
-    ? menuCategories.map(cat => ({
-        ...cat,
-        items: cat.items.filter(i =>
-          i.name.toLowerCase().includes(search.toLowerCase()) ||
-          (i.desc || '').toLowerCase().includes(search.toLowerCase())
-        )
-      })).filter(cat => cat.items.length > 0)
-    : showAllCategories
-      ? menuCategories
-      : [menuCategories[active]]
+  const veggieEntries = useMemo<DisplayEntry[]>(() => {
+    const seen = new Set<string>()
+    const entries: DisplayEntry[] = []
+    for (const cat of menuCategories) {
+      for (const item of cat.items) {
+        if (isVeggieItem(item) && !seen.has(item.id)) {
+          seen.add(item.id)
+          entries.push({ item, cat })
+        }
+      }
+    }
+    return sortVeggieEntries(entries)
+  }, [])
+
+  useEffect(() => {
+    if (!detail) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [detail])
+
+  const displayGroups = useMemo(() => {
+    const q = search.trim().toLowerCase()
+
+    if (q) {
+      return menuCategories
+        .map(cat => ({
+          heading: categoryLabel(cat.name, locale),
+          items: cat.items
+            .filter(i => itemMatchesSearch(i, q, locale))
+            .map(item => ({ item, cat })),
+        }))
+        .filter(g => g.items.length > 0)
+    }
+
+    if (showAllCategories) {
+      return menuCategories.map(cat => ({
+        heading: categoryLabel(cat.name, locale),
+        items: cat.items.map(item => ({ item, cat })),
+      }))
+    }
+
+    if (activeTab === VEGGIE_TAB) {
+      return [{
+        heading: categoryLabel('Veggie', locale),
+        items: veggieEntries,
+      }]
+    }
+
+    const cat = menuCategories[activeTab as number]
+    if (!cat) return []
+    return [{
+      heading: undefined,
+      items: cat.items.map(item => ({ item, cat })),
+    }]
+  }, [search, showAllCategories, activeTab, locale, veggieEntries])
 
   function addItem(item: MenuItem) {
+    if (item.priceTbd) return
     setCart(prev => {
       const found = prev.find(l => l.id === item.id)
       if (found) {
@@ -61,286 +158,344 @@ export default function MenuEmbed({ showSearch = true, showAllCategories = false
   const total = cart.reduce((s, l) => s + l.qty * l.price, 0)
   const empty = cart.length === 0
 
+  function altFor(item: MenuItem, cat: MenuCategory) {
+    if (locale === 'en') return itemAltText(item, locale)
+    return item.imageAlt || (item.desc ? `${item.name} – ${item.desc}` : item.name)
+  }
+
   return (
-    <div className="menu-layout">
+    <div className={`menu-layout${isKiosk ? ' menu-layout--kiosk' : ''}`}>
       <div className="menu-main">
         {showSearch && (
-          <div style={{ maxWidth: 400, margin: '0 auto 20px', position: 'relative' }}>
+          <div className="menu-search">
             <input
               type="text"
-              placeholder="Gericht suchen..."
+              placeholder={locale === 'en' ? t(locale, 'searchPlaceholder') : 'Gericht suchen...'}
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{
-                width: '100%', padding: '12px 16px',
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderRadius: 8, color: 'var(--text)', fontSize: 15,
-                outline: 'none', fontFamily: 'system-ui',
-              }}
+              className="menu-search-input"
             />
           </div>
         )}
 
-        <p style={{
-          textAlign: 'center', fontSize: 13, color: 'var(--muted)',
-          marginBottom: 6, fontStyle: 'italic',
-        }}>
-          Tippen Sie auf ein Gericht, um es zu Ihrer Bestellung hinzuzufügen.
-        </p>
-        <p style={{
-          textAlign: 'center', fontSize: 11.5, color: 'var(--muted)',
-          marginBottom: 24,
-        }}>
-          Alle Preise inkl. MwSt. · Halal-zertifiziert
+        {!isKiosk && (
+          <p className="menu-hint menu-hint--order">
+            {locale === 'en'
+              ? 'Tap a dish for details and to add to your order.'
+              : 'Tippen Sie auf ein Gericht für Details und zur Bestellung.'}
+          </p>
+        )}
+        {isKiosk && (
+          <p className="menu-hint menu-hint--browse">
+            {t(locale, 'browseHint')}
+          </p>
+        )}
+        <p className="menu-hint menu-hint--meta">
+          {locale === 'en' ? t(locale, 'metaHint') : 'Alle Preise inkl. MwSt. · Halal-zertifiziert'}
         </p>
 
         {!search.trim() && !showAllCategories && (
-          <div style={{
-            overflowX: 'auto',
-            marginBottom: 28,
-            borderBottom: '1px solid var(--border)',
-            paddingBottom: 12,
-          }}>
-            <div style={{
-              display: 'flex', gap: 6, flexWrap: 'wrap',
-              justifyContent: 'center',
-            }}>
+          <div className="menu-category-tabs">
+            <div className="menu-category-tabs-inner">
               {menuCategories.map((cat, i) => (
-                <button key={cat.name} onClick={() => setActive(i)} style={{
-                  padding: '8px 16px', borderRadius: 6, whiteSpace: 'nowrap',
-                  background: active === i ? 'var(--accent)' : 'var(--surface)',
-                  border: `1px solid ${active === i ? 'var(--accent)' : 'var(--border)'}`,
-                  color: active === i ? '#fff' : 'var(--muted)',
-                  fontWeight: 600, fontSize: 13,
-                  cursor: 'pointer', fontFamily: 'inherit',
-                }}>
-                  {cat.icon} {cat.name}
+                <button
+                  key={cat.name}
+                  type="button"
+                  className={`menu-category-tab${activeTab === i ? ' menu-category-tab--active' : ''}`}
+                  onClick={() => setActiveTab(i)}
+                >
+                  {categoryLabel(cat.name, locale)}
                 </button>
               ))}
+              {veggieEntries.length > 0 && (
+                <button
+                  type="button"
+                  className={`menu-category-tab menu-category-tab--veggie${activeTab === VEGGIE_TAB ? ' menu-category-tab--active' : ''}`}
+                  onClick={() => setActiveTab(VEGGIE_TAB)}
+                >
+                  {t(locale, 'veggieTab')}
+                </button>
+              )}
             </div>
           </div>
         )}
 
         <div>
-          {filtered.map(cat => (
-            <div key={cat.name} style={{ marginBottom: (search || showAllCategories) ? 40 : 0 }}>
-              {(search || showAllCategories) && (
-                <h3 style={{
-                  fontFamily: 'Georgia, serif',
-                  fontSize: 22, fontWeight: 700,
-                  color: 'var(--accent-dark)',
-                  marginBottom: 16,
-                  paddingBottom: 8,
-                  borderBottom: '2px solid var(--border)',
-                }}>
-                  {cat.icon} {cat.name}
-                </h3>
+          {displayGroups.map(group => (
+            <div key={group.heading ?? 'single'} className={group.heading ? 'menu-category-block' : undefined}>
+              {group.heading && (
+                <h3 className="menu-category-heading">{group.heading}</h3>
               )}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                gap: 10,
-              }}>
-                {cat.items.map(item => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className="menu-item"
-                    data-flash={flash === item.id}
-                    onClick={() => addItem(item)}
-                    aria-label={`${item.name} hinzufügen`}
-                  >
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>
-                          #{item.id}
-                        </span>
-                        {item.badge && (
-                          <span style={{
-                            background: 'var(--accent)',
-                            color: '#fff',
-                            fontSize: 10, fontWeight: 700,
-                            padding: '2px 8px', borderRadius: 4,
-                          }}>{item.badge}</span>
+              <div className="menu-item-grid">
+                {group.items.map(({ item, cat }) => {
+                  const imageSrc = getItemImage(item, cat)
+                  const cutout = imageSrc ? isCutoutPhoto(imageSrc) : false
+                  const alt = altFor(item, cat)
+                  const label = itemLabel(item, locale)
+                  return (
+                    <button
+                      key={`${cat.slug}-${item.id}`}
+                      type="button"
+                      className={`menu-item${imageSrc ? ' menu-item--with-image' : ''}${item.compactCard ? ' menu-item--compact' : ''}`}
+                      data-flash={!isKiosk && flash === item.id}
+                      onClick={() => setDetail({ item, cat })}
+                      aria-label={`${alt} – ${locale === 'en' ? t(locale, 'detailsLabel') : 'Details anzeigen'}`}
+                    >
+                      {imageSrc && (
+                        <div className={`menu-item-image${cutout ? ' menu-item-image--cutout' : ''}`}>
+                          <Image
+                            src={imageSrc}
+                            alt={alt}
+                            width={400}
+                            height={300}
+                            sizes="(max-width: 600px) 100vw, 280px"
+                          />
+                        </div>
+                      )}
+                      <div className="menu-item-body">
+                        <div className="menu-item-meta">
+                          <span className="menu-item-id">#{item.id}</span>
+                          {item.badge && <span className="menu-item-badge">{item.badge}</span>}
+                        </div>
+                        <div className="menu-item-name">{label.name}</div>
+                        {label.desc && (
+                          <div className="menu-item-desc">{label.desc}</div>
                         )}
-                      </div>
-                      <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--text)', marginTop: 4 }}>
-                        {item.name}
-                      </div>
-                      {item.desc && (
-                        <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4, lineHeight: 1.5 }}>
-                          {item.desc}
+                        {!item.compactCard && item.tags && item.tags.length > 0 && (
+                          <div className="menu-item-tags">
+                            {item.tags.map(tag => (
+                              <span key={tag} className="menu-item-tag">
+                                {translateTag(tag, locale)}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <div className="menu-item-footer">
+                          <span className={`menu-item-price${item.priceTbd ? ' menu-item-price--tbd' : ''}`}>
+                            {displayPrice(item, locale)}
+                          </span>
                         </div>
-                      )}
-                      {item.tags && item.tags.length > 0 && (
-                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 6 }}>
-                          {item.tags.map(tag => (
-                            <span key={tag} style={{
-                              background: 'var(--surface2)',
-                              color: 'var(--muted)',
-                              fontSize: 10, padding: '2px 6px', borderRadius: 4,
-                            }}>{tag}</span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{
-                      display: 'flex', flexDirection: 'column',
-                      alignItems: 'flex-end', gap: 8, flexShrink: 0,
-                    }}>
-                      <span style={{
-                        fontSize: 16, fontWeight: 700,
-                        color: 'var(--accent-dark)', whiteSpace: 'nowrap',
-                      }}>
-                        {fmt(item.price)}
-                      </span>
-                      <span className="menu-item-plus" aria-hidden="true">+</span>
-                    </div>
-                  </button>
-                ))}
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             </div>
           ))}
 
-          {search && filtered.length === 0 && (
-            <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '40px 24px' }}>
-              Kein Gericht gefunden für &quot;{search}&quot;
+          {search && displayGroups.length === 0 && (
+            <div className="menu-empty-search">
+              {locale === 'en' ? t(locale, 'emptySearch') : 'Kein Gericht gefunden für'} &quot;{search}&quot;
             </div>
           )}
         </div>
       </div>
 
-      {/* Bestellübersicht */}
-      <aside className="menu-cart" data-empty={empty} data-open={open}>
-        <div className="menu-cart-inner">
-          <button
-            type="button"
-            className="menu-cart-bar"
-            onClick={() => setOpen(o => !o)}
-            aria-expanded={open}
-          >
-            <span>🛒 {count} {count === 1 ? 'Artikel' : 'Artikel'} · {fmt(total)}</span>
-            <span aria-hidden="true">{open ? '▾' : '▴'}</span>
-          </button>
+      {!isKiosk && (
+        <aside className="menu-cart" data-empty={empty} data-open={open}>
+          <div className="menu-cart-inner">
+            <button
+              type="button"
+              className="menu-cart-bar"
+              onClick={() => setOpen(o => !o)}
+              aria-expanded={open}
+            >
+              <span>{count} {count === 1 ? 'Artikel' : 'Artikel'} · {fmt(total)}</span>
+              <span aria-hidden="true">{open ? '▾' : '▴'}</span>
+            </button>
 
-          <div className="menu-cart-body">
-            <div style={{
-              background: 'var(--accent)', color: '#fff',
-              padding: '12px 16px', display: 'flex',
-              justifyContent: 'space-between', alignItems: 'center',
-            }}>
-              <strong style={{ fontSize: '0.95rem', letterSpacing: '0.03em' }}>
-                Ihre Bestellung
-              </strong>
-              {!empty && (
-                <button
-                  type="button"
-                  onClick={() => { setCart([]); setOpen(false) }}
-                  style={{
-                    background: 'transparent', border: '1px solid rgba(255,255,255,0.5)',
-                    color: '#fff', borderRadius: 6, padding: '3px 8px',
-                    fontSize: 11, cursor: 'pointer', fontFamily: 'inherit',
-                  }}
-                >
-                  Leeren
-                </button>
+            <div className="menu-cart-body">
+              <div className="menu-cart-header">
+                <strong>Ihre Bestellung</strong>
+                {!empty && (
+                  <button
+                    type="button"
+                    className="menu-cart-clear"
+                    onClick={() => { setCart([]); setOpen(false) }}
+                  >
+                    Leeren
+                  </button>
+                )}
+              </div>
+
+              {empty ? (
+                <p className="menu-cart-empty">
+                  Noch keine Gerichte ausgewählt.<br />
+                  Tippen Sie auf ein Gericht, um es hinzuzufügen.
+                </p>
+              ) : (
+                <>
+                  <div className="menu-cart-lines">
+                    {cart.map(line => (
+                      <div key={line.id} className="menu-cart-line">
+                        <div className="menu-cart-line-info">
+                          <div className="menu-cart-line-name">{line.name}</div>
+                          <div className="menu-cart-line-price">{fmt(line.price)}</div>
+                        </div>
+                        <div className="menu-cart-line-qty">
+                          <button type="button" onClick={() => changeQty(line.id, -1)} style={qtyBtn} aria-label="weniger">−</button>
+                          <span>{line.qty}</span>
+                          <button type="button" onClick={() => changeQty(line.id, +1)} style={qtyBtn} aria-label="mehr">+</button>
+                        </div>
+                        <button
+                          type="button"
+                          className="menu-cart-line-remove"
+                          onClick={() => removeItem(line.id)}
+                          aria-label="entfernen"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="menu-cart-total">
+                    <span>Summe</span>
+                    <span>{fmt(total)}</span>
+                  </div>
+
+                  <div className="menu-cart-actions">
+                    <a href={`tel:${site.phoneRaw}`} className="btn btn-primary">
+                      Vorbestellen &amp; Abholen
+                    </a>
+                    <a
+                      href={site.maps}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-secondary"
+                    >
+                      Vor Ort bestellen
+                    </a>
+                    <p className="menu-cart-disclaimer">
+                      Bestellung telefonisch oder vor Ort · keine Online-Zahlung · keine Lieferung
+                    </p>
+                  </div>
+                </>
               )}
             </div>
-
-            {empty ? (
-              <p style={{
-                padding: '24px 18px', color: 'var(--muted)',
-                fontSize: '0.88rem', lineHeight: 1.6, textAlign: 'center',
-              }}>
-                Noch keine Gerichte ausgewählt.<br />
-                Klicken Sie auf ein Gericht, um es hinzuzufügen.
-              </p>
-            ) : (
-              <>
-                <div style={{ padding: '6px 0', maxHeight: 360, overflowY: 'auto' }}>
-                  {cart.map(line => (
-                    <div key={line.id} style={{
-                      display: 'flex', alignItems: 'center', gap: 8,
-                      padding: '8px 16px',
-                    }}>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.3 }}>
-                          {line.name}
-                        </div>
-                        <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-                          {fmt(line.price)}
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <button type="button" onClick={() => changeQty(line.id, -1)} style={qtyBtn} aria-label="weniger">−</button>
-                        <span style={{ minWidth: 18, textAlign: 'center', fontWeight: 700, fontSize: 13 }}>{line.qty}</span>
-                        <button type="button" onClick={() => changeQty(line.id, +1)} style={qtyBtn} aria-label="mehr">+</button>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeItem(line.id)}
-                        style={{
-                          background: 'transparent', border: 'none', cursor: 'pointer',
-                          color: 'var(--muted)', fontSize: 16, lineHeight: 1, padding: 4,
-                          fontFamily: 'inherit',
-                        }}
-                        aria-label="entfernen"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={{
-                  display: 'flex', justifyContent: 'space-between',
-                  padding: '12px 16px', borderTop: '2px solid var(--border)',
-                  fontWeight: 700, fontSize: '1.05rem',
-                }}>
-                  <span>Summe</span>
-                  <span style={{ color: 'var(--accent-dark)' }}>{fmt(total)}</span>
-                </div>
-
-                <div style={{ padding: '0 16px 16px', display: 'grid', gap: 8 }}>
-                  <a
-                    href={`tel:${site.phoneRaw}`}
-                    className="btn btn-primary"
-                    style={{ textAlign: 'center' }}
-                  >
-                    📞 Vorbestellen &amp; Abholen
-                  </a>
-                  <a
-                    href={site.maps}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-secondary"
-                    style={{ textAlign: 'center' }}
-                  >
-                    📍 Vor Ort bestellen
-                  </a>
-                  <p style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', marginTop: 2, lineHeight: 1.5 }}>
-                    Bestellung telefonisch oder vor Ort <br /> 
-                    keine Online-Zahlung
-                    <br /> 
-                    keine Lieferung
-                    <br />
-                  </p>
-                  </div> 
-              </>
-            )}
           </div>
+        </aside>
+      )}
+
+      {detail && (
+        <ItemDetailModal
+          item={detail.item}
+          cat={detail.cat}
+          isKiosk={isKiosk}
+          locale={locale}
+          onClose={() => setDetail(null)}
+          onAdd={isKiosk ? undefined : () => {
+            addItem(detail.item)
+            setDetail(null)
+            setOpen(true)
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
+function ItemDetailModal({
+  item,
+  cat,
+  isKiosk,
+  locale,
+  onClose,
+  onAdd,
+}: {
+  item: MenuItem
+  cat: MenuCategory
+  isKiosk: boolean
+  locale: 'de' | 'en'
+  onClose: () => void
+  onAdd?: () => void
+}) {
+  const imageSrc = getItemImage(item, cat)
+  const cutout = imageSrc ? isCutoutPhoto(imageSrc) : false
+  const label = itemLabel(item, locale)
+  const alt = locale === 'en' ? itemAltText(item, locale) : (item.imageAlt || (item.desc ? `${item.name} – ${item.desc}` : item.name))
+  const canOrder = !isKiosk && !item.priceTbd
+
+  return (
+    <div
+      className="menu-item-detail-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="menu-detail-title"
+      onClick={onClose}
+    >
+      <div className="menu-item-detail" onClick={e => e.stopPropagation()}>
+        <button
+          type="button"
+          className="menu-item-detail-close"
+          onClick={onClose}
+          aria-label={locale === 'en' ? t(locale, 'close') : 'Schließen'}
+        >
+          ×
+        </button>
+
+        {imageSrc && (
+          <div className={`menu-item-detail-image${cutout ? ' menu-item-detail-image--cutout' : ''}`}>
+            <Image
+              src={imageSrc}
+              alt={alt}
+              width={800}
+              height={600}
+              priority
+              sizes="(max-width: 700px) 100vw, 560px"
+            />
+          </div>
+        )}
+
+        <div className="menu-item-detail-content">
+          <div className="menu-item-meta">
+            <span className="menu-item-id">#{item.id}</span>
+            {item.badge && <span className="menu-item-badge">{item.badge}</span>}
+          </div>
+          <h2 id="menu-detail-title" className="menu-item-detail-title">{label.name}</h2>
+          {label.desc && <p className="menu-item-detail-desc">{label.desc}</p>}
+          {item.tags && item.tags.length > 0 && (
+            <div className="menu-item-tags">
+              {item.tags.map(tag => (
+                <span key={tag} className="menu-item-tag">
+                  {translateTag(tag, locale)}
+                </span>
+              ))}
+            </div>
+          )}
+          <p className={`menu-item-detail-price${item.priceTbd ? ' menu-item-price--tbd' : ''}`}>
+            {displayPrice(item, locale)}
+          </p>
+          {isKiosk ? (
+            <>
+              <p className="menu-item-detail-kiosk-notice">
+                {t(locale, 'kioskDetailNotice')}
+              </p>
+              <button type="button" className="btn btn-secondary menu-item-detail-add" onClick={onClose}>
+                {t(locale, 'close')}
+              </button>
+            </>
+          ) : canOrder ? (
+            <button type="button" className="btn btn-primary menu-item-detail-add" onClick={onAdd}>
+              {locale === 'en' ? 'Add to order' : 'Zur Bestellung hinzufügen'}
+            </button>
+          ) : (
+            <p className="menu-item-detail-kiosk-notice">
+              {locale === 'en' ? 'Price not yet set – please ask at the counter.' : 'Preis noch nicht hinterlegt – bitte an der Kasse erfragen.'}
+            </p>
+          )}
         </div>
-      </aside>
+      </div>
     </div>
   )
 }
 
 const qtyBtn: React.CSSProperties = {
-  width: 24, height: 24, borderRadius: 6,
+  width: 28, height: 28, borderRadius: 6,
   border: '1px solid var(--border-dark)',
   background: 'var(--surface)', color: 'var(--text)',
   fontSize: 15, fontWeight: 700, lineHeight: 1,
   cursor: 'pointer', fontFamily: 'inherit',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
+  minWidth: 28, minHeight: 28,
 }

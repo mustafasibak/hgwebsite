@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Croque – Foto folgt">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fdf4dc"/>
+      <stop offset="100%" stop-color="#f5e6b8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <rect x="24" y="24" width="752" height="552" fill="none" stroke="#cfa23e" stroke-width="4"/>
+  <rect x="40" y="40" width="720" height="72" fill="#3a2c10"/>
+  <text x="400" y="88" text-anchor="middle" fill="#f5c211" font-family="Georgia, serif" font-size="34" font-weight="700">Croque</text>
+  <text x="400" y="310" text-anchor="middle" fill="#a8170e" font-family="Georgia, serif" font-size="42" font-weight="700">HHanse Grill</text>
+  <text x="400" y="370" text-anchor="middle" fill="#6e5e40" font-family="Georgia, serif" font-size="28">Foto folgt</text>
+</svg>
