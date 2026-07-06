@@ -34,8 +34,7 @@ export default function MenuPage() {
         <p style={{
           marginTop: 16, fontSize: '0.8rem', color: 'var(--muted)', lineHeight: 1.7,
         }}>
-          Alle Preise sind unverbindlich. Es gelten die Preise in der Karte vor Ort.
-          Allergenkennzeichnung auf Anfrage. Abbildungen der Speisen sind Dekoration.
+          Hinweise zu Allergenen, Zusatzstoffen und Preisen siehe Infobereich und Fußzeile in der Speisekarte oben.
         </p>
       </div>
     </MenuLocaleProvider>

@@ -243,7 +243,6 @@ export const menuCategories: MenuCategory[] = [
     icon: '🥔',
     items: [
       { id: '531', name: 'Reis oder Bulgur mit Sauce Nachwahl.', price: 4.0 },
-      { id: '245', name: 'Zigeunersauce oder Jägersauce', price: 1.8, tags: ['Gluten', 'Ei', 'Sellerie'] },
       { id: '131', name: 'Doppelte Pommes', price: 6.0 },
       { id: '231', name: 'Kartoffelspalten', price: 3.0 },
       { id: '331', name: 'Kartoffelspalten', desc: 'mit Sour Cream', price: 4.0, tags: ['Milch'] },
@@ -256,11 +255,20 @@ export const menuCategories: MenuCategory[] = [
       { id: '38', name: 'Gurkensalat Essig Öl', price: 2.5 },
       { id: '39', name: 'Gurke in Sahne', price: 2.5, tags: ['Sahne'] },
       { id: '40', name: 'Bauernsalat', price: 2.5, tags: ['Milch'] },
-      { id: '33', name: 'Ketchup oder Mayonnaise Portion', price: 0.5, tags: ['Ei', 'Senf'] },
-      { id: '133', name: 'Extra Ketchup oder Mayonnaise', price: 1.0, tags: ['Ei', 'Senf'] },
-      { id: '45', name: 'Sour Cream oder Tzatziki', desc: 'Portion 100 g', price: 1.5, tags: ['Milch'] },
       { id: '46', name: 'Folienkartoffel', desc: 'mit Sour Cream', price: 4.0, tags: ['Milch'] },
       { id: '47', name: 'Knoblauchbrot', price: 1.5, badge: 'Veggie' },
+    ]
+  },
+  {
+    name: 'Saucen',
+    slug: 'saucen',
+    showImage: false,
+    icon: '🫙',
+    items: [
+      { id: '245', name: 'Zigeunersauce oder Jägersauce', price: 1.8, showImage: false, compactCard: true, tags: ['Gluten', 'Ei', 'Sellerie'] },
+      { id: '33', name: 'Ketchup oder Mayonnaise Portion', price: 0.5, showImage: false, compactCard: true, tags: ['Ei', 'Senf'] },
+      { id: '133', name: 'Extra Ketchup oder Mayonnaise', price: 1.0, showImage: false, compactCard: true, tags: ['Ei', 'Senf'] },
+      { id: '45', name: 'Sauce: Sour Cream, Tzatziki, Knoblauch, Remoulade (Cocktail), Hanse-Sauce (scharf)', desc: 'Portion 100 g', price: 1.5, showImage: false, compactCard: true, tags: ['Milch'] },
     ]
   },
   {

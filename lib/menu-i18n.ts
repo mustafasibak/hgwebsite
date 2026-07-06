@@ -1,10 +1,20 @@
-import type { MenuCategory, MenuItem } from '@/lib/menu-data'
+import { menuCategories, type MenuCategory, type MenuItem } from '@/lib/menu-data'
 import { compareSaladItems } from '@/lib/salad-order'
 
 export type Locale = 'de' | 'en'
 
 export const VEGGIE_TAB = '__veggie__' as const
-export type MenuTab = number | typeof VEGGIE_TAB
+export const NACHTISCH_TAB = '__nachtisch__' as const
+export type MenuTab = typeof VEGGIE_TAB | typeof NACHTISCH_TAB | string
+
+const TRAILING_CATEGORY_SLUGS = ['saucen', 'getraenke'] as const
+
+/** Category tabs with Saucen & Getränke last (after Veggie/Nachtisch). */
+export function getMenuTabOrder(): MenuTab[] {
+  const trailing = new Set<string>(TRAILING_CATEGORY_SLUGS)
+  const main = menuCategories.filter(c => !trailing.has(c.slug)).map(c => c.slug)
+  return [...main, VEGGIE_TAB, NACHTISCH_TAB, ...TRAILING_CATEGORY_SLUGS]
+}
 
 const VEGGIE_EXCLUDE_IDS = new Set(['555'])
 
@@ -49,8 +59,10 @@ const categoryEn: Record<string, string> = {
   'Super-Spar-Menüs': 'Value Meals',
   'Menü mit Pommes + Getränk (0,3 l)': 'Menu with Fries + Drink (0.3 l)',
   'Beilagen': 'Sides',
+  'Saucen': 'Sauces',
   'Getränke': 'Drinks',
   Veggie: 'Veggie',
+  'Nachtisch (nach Anfrage)': 'Desserts (on request)',
 }
 
 const tagEn: Record<string, string> = {
@@ -86,6 +98,14 @@ const ui = {
     langEn: 'English',
     priceTbd: 'Preis folgt',
     allergensLabel: 'Allergene',
+    additivesLabel: 'Zusatzstoffe',
+    dressingNote: 'Salat mit Dressing – Allergene je nach Dressing (siehe Infobereich).',
+    infoPanelTitle: 'Allergene & Kennzeichnung',
+    infoPanelExpand: 'Details anzeigen',
+    infoPanelCollapse: 'Details ausblenden',
+    nachtischTab: 'Nachtisch (nach Anfrage)',
+    nachtischLead: 'Wechselndes Angebot – bitte an der Kasse nachfragen.',
+    nachtischHint: 'Preise & Verfügbarkeit erhalten Sie direkt an der Theke.',
   },
   en: {
     kioskNotice: 'No ordering here – please order at the counter.',
@@ -101,6 +121,14 @@ const ui = {
     langEn: 'English',
     priceTbd: 'Price TBD',
     allergensLabel: 'Allergens',
+    additivesLabel: 'Additives',
+    dressingNote: 'Salad with dressing – allergens depend on dressing (see info section).',
+    infoPanelTitle: 'Allergens & labelling',
+    infoPanelExpand: 'Show details',
+    infoPanelCollapse: 'Hide details',
+    nachtischTab: 'Desserts (on request)',
+    nachtischLead: 'Selection varies – please ask at the counter.',
+    nachtischHint: 'Prices and availability are given at the counter.',
   },
 } as const
 
@@ -219,6 +247,19 @@ const descPhrasePairs: [string, string][] = [
   ['Ketchup', 'ketchup'],
   ['Mayonnaise', 'mayonnaise'],
   ['Portion', 'portion'],
+  ['Zigeunersauce oder Jägersauce', 'Gypsy or hunter\'s sauce'],
+  ['Ketchup oder Mayonnaise Portion', 'Ketchup or mayonnaise portion'],
+  ['Extra Ketchup oder Mayonnaise', 'Extra ketchup or mayonnaise'],
+  ['Sour Cream oder Tzatziki', 'Sour cream or tzatziki'],
+  [
+    'Sauce: Sour Cream, Tzatziki, Knoblauch, Remoulade (Cocktail), Hanse-Sauce (scharf)',
+    'Sauce: sour cream, tzatziki, garlic, remoulade (cocktail), Hanse sauce (hot)',
+  ],
+  ['Knoblauch', 'garlic'],
+  ['Remoulade (Cocktail)', 'remoulade (cocktail)'],
+  ['Hanse-Sauce (scharf)', 'Hanse sauce (hot)'],
+  ['Jägersauce', 'hunter\'s sauce'],
+  ['Zigeunersauce', 'gypsy sauce'],
   ['zur Wahl', 'of choice'],
   ['ohne Sauce', 'without sauce'],
   ['ohne Pfand', 'no deposit'],

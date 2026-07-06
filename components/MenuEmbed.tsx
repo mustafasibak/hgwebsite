@@ -2,10 +2,12 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import Image from 'next/image'
 import { menuCategories, type MenuCategory, type MenuItem } from '@/lib/menu-data'
-import { getItemImage } from '@/lib/menu-images'
-import { isCutoutPhoto } from '@/lib/menu-item-photos'
+import { getItemImage, itemHasPhoto } from '@/lib/menu-images'
+import { getCutoutPhotoStyle, isCutoutPhoto } from '@/lib/menu-item-photos'
 import {
   VEGGIE_TAB,
+  NACHTISCH_TAB,
+  getMenuTabOrder,
   categoryLabel,
   formatItemPrice,
   isVeggieItem,
@@ -16,10 +18,26 @@ import {
   translateTag,
   type MenuTab,
 } from '@/lib/menu-i18n'
+import { resolveItemAllergens, saladHasDressingNote } from '@/lib/allergen-info'
+import {
+  formatAdditiveCodes,
+  resolveDrinkAdditives,
+} from '@/lib/additive-info'
+import MenuInfoPanel from '@/components/MenuInfoPanel'
+import MenuLegalFooter from '@/components/MenuLegalFooter'
 import { useMenuLocale } from '@/components/MenuLocaleContext'
 import { site } from '@/lib/site'
 
 type MenuMode = 'website' | 'kiosk'
+
+function cutoutFrameStyle(src: string): React.CSSProperties | undefined {
+  if (!isCutoutPhoto(src)) return undefined
+  const { scale, shiftY } = getCutoutPhotoStyle(src)
+  return {
+    '--cutout-scale': scale,
+    '--cutout-shift-y': shiftY,
+  } as React.CSSProperties
+}
 
 type MenuEmbedProps = {
   mode?: MenuMode
@@ -63,7 +81,7 @@ export default function MenuEmbed({
 }: MenuEmbedProps) {
   const isKiosk = mode === 'kiosk'
   const { locale } = useMenuLocale()
-  const [activeTab, setActiveTab] = useState<MenuTab>(0)
+  const [activeTab, setActiveTab] = useState<MenuTab>(() => menuCategories[0]?.slug ?? getMenuTabOrder()[0])
   const [search, setSearch] = useState('')
   const [cart, setCart] = useState<CartLine[]>([])
   const [flash, setFlash] = useState<string | null>(null)
@@ -120,13 +138,19 @@ export default function MenuEmbed({
       }]
     }
 
-    const cat = menuCategories[activeTab as number]
+    if (activeTab === NACHTISCH_TAB) {
+      return []
+    }
+
+    const cat = menuCategories.find(c => c.slug === activeTab)
     if (!cat) return []
     return [{
       heading: undefined,
       items: cat.items.map(item => ({ item, cat })),
     }]
   }, [search, showAllCategories, activeTab, locale, veggieEntries])
+
+  const tabOrder = useMemo(() => getMenuTabOrder(), [])
 
   function addItem(item: MenuItem) {
     if (item.priceTbd) return
@@ -166,18 +190,6 @@ export default function MenuEmbed({
   return (
     <div className={`menu-layout${isKiosk ? ' menu-layout--kiosk' : ''}`}>
       <div className="menu-main">
-        {showSearch && (
-          <div className="menu-search">
-            <input
-              type="text"
-              placeholder={locale === 'en' ? t(locale, 'searchPlaceholder') : 'Gericht suchen...'}
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="menu-search-input"
-            />
-          </div>
-        )}
-
         {!isKiosk && (
           <p className="menu-hint menu-hint--order">
             {locale === 'en'
@@ -194,57 +206,108 @@ export default function MenuEmbed({
           {locale === 'en' ? t(locale, 'metaHint') : 'Alle Preise inkl. MwSt. · Halal-zertifiziert'}
         </p>
 
-        {!search.trim() && !showAllCategories && (
-          <div className="menu-category-tabs">
-            <div className="menu-category-tabs-inner">
-              {menuCategories.map((cat, i) => (
-                <button
-                  key={cat.name}
-                  type="button"
-                  className={`menu-category-tab${activeTab === i ? ' menu-category-tab--active' : ''}`}
-                  onClick={() => setActiveTab(i)}
-                >
-                  {categoryLabel(cat.name, locale)}
-                </button>
-              ))}
-              {veggieEntries.length > 0 && (
-                <button
-                  type="button"
-                  className={`menu-category-tab menu-category-tab--veggie${activeTab === VEGGIE_TAB ? ' menu-category-tab--active' : ''}`}
-                  onClick={() => setActiveTab(VEGGIE_TAB)}
-                >
-                  {t(locale, 'veggieTab')}
-                </button>
-              )}
+        <div className="menu-sticky-controls">
+          {showSearch && (
+            <div className="menu-search">
+              <input
+                type="text"
+                placeholder={locale === 'en' ? t(locale, 'searchPlaceholder') : 'Gericht suchen...'}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="menu-search-input"
+              />
             </div>
-          </div>
-        )}
+          )}
+
+          {!search.trim() && !showAllCategories && (
+            <div className="menu-category-tabs">
+              <div className="menu-category-tabs-inner">
+                {tabOrder.map(tab => {
+                  if (tab === VEGGIE_TAB) {
+                    if (veggieEntries.length === 0) return null
+                    return (
+                      <button
+                        key={tab}
+                        type="button"
+                        className={`menu-category-tab menu-category-tab--veggie${activeTab === VEGGIE_TAB ? ' menu-category-tab--active' : ''}`}
+                        onClick={() => setActiveTab(VEGGIE_TAB)}
+                      >
+                        {t(locale, 'veggieTab')}
+                      </button>
+                    )
+                  }
+                  if (tab === NACHTISCH_TAB) {
+                    return (
+                      <button
+                        key={tab}
+                        type="button"
+                        className={`menu-category-tab menu-category-tab--nachtisch${activeTab === NACHTISCH_TAB ? ' menu-category-tab--active' : ''}`}
+                        onClick={() => setActiveTab(NACHTISCH_TAB)}
+                      >
+                        {t(locale, 'nachtischTab')}
+                      </button>
+                    )
+                  }
+                  const cat = menuCategories.find(c => c.slug === tab)
+                  if (!cat) return null
+                  return (
+                    <button
+                      key={tab}
+                      type="button"
+                      className={`menu-category-tab${activeTab === tab ? ' menu-category-tab--active' : ''}`}
+                      onClick={() => setActiveTab(tab)}
+                    >
+                      {categoryLabel(cat.name, locale)}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </div>
 
         <div>
+          {activeTab === NACHTISCH_TAB && !search.trim() && !showAllCategories && (
+            <NachtischPanel locale={locale} />
+          )}
+
           {displayGroups.map(group => (
             <div key={group.heading ?? 'single'} className={group.heading ? 'menu-category-block' : undefined}>
               {group.heading && (
                 <h3 className="menu-category-heading">{group.heading}</h3>
               )}
               <div className="menu-item-grid">
-                {group.items.map(({ item, cat }) => {
-                  const imageSrc = getItemImage(item, cat)
+                {(() => {
+                  const fillMissingInGroup = group.items.some(({ item }) => itemHasPhoto(item))
+                  return group.items.map(({ item, cat }) => {
+                  const imageOpts = {
+                    fillMissingInGroup: fillMissingInGroup && !item.compactCard,
+                  }
+                  const imageSrc = getItemImage(item, cat, imageOpts)
+                  const hasImageArea = imageSrc != null
                   const cutout = imageSrc ? isCutoutPhoto(imageSrc) : false
                   const alt = altFor(item, cat)
                   const label = itemLabel(item, locale)
+                  const allergens = resolveItemAllergens(item, cat)
+                  const drinkCodes = cat.slug === 'getraenke' ? resolveDrinkAdditives(item) : []
+                  const additiveCodes = drinkCodes.length > 0 ? formatAdditiveCodes(drinkCodes) : ''
+                  const dressingNote = saladHasDressingNote(item, cat)
                   return (
                     <button
                       key={`${cat.slug}-${item.id}`}
                       type="button"
-                      className={`menu-item${imageSrc ? ' menu-item--with-image' : ''}${item.compactCard ? ' menu-item--compact' : ''}`}
+                      className={`menu-item${hasImageArea ? ' menu-item--with-image' : ''}${item.compactCard ? ' menu-item--compact' : ''}`}
                       data-flash={!isKiosk && flash === item.id}
                       onClick={() => setDetail({ item, cat })}
                       aria-label={`${alt} – ${locale === 'en' ? t(locale, 'detailsLabel') : 'Details anzeigen'}`}
                     >
-                      {imageSrc && (
-                        <div className={`menu-item-image${cutout ? ' menu-item-image--cutout' : ''}`}>
+                      {hasImageArea && (
+                        <div
+                          className={`menu-item-image${cutout ? ' menu-item-image--cutout' : ''}`}
+                          style={cutout ? cutoutFrameStyle(imageSrc!) : undefined}
+                        >
                           <Image
-                            src={imageSrc}
+                            src={imageSrc!}
                             alt={alt}
                             width={400}
                             height={300}
@@ -261,14 +324,22 @@ export default function MenuEmbed({
                         {label.desc && (
                           <div className="menu-item-desc">{label.desc}</div>
                         )}
-                        {!item.compactCard && item.tags && item.tags.length > 0 && (
+                        {!item.compactCard && allergens.length > 0 && (
                           <div className="menu-item-tags">
-                            {item.tags.map(tag => (
+                            {allergens.map(tag => (
                               <span key={tag} className="menu-item-tag">
                                 {translateTag(tag, locale)}
                               </span>
                             ))}
                           </div>
+                        )}
+                        {dressingNote && (
+                          <p className="menu-item-note">{t(locale, 'dressingNote')}</p>
+                        )}
+                        {additiveCodes && (
+                          <p className="menu-item-additives">
+                            {t(locale, 'additivesLabel')}: {additiveCodes}
+                          </p>
                         )}
                         <div className="menu-item-footer">
                           <span className={`menu-item-price${item.priceTbd ? ' menu-item-price--tbd' : ''}`}>
@@ -278,17 +349,30 @@ export default function MenuEmbed({
                       </div>
                     </button>
                   )
-                })}
+                })
+                })()}
               </div>
             </div>
           ))}
 
-          {search && displayGroups.length === 0 && (
+          {search && displayGroups.length === 0 && activeTab !== NACHTISCH_TAB && (
             <div className="menu-empty-search">
               {locale === 'en' ? t(locale, 'emptySearch') : 'Kein Gericht gefunden für'} &quot;{search}&quot;
             </div>
           )}
         </div>
+
+        {isKiosk && (
+          <MenuInfoPanel locale={locale} variant="kiosk" showAdditives />
+        )}
+        {!isKiosk && (
+          <MenuInfoPanel
+            locale={locale}
+            variant="compact"
+            showAdditives={activeTab === 'getraenke'}
+          />
+        )}
+        <MenuLegalFooter locale={locale} />
       </div>
 
       {!isKiosk && (
@@ -415,6 +499,10 @@ function ItemDetailModal({
   const label = itemLabel(item, locale)
   const alt = locale === 'en' ? itemAltText(item, locale) : (item.imageAlt || (item.desc ? `${item.name} – ${item.desc}` : item.name))
   const canOrder = !isKiosk && !item.priceTbd
+  const allergens = resolveItemAllergens(item, cat)
+  const drinkCodes = cat.slug === 'getraenke' ? resolveDrinkAdditives(item) : []
+  const additiveCodes = drinkCodes.length > 0 ? formatAdditiveCodes(drinkCodes) : ''
+  const dressingNote = saladHasDressingNote(item, cat)
 
   return (
     <div
@@ -435,7 +523,10 @@ function ItemDetailModal({
         </button>
 
         {imageSrc && (
-          <div className={`menu-item-detail-image${cutout ? ' menu-item-detail-image--cutout' : ''}`}>
+          <div
+            className={`menu-item-detail-image${cutout ? ' menu-item-detail-image--cutout' : ''}`}
+            style={cutoutFrameStyle(imageSrc)}
+          >
             <Image
               src={imageSrc}
               alt={alt}
@@ -454,14 +545,23 @@ function ItemDetailModal({
           </div>
           <h2 id="menu-detail-title" className="menu-item-detail-title">{label.name}</h2>
           {label.desc && <p className="menu-item-detail-desc">{label.desc}</p>}
-          {item.tags && item.tags.length > 0 && (
+          {allergens.length > 0 && (
             <div className="menu-item-tags">
-              {item.tags.map(tag => (
+              <span className="menu-item-tags-label">{t(locale, 'allergensLabel')}:</span>
+              {allergens.map(tag => (
                 <span key={tag} className="menu-item-tag">
                   {translateTag(tag, locale)}
                 </span>
               ))}
             </div>
+          )}
+          {dressingNote && (
+            <p className="menu-item-note">{t(locale, 'dressingNote')}</p>
+          )}
+          {additiveCodes && (
+            <p className="menu-item-additives">
+              {t(locale, 'additivesLabel')}: {additiveCodes}
+            </p>
           )}
           <p className={`menu-item-detail-price${item.priceTbd ? ' menu-item-price--tbd' : ''}`}>
             {displayPrice(item, locale)}
@@ -485,6 +585,49 @@ function ItemDetailModal({
             </p>
           )}
         </div>
+      </div>
+    </div>
+  )
+}
+
+const NACHTISCH_ITEMS = [
+  {
+    id: 'rote-gruetze',
+    nameDe: 'Rote Grütze mit Vanillensauce',
+    nameEn: 'Red berry compote with vanilla sauce',
+    image: '/essen/rotegruetzemitvanillensauce-removebg-preview.png',
+  },
+] as const
+
+function NachtischPanel({ locale }: { locale: 'de' | 'en' }) {
+  return (
+    <div className="menu-nachtisch-panel">
+      <div className="menu-nachtisch-window">
+        <p className="menu-nachtisch-lead">{t(locale, 'nachtischLead')}</p>
+        <p className="menu-nachtisch-hint">{t(locale, 'nachtischHint')}</p>
+      </div>
+
+      <div className="menu-nachtisch-grid">
+        {NACHTISCH_ITEMS.map(item => {
+          const name = locale === 'de' ? item.nameDe : item.nameEn
+          return (
+            <article key={item.id} className="menu-nachtisch-card">
+              <div
+                className="menu-nachtisch-card-image menu-item-image menu-item-image--cutout"
+                style={cutoutFrameStyle(item.image)}
+              >
+                <Image
+                  src={item.image}
+                  alt={name}
+                  width={320}
+                  height={240}
+                  sizes="(max-width: 600px) 45vw, 200px"
+                />
+              </div>
+              <p className="menu-nachtisch-card-name">{name}</p>
+            </article>
+          )
+        })}
       </div>
     </div>
   )

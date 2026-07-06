@@ -1,6 +1,7 @@
 import { readFileSync, statSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { spawnSync } from 'node:child_process'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const photosFile = join(root, 'lib/menu-item-photos.ts')
@@ -30,3 +31,7 @@ const lines = [
 
 writeFileSync(outFile, lines.join('\n'))
 console.log(`Wrote ${Object.keys(versions).length} photo version(s) to lib/menu-item-photo-versions.ts`)
+
+spawnSync(process.execPath, [join(dirname(fileURLToPath(import.meta.url)), 'generate-cutout-metrics.mjs')], {
+  stdio: 'inherit',
+})
