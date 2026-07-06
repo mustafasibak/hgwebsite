@@ -184,7 +184,6 @@ export const menuCategories: MenuCategory[] = [
   {
     name: 'Salate',
     slug: 'salate',
-    showImage: false,
     icon: '🥗',
     items: [
       { id: '341', name: 'Kleiner gemischter Salat', desc: 'Eisbergsalat, Tomate, Gurke, Mais, Zwiebel, Peperoni,Dressing', price: 5.0 },
