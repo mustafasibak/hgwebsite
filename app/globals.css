@@ -100,35 +100,26 @@ a { color: var(--accent-dark); }
 /* ---- Speisekarte mit Warenkorb ---- */
 .menu-search {
   max-width: 400px;
-  margin: 0 auto 12px;
+  margin: 0 auto 20px;
 }
 
-.menu-sticky-controls {
+.menu-search--sticky {
   position: sticky;
   top: 0;
   z-index: 40;
   background: var(--bg);
-  padding: 10px 0 8px;
-  margin-bottom: 20px;
+  padding: 8px 0 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
 }
 
-.menu-layout--kiosk .menu-sticky-controls {
-  padding-top: 8px;
-  margin-bottom: 16px;
+.menu-layout--kiosk .menu-search--sticky {
+  max-width: none;
   margin-left: -16px;
   margin-right: -16px;
   padding-left: 16px;
   padding-right: 16px;
-}
-
-.menu-sticky-controls .menu-search {
-  margin-bottom: 10px;
-}
-
-.menu-sticky-controls .menu-category-tabs {
-  margin-bottom: 0;
-  border-bottom: none;
-  padding-bottom: 4px;
+  margin-bottom: 14px;
 }
 
 .menu-search-input {
@@ -158,6 +149,71 @@ a { color: var(--accent-dark); }
 .menu-hint--meta {
   font-size: 11.5px;
   margin-bottom: 16px;
+}
+
+.menu-hint--footer {
+  margin-top: 20px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.menu-hint--footer:last-child {
+  margin-bottom: 0;
+}
+
+.menu-additive-legend-block {
+  margin-top: 22px;
+  margin-bottom: 12px;
+}
+
+.menu-additive-legend-heading {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.menu-additive-legend-note {
+  margin-top: 20px;
+  margin-bottom: 0;
+  text-align: center;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.menu-additive-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 6px 14px;
+  margin: 0;
+  padding: 4px 0;
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.menu-additive-legend-item {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.menu-additive-legend-item dt {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--accent-dark);
+  min-width: 1.25rem;
+}
+
+.menu-additive-legend-item dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.menu-layout--kiosk .menu-additive-legend {
+  font-size: 11px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
 
 .menu-category-tabs {
@@ -597,59 +653,54 @@ a { color: var(--accent-dark); }
   margin-top: 4px;
 }
 
-.menu-legal-footer {
-  margin-top: 28px;
-  padding: 18px 16px;
-  background: var(--surface);
-  border: 2px solid var(--border-dark);
-  border-radius: 8px;
-  font-size: 0.82rem;
-  line-height: 1.55;
-  color: var(--text);
-}
-
-.menu-legal-footer-note {
-  margin: 0 0 12px;
-}
-
-.menu-legal-footer-additives {
-  margin: 0 0 8px;
-  font-size: 0.78rem;
-  line-height: 1.5;
-}
-
-.menu-legal-footer-hint {
-  margin: 0 0 14px;
-  font-size: 0.75rem;
-  color: var(--muted);
-  font-style: italic;
-}
-
-.menu-legal-footer-disclaimer {
-  margin: 0 0 8px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.menu-legal-footer-disclaimer:last-child {
-  margin-bottom: 0;
-}
-
-.menu-layout--kiosk .menu-legal-footer {
-  margin-top: 24px;
-  font-size: 0.88rem;
-}
-
-.menu-layout--kiosk .menu-legal-footer-additives {
-  font-size: 0.8rem;
-}
-
 .menu-info-list {
   margin: 0;
   padding-left: 1.1rem;
   line-height: 1.55;
   font-size: 0.92rem;
+}
+
+.menu-info-allergen-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.88rem;
+}
+
+.menu-info-allergen-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.menu-info-allergen-row:nth-child(even) {
+  background: var(--yellow-soft);
+}
+
+.menu-info-allergen-row:last-child {
+  border-bottom: none;
+}
+
+.menu-info-allergen-name {
+  font-weight: 600;
+  color: var(--text);
+  min-width: 0;
+  flex: 1 1 140px;
+}
+
+.menu-info-allergen-tags {
+  color: var(--muted);
+  flex: 1 1 160px;
+  text-align: right;
+  font-size: 0.84rem;
 }
 
 .menu-info-additive-grid {

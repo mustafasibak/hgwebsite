@@ -14,6 +14,7 @@ export const menuItemPhotos: Record<string, string> = {
   // Grillplatten
   '666': '/essen/grillplatter666-removebg-preview-removebg-preview.png',
   // Snacks
+  '4': '/essen/hotdog4.png',
   '51': '/essen/chickenburger51-nobg.png',
   '58': '/essen/bigcheeseburger58-removebg-preview-removebg-preview.png',
   '127': '/essen/gyrospita127.png',

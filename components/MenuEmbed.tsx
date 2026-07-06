@@ -19,12 +19,8 @@ import {
   type MenuTab,
 } from '@/lib/menu-i18n'
 import { resolveItemAllergens, saladHasDressingNote } from '@/lib/allergen-info'
-import {
-  formatAdditiveCodes,
-  resolveDrinkAdditives,
-} from '@/lib/additive-info'
-import MenuInfoPanel from '@/components/MenuInfoPanel'
-import MenuLegalFooter from '@/components/MenuLegalFooter'
+import { formatAdditiveCodes, resolveItemAdditiveCodes } from '@/lib/additive-info'
+import MenuAdditiveLegend from '@/components/MenuAdditiveLegend'
 import { useMenuLocale } from '@/components/MenuLocaleContext'
 import { site } from '@/lib/site'
 
@@ -206,23 +202,22 @@ export default function MenuEmbed({
           {locale === 'en' ? t(locale, 'metaHint') : 'Alle Preise inkl. MwSt. · Halal-zertifiziert'}
         </p>
 
-        <div className="menu-sticky-controls">
-          {showSearch && (
-            <div className="menu-search">
-              <input
-                type="text"
-                placeholder={locale === 'en' ? t(locale, 'searchPlaceholder') : 'Gericht suchen...'}
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="menu-search-input"
-              />
-            </div>
-          )}
+        {showSearch && (
+          <div className="menu-search menu-search--sticky">
+            <input
+              type="text"
+              placeholder={locale === 'en' ? t(locale, 'searchPlaceholder') : 'Gericht suchen...'}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="menu-search-input"
+            />
+          </div>
+        )}
 
-          {!search.trim() && !showAllCategories && (
-            <div className="menu-category-tabs">
-              <div className="menu-category-tabs-inner">
-                {tabOrder.map(tab => {
+        {!search.trim() && !showAllCategories && (
+          <div className="menu-category-tabs">
+            <div className="menu-category-tabs-inner">
+              {tabOrder.map(tab => {
                   if (tab === VEGGIE_TAB) {
                     if (veggieEntries.length === 0) return null
                     return (
@@ -260,11 +255,10 @@ export default function MenuEmbed({
                       {categoryLabel(cat.name, locale)}
                     </button>
                   )
-                })}
-              </div>
+              })}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         <div>
           {activeTab === NACHTISCH_TAB && !search.trim() && !showAllCategories && (
@@ -289,8 +283,7 @@ export default function MenuEmbed({
                   const alt = altFor(item, cat)
                   const label = itemLabel(item, locale)
                   const allergens = resolveItemAllergens(item, cat)
-                  const drinkCodes = cat.slug === 'getraenke' ? resolveDrinkAdditives(item) : []
-                  const additiveCodes = drinkCodes.length > 0 ? formatAdditiveCodes(drinkCodes) : ''
+                  const additiveCodes = formatAdditiveCodes(resolveItemAdditiveCodes(item))
                   const dressingNote = saladHasDressingNote(item, cat)
                   return (
                     <button
@@ -324,7 +317,7 @@ export default function MenuEmbed({
                         {label.desc && (
                           <div className="menu-item-desc">{label.desc}</div>
                         )}
-                        {!item.compactCard && allergens.length > 0 && (
+                        {allergens.length > 0 && (
                           <div className="menu-item-tags">
                             {allergens.map(tag => (
                               <span key={tag} className="menu-item-tag">
@@ -362,17 +355,13 @@ export default function MenuEmbed({
           )}
         </div>
 
-        {isKiosk && (
-          <MenuInfoPanel locale={locale} variant="kiosk" showAdditives />
-        )}
-        {!isKiosk && (
-          <MenuInfoPanel
-            locale={locale}
-            variant="compact"
-            showAdditives={activeTab === 'getraenke'}
-          />
-        )}
-        <MenuLegalFooter locale={locale} />
+        <MenuAdditiveLegend locale={locale} />
+        <p className="menu-hint menu-hint--meta menu-hint--footer">
+          {t(locale, 'footerPriceNote')}
+        </p>
+        <p className="menu-hint menu-hint--meta menu-hint--footer">
+          {t(locale, 'footerImageNote')}
+        </p>
       </div>
 
       {!isKiosk && (
@@ -500,8 +489,7 @@ function ItemDetailModal({
   const alt = locale === 'en' ? itemAltText(item, locale) : (item.imageAlt || (item.desc ? `${item.name} – ${item.desc}` : item.name))
   const canOrder = !isKiosk && !item.priceTbd
   const allergens = resolveItemAllergens(item, cat)
-  const drinkCodes = cat.slug === 'getraenke' ? resolveDrinkAdditives(item) : []
-  const additiveCodes = drinkCodes.length > 0 ? formatAdditiveCodes(drinkCodes) : ''
+  const additiveCodes = formatAdditiveCodes(resolveItemAdditiveCodes(item))
   const dressingNote = saladHasDressingNote(item, cat)
 
   return (
