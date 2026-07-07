@@ -9,6 +9,7 @@ import { MenuCategories } from './collections/MenuCategories'
 import { MenuItems } from './collections/MenuItems'
 import { Users } from './collections/Users'
 import { getDatabaseUrl } from './lib/database-url'
+import { migrations } from './migrations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -34,6 +35,7 @@ export default buildConfig({
     pool: {
       connectionString: getDatabaseUrl(),
     },
+    prodMigrations: migrations,
   }),
   sharp,
   plugins: blobToken

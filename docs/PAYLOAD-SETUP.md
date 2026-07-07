@@ -6,23 +6,30 @@
 docker compose up -d
 ```
 
-Add to `.env.local`:
+Link this repo to your Vercel project (one-time):
+
+```bash
+npx vercel link
+npx vercel env pull .env.local
+```
+
+Add to `.env.local` manually if needed:
 
 ```
 PAYLOAD_SECRET=local-dev-secret-change-me-32chars
-DATABASE_URI=postgresql://payload:payload@localhost:5432/hhansegrill
 USE_PAYLOAD_MENU=false
 ```
 
-Run dev server (creates DB tables on first `/admin` visit):
+Run dev server:
 
 ```bash
 npm run dev
 ```
 
-Seed menu + photos:
+Run migrations + seed menu + photos:
 
 ```bash
+node scripts/payload-migrate.mjs
 npm run seed:menu
 ```
 
