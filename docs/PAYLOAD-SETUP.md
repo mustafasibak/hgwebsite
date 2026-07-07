@@ -51,9 +51,9 @@ While `USE_PAYLOAD_MENU=false`, `/menu` and `/kiosk` use the static menu in `lib
 
 ## First-time setup
 
-1. Create **Vercel Postgres** and **Vercel Blob** on the project.
+1. Create **Neon Postgres** and **Vercel Blob** on the project.
 2. Add env vars in Vercel (and locally in `.env.local`).
-3. Deploy once (or run locally with Postgres).
+3. Deploy once. **Important:** if `/admin` is blank after deploy, redeploy with **Clear build cache** enabled in Vercel (Payload admin needs a webpack build, not Turbopack).
 4. Seed the menu:
    ```bash
    npm run seed:menu

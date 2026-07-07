@@ -1,0 +1,3 @@
+{
+  "buildCommand": "node scripts/generate-photo-versions.mjs && node scripts/payload-migrate.mjs && next build --webpack"
+}

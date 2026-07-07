@@ -33,6 +33,8 @@ const nextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+  // Payload admin requires webpack production builds on Next.js 16.
+  // Vercel defaults to Turbopack unless --webpack is used (see vercel.json).
 }
 
 export default withPayload(nextConfig, { devBundleServerPackages: false })
