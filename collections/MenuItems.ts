@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { adminOnly } from '@/lib/payload-access'
 import { revalidateMenu, revalidateMenuDelete } from '@/payload/hooks/revalidateMenu'
 
 const ALLERGEN_OPTIONS = [
@@ -22,6 +23,14 @@ export const MenuItems: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['itemNumber', 'name', 'category', 'price', 'published'],
     group: 'Speisekarte',
+    description:
+      'Gericht in der Liste anklicken zum Bearbeiten. Mehrere auswählen (Checkbox links) und unten „Löschen“ zum Entfernen.',
+  },
+  access: {
+    read: adminOnly,
+    create: adminOnly,
+    update: adminOnly,
+    delete: adminOnly,
   },
   defaultSort: 'itemNumber',
   hooks: {

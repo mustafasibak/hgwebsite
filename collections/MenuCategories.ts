@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { adminOnly } from '@/lib/payload-access'
 import { revalidateMenu, revalidateMenuDelete } from '@/payload/hooks/revalidateMenu'
 
 export const MenuCategories: CollectionConfig = {
@@ -11,6 +12,14 @@ export const MenuCategories: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'slug', 'sortOrder'],
     group: 'Speisekarte',
+    description:
+      'Kategorie anklicken zum Bearbeiten. Reihenfolge steuert die Tab-Reihenfolge auf der Speisekarte.',
+  },
+  access: {
+    read: adminOnly,
+    create: adminOnly,
+    update: adminOnly,
+    delete: adminOnly,
   },
   defaultSort: 'sortOrder',
   hooks: {

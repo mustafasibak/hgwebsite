@@ -1,5 +1,6 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { de } from '@payloadcms/translations/languages/de'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { buildConfig } from 'payload'
@@ -27,6 +28,10 @@ export default buildConfig({
     meta: {
       titleSuffix: '– HHanse Grill',
     },
+  },
+  i18n: {
+    supportedLanguages: { de },
+    fallbackLanguage: 'de',
   },
   collections: [Users, Media, MenuCategories, MenuItems],
   secret: process.env.PAYLOAD_SECRET || 'dev-secret-change-me',
