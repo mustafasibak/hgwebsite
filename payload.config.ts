@@ -9,6 +9,7 @@ import { MenuCategories } from './collections/MenuCategories'
 import { MenuItems } from './collections/MenuItems'
 import { Users } from './collections/Users'
 import { getDatabaseUrl } from './lib/database-url'
+import { getServerURL } from './lib/server-url'
 import { migrations } from './migrations'
 
 const filename = fileURLToPath(import.meta.url)
@@ -17,6 +18,7 @@ const dirname = path.dirname(filename)
 const blobToken = process.env.BLOB_READ_WRITE_TOKEN
 
 export default buildConfig({
+  serverURL: getServerURL(),
   admin: {
     user: Users.slug,
     importMap: {

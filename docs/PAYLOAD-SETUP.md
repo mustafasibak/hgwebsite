@@ -41,6 +41,7 @@ Copy `.env.example` to `.env.local` and set:
 
 | Variable | Purpose |
 |----------|---------|
+| `PAYLOAD_PUBLIC_SERVER_URL` | Your live site URL, e.g. `https://hgwebsite-alpha.vercel.app` |
 | `PAYLOAD_SECRET` | Random 32+ character secret |
 | `DATABASE_URL` or `POSTGRES_URL` | Auto-added by Neon — no manual copy needed |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob for uploaded dish photos |
