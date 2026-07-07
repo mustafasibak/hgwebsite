@@ -1,25 +1,38 @@
 /**
  * One-time import of static menu + photos into Payload.
- * Usage: PAYLOAD_SECRET=... npx tsx scripts/seed-menu-to-payload.ts
- * (Neon/Vercel: DATABASE_URL or POSTGRES_URL from .env.local)
+ * Usage: npm run seed:menu
+ * (Pull production env first: npx vercel env pull .env.local --environment=production)
  */
 import { readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
-import config from '../payload.config'
-import { hasDatabaseUrl } from '../lib/database-url'
 import { staticMenuCategories } from '../lib/menu-data'
 import { menuItemPhotos } from '../lib/menu-item-photos'
-import { getPayload } from 'payload'
 
 const root = join(import.meta.dirname, '..')
 
 async function seed() {
+  const { hasDatabaseUrl, getDatabaseUrl } = await import('../lib/database-url')
   if (!hasDatabaseUrl()) {
     console.error('DATABASE_URL, POSTGRES_URL, or DATABASE_URI is required')
+    console.error('Run: npx vercel env pull .env.local --environment=production')
+    console.error('Then: npm run seed:menu')
     process.exit(1)
   }
 
+  console.log('Using database:', getDatabaseUrl().replace(/:[^:@/]+@/, ':***@'))
+
+  const { default: config } = await import('../payload.config')
+  const { getPayload } = await import('payload')
   const payload = await getPayload({ config })
+
+  const existingItems = await payload.find({
+    collection: 'menu-items',
+    limit: 1,
+  })
+  if (existingItems.totalDocs > 0) {
+    console.log(`Seed skipped: ${existingItems.totalDocs} menu items already in database.`)
+    process.exit(0)
+  }
 
   const categoryIdBySlug = new Map<string, number>()
 

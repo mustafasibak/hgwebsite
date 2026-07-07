@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/generate-photo-versions.mjs && next dev",
-    "build": "node scripts/generate-photo-versions.mjs && node scripts/payload-migrate.mjs && payload generate:importmap && next build --webpack",
+    "build": "node scripts/generate-photo-versions.mjs && node scripts/payload-migrate.mjs && node scripts/payload-seed.mjs && payload generate:importmap && next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "payload": "payload",
     "generate:importmap": "payload generate:importmap",
     "generate:types": "payload generate:types",
-    "seed:menu": "tsx scripts/seed-menu-to-payload.ts"
+    "seed:menu": "node --import ./scripts/load-env-local.mjs ./node_modules/.bin/tsx scripts/seed-menu-to-payload.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.85.2",
