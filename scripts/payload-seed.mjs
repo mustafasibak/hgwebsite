@@ -16,5 +16,5 @@ if (!hasDatabaseUrl()) {
 console.log('Running menu seed on deploy...')
 execSync('./node_modules/.bin/tsx scripts/seed-menu-to-payload.ts', {
   stdio: 'inherit',
-  env: process.env,
+  env: { ...process.env, PAYLOAD_SEEDING: 'true' },
 })
