@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Logo from '@/components/Logo'
 import { site } from '@/lib/site'
-import { menuCategories } from '@/lib/menu-data'
+import { getMenu } from '@/lib/menu-api'
 import { getWeekPlan } from '@/lib/mittagstisch'
 
 function formatPrice(p: number) {
@@ -12,6 +12,7 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI']
 
 export default async function HomePage() {
   const { week } = await getWeekPlan()
+  const menuCategories = await getMenu()
   const today = new Date().toISOString().slice(0, 10)
   const todayPlan = week.find(d => d.date === today)
 

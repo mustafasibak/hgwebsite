@@ -5,6 +5,7 @@ export type MenuItem = {
   price: number
   priceTbd?: boolean
   nameEn?: string
+  descEn?: string
   compactCard?: boolean
   tags?: string[]
   badge?: string
@@ -22,7 +23,7 @@ export type MenuCategory = {
 }
 
 // Stand: aktuelle Karte von api.hhansegrill-halal.de (Juni 2026)
-export const menuCategories: MenuCategory[] = [
+export const staticMenuCategories: MenuCategory[] = [
   {
     name: 'Klassiker',
     slug: 'klassiker',

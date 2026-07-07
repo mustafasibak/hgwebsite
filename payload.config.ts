@@ -1,0 +1,49 @@
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { postgresAdapter } from '@payloadcms/db-postgres'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { buildConfig } from 'payload'
+import sharp from 'sharp'
+import { Media } from './collections/Media'
+import { MenuCategories } from './collections/MenuCategories'
+import { MenuItems } from './collections/MenuItems'
+import { Users } from './collections/Users'
+import { getDatabaseUrl } from './lib/database-url'
+
+const filename = fileURLToPath(import.meta.url)
+const dirname = path.dirname(filename)
+
+const blobToken = process.env.BLOB_READ_WRITE_TOKEN
+
+export default buildConfig({
+  admin: {
+    user: Users.slug,
+    importMap: {
+      baseDir: path.resolve(dirname),
+    },
+    meta: {
+      titleSuffix: '– HHanse Grill',
+    },
+  },
+  collections: [Users, Media, MenuCategories, MenuItems],
+  secret: process.env.PAYLOAD_SECRET || 'dev-secret-change-me',
+  typescript: {
+    outputFile: path.resolve(dirname, 'payload-types.ts'),
+  },
+  db: postgresAdapter({
+    pool: {
+      connectionString: getDatabaseUrl(),
+    },
+  }),
+  sharp,
+  plugins: blobToken
+    ? [
+        vercelBlobStorage({
+          collections: {
+            media: true,
+          },
+          token: blobToken,
+        }),
+      ]
+    : [],
+})

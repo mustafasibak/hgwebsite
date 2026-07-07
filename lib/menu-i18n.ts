@@ -1,4 +1,4 @@
-import { menuCategories, type MenuCategory, type MenuItem } from '@/lib/menu-data'
+import type { MenuCategory, MenuItem } from '@/lib/menu-data'
 import { compareSaladItems } from '@/lib/salad-order'
 
 export type Locale = 'de' | 'en'
@@ -10,9 +10,9 @@ export type MenuTab = typeof VEGGIE_TAB | typeof NACHTISCH_TAB | string
 const TRAILING_CATEGORY_SLUGS = ['saucen', 'getraenke'] as const
 
 /** Category tabs with Saucen & Getränke last (after Veggie/Nachtisch). */
-export function getMenuTabOrder(): MenuTab[] {
+export function getMenuTabOrder(categories: MenuCategory[]): MenuTab[] {
   const trailing = new Set<string>(TRAILING_CATEGORY_SLUGS)
-  const main = menuCategories.filter(c => !trailing.has(c.slug)).map(c => c.slug)
+  const main = categories.filter(c => !trailing.has(c.slug)).map(c => c.slug)
   return [...main, VEGGIE_TAB, NACHTISCH_TAB, ...TRAILING_CATEGORY_SLUGS]
 }
 
@@ -341,7 +341,7 @@ export function itemLabel(item: MenuItem, locale: Locale): { name: string; desc?
     ?? (WINGS_ITEM_IDS.test(item.id) ? wingsNameEn(item.name) : item.name)
   return {
     name,
-    desc: item.desc ? translateDesc(item.desc, locale) : undefined,
+    desc: item.descEn ?? (item.desc ? translateDesc(item.desc, locale) : undefined),
   }
 }
 

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef, useEffect, useMemo } from 'react'
 import Image from 'next/image'
-import { menuCategories, type MenuCategory, type MenuItem } from '@/lib/menu-data'
+import type { MenuCategory, MenuItem } from '@/lib/menu-data'
 import { getItemImage, itemHasPhoto } from '@/lib/menu-images'
 import { getCutoutPhotoStyle, isCutoutPhoto } from '@/lib/menu-item-photos'
 import {
@@ -36,6 +36,7 @@ function cutoutFrameStyle(src: string): React.CSSProperties | undefined {
 }
 
 type MenuEmbedProps = {
+  menuCategories: MenuCategory[]
   mode?: MenuMode
   showSearch?: boolean
   showAllCategories?: boolean
@@ -71,13 +72,15 @@ function displayPrice(item: MenuItem, locale: 'de' | 'en'): string {
 }
 
 export default function MenuEmbed({
+  menuCategories,
   mode = 'website',
   showSearch = true,
   showAllCategories = false,
 }: MenuEmbedProps) {
   const isKiosk = mode === 'kiosk'
   const { locale } = useMenuLocale()
-  const [activeTab, setActiveTab] = useState<MenuTab>(() => menuCategories[0]?.slug ?? getMenuTabOrder()[0])
+  const tabOrder = useMemo(() => getMenuTabOrder(menuCategories), [menuCategories])
+  const [activeTab, setActiveTab] = useState<MenuTab>(() => menuCategories[0]?.slug ?? tabOrder[0])
   const [search, setSearch] = useState('')
   const [cart, setCart] = useState<CartLine[]>([])
   const [flash, setFlash] = useState<string | null>(null)
@@ -97,7 +100,7 @@ export default function MenuEmbed({
       }
     }
     return sortVeggieEntries(entries)
-  }, [])
+  }, [menuCategories])
 
   useEffect(() => {
     if (!detail) return
@@ -144,9 +147,7 @@ export default function MenuEmbed({
       heading: undefined,
       items: cat.items.map(item => ({ item, cat })),
     }]
-  }, [search, showAllCategories, activeTab, locale, veggieEntries])
-
-  const tabOrder = useMemo(() => getMenuTabOrder(), [])
+  }, [search, showAllCategories, activeTab, locale, veggieEntries, menuCategories])
 
   function addItem(item: MenuItem) {
     if (item.priceTbd) return

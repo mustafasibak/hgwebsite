@@ -2,6 +2,7 @@ import MenuEmbed from '@/components/MenuEmbed'
 import MenuLangBar from '@/components/MenuLangBar'
 import MenuPhoto from '@/components/MenuPhoto'
 import { MenuLocaleProvider } from '@/components/MenuLocaleContext'
+import { getMenu } from '@/lib/menu-api'
 import { site } from '@/lib/site'
 
 export const metadata = {
@@ -9,12 +10,17 @@ export const metadata = {
   description: 'Grillgerichte, Burger, Schnitzel, Croques, Pasta und mehr – alles Halal, täglich frisch.',
 }
 
-export default function MenuPage() {
+/** ISR interval — keep in sync with lib/menu-api.ts MENU_REVALIDATE_SECONDS */
+export const revalidate = 60
+
+export default async function MenuPage() {
+  const menuCategories = await getMenu()
+
   return (
     <MenuLocaleProvider>
       <div className="container" style={{ padding: '32px 20px 48px', maxWidth: 1120 }}>
         <MenuLangBar />
-        <MenuEmbed />
+        <MenuEmbed menuCategories={menuCategories} />
 
         <div style={{ marginTop: 36, textAlign: 'center' }}>
           <a
