@@ -10,8 +10,8 @@ export const metadata = {
   description: 'Grillgerichte, Burger, Schnitzel, Croques, Pasta und mehr – alles Halal, täglich frisch.',
 }
 
-/** ISR interval — keep in sync with lib/menu-api.ts MENU_REVALIDATE_SECONDS */
-export const revalidate = 60
+/** CMS-driven menu — always read fresh data after admin edits */
+export const revalidate = 0
 
 export default async function MenuPage() {
   const menuCategories = await getMenu()

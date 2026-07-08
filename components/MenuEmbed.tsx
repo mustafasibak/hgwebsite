@@ -315,6 +315,7 @@ export default function MenuEmbed({
                           style={cutout ? cutoutFrameStyle(imageSrc!) : undefined}
                         >
                           <Image
+                            key={imageSrc}
                             src={imageSrc!}
                             alt={alt}
                             width={400}

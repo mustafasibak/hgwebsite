@@ -8,8 +8,8 @@ export const metadata = {
   description: 'Speisekarte zum Durchstöbern im Restaurant. Bestellung nur an der Kasse.',
 }
 
-/** ISR interval — keep in sync with lib/menu-api.ts MENU_REVALIDATE_SECONDS */
-export const revalidate = 60
+/** CMS-driven menu — always read fresh data after admin edits */
+export const revalidate = 0
 
 export default async function KioskPage() {
   const menuCategories = await getMenu()

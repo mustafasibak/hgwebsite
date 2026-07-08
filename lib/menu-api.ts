@@ -56,10 +56,18 @@ function blobUrlFromFilename(filename: string): string | undefined {
 }
 
 function mediaUrl(photo: PayloadMenuItem['photo']): string | undefined {
-  if (!photo || typeof photo === 'number' || typeof photo === 'string') return undefined
+  if (!photo) return undefined
+
+  // Unpopulated relationship — depth should hydrate this; skip bare IDs.
+  if (typeof photo === 'number' || typeof photo === 'string') return undefined
 
   let url = photo.url ?? undefined
   const filename = photo.filename ?? undefined
+
+  // Direct blob/CDN URLs from Payload + Vercel Blob plugin.
+  if (url?.startsWith('https://') && url.includes('.blob.vercel-storage.com')) {
+    return withCacheBust(url, photo.updatedAt)
+  }
 
   // Payload proxy URLs fail on Vercel when files live in blob storage.
   if (
@@ -89,9 +97,16 @@ function mediaUrl(photo: PayloadMenuItem['photo']): string | undefined {
   return withCacheBust(url, photo.updatedAt)
 }
 
-function mapItem(doc: PayloadMenuItem): MenuItem {
+function resolveItemImage(doc: PayloadMenuItem): string | undefined {
+  const payloadImage = mediaUrl(doc.photo)
   const staticImage = getStaticItemPhoto(doc.itemNumber)
-  const image = staticImage ?? mediaUrl(doc.photo)
+  // Mapped /essen/ photos: deploy via git (e.g. rotated PNGs). Admin upload wins elsewhere.
+  if (staticImage) return staticImage
+  return payloadImage
+}
+
+function mapItem(doc: PayloadMenuItem): MenuItem {
+  const image = resolveItemImage(doc)
   const tags = doc.allergenTags?.length ? [...doc.allergenTags] : undefined
 
   return {
@@ -135,7 +150,7 @@ async function getMenuFromPayload(): Promise<MenuCategory[]> {
     where: { published: { equals: true } },
     sort: 'itemNumber',
     limit: 500,
-    depth: 1,
+    depth: 2,
   })
 
   const itemsByCategoryId = new Map<string, MenuItem[]>()

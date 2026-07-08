@@ -22,6 +22,7 @@ export const MenuItems: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['itemNumber', 'name', 'category', 'price', 'published'],
+    listSearchableFields: ['itemNumber', 'name', 'description'],
     group: 'Speisekarte',
     description:
       'Gerichte als Fotokarten – auf ein Bild tippen zum Foto ändern, auf den Namen zum Bearbeiten.',
@@ -119,6 +120,10 @@ export const MenuItems: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       label: 'Foto',
+      admin: {
+        description:
+          'Nach dem Hochladen unten auf Speichern klicken. Erscheint auf Speisekarte/Kiosk (sofern „Bild anzeigen“ aktiv ist).',
+      },
     },
     {
       name: 'imageAlt',

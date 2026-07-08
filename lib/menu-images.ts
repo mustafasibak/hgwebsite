@@ -46,10 +46,10 @@ export function getItemImage(
   options?: { fillMissingInGroup?: boolean },
 ): string | null {
   if (item.showImage === false) return null
-  // Prefer same-origin /essen/ files over Payload blob copies (more reliable on deploy).
+  // mapItem already picks static /essen/ or admin blob; don't override here.
+  if (item.image) return item.image
   const staticPhoto = getStaticItemPhoto(item.id)
   if (staticPhoto) return staticPhoto
-  if (item.image) return item.image
   if (options?.fillMissingInGroup || categoryShowsImage(cat)) {
     return getCategoryPlaceholder(cat)
   }
