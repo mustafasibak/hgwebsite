@@ -6,6 +6,7 @@ import {
   type MenuCategory,
   type MenuItem,
 } from '@/lib/menu-data'
+import { getStaticItemPhoto } from '@/lib/menu-images'
 
 type PayloadCategory = {
   id: number | string
@@ -89,7 +90,8 @@ function mediaUrl(photo: PayloadMenuItem['photo']): string | undefined {
 }
 
 function mapItem(doc: PayloadMenuItem): MenuItem {
-  const image = mediaUrl(doc.photo)
+  const staticImage = getStaticItemPhoto(doc.itemNumber)
+  const image = staticImage ?? mediaUrl(doc.photo)
   const tags = doc.allergenTags?.length ? [...doc.allergenTags] : undefined
 
   return {

@@ -35,14 +35,21 @@ export function itemShowsImage(item: MenuItem, cat: MenuCategory): boolean {
   return categoryShowsImage(cat)
 }
 
+export function getStaticItemPhoto(itemId: string): string | undefined {
+  const src = menuItemPhotos[itemId]
+  return src ? withPhotoCacheBust(src) : undefined
+}
+
 export function getItemImage(
   item: MenuItem,
   cat: MenuCategory,
   options?: { fillMissingInGroup?: boolean },
 ): string | null {
   if (item.showImage === false) return null
+  // Prefer same-origin /essen/ files over Payload blob copies (more reliable on deploy).
+  const staticPhoto = getStaticItemPhoto(item.id)
+  if (staticPhoto) return staticPhoto
   if (item.image) return item.image
-  if (menuItemPhotos[item.id]) return withPhotoCacheBust(menuItemPhotos[item.id])
   if (options?.fillMissingInGroup || categoryShowsImage(cat)) {
     return getCategoryPlaceholder(cat)
   }
