@@ -1,0 +1,207 @@
+/* HHanse Grill — Payload admin brand theme (matches /menu & /kiosk) */
+
+@layer payload-default {
+  :root {
+    /* Site palette */
+    --hh-accent: #a8170e;
+    --hh-accent-dark: #7c0f08;
+    --hh-yellow: #f5c211;
+    --hh-yellow-soft: #fce8b0;
+    --hh-cream: #fdf4dc;
+    --hh-bg: #faedc8;
+    --hh-surface: #fffdf5;
+    --hh-surface2: #faeecd;
+    --hh-border: #e9cb7e;
+    --hh-border-dark: #cfa23e;
+    --hh-text: #2b2310;
+    --hh-muted: #6e5e40;
+
+    /* Warm elevation scale (cream → brown) */
+    --color-base-0: #fffdf5;
+    --color-base-50: #fdf4dc;
+    --color-base-100: #faeecd;
+    --color-base-150: #fce8b0;
+    --color-base-200: #f5d98a;
+    --color-base-250: #e9cb7e;
+    --color-base-300: #d4b05a;
+    --color-base-350: #b8923f;
+    --color-base-400: #9a7830;
+    --color-base-450: #7d6128;
+    --color-base-500: #6e5e40;
+    --color-base-550: #5c4e35;
+    --color-base-600: #4a3f2b;
+    --color-base-650: #3a3222;
+    --color-base-700: #3a2c10;
+    --color-base-750: #32260e;
+    --color-base-800: #2b2310;
+    --color-base-850: #241d0d;
+    --color-base-900: #1c160a;
+    --color-base-950: #120e07;
+    --color-base-1000: #2b2310;
+
+    --theme-bg: var(--hh-bg);
+    --theme-text: var(--hh-text);
+    --theme-input-bg: var(--hh-surface);
+    --theme-border-color: var(--hh-border);
+
+    --font-body: Georgia, 'Times New Roman', Times, serif;
+    --font-serif: Georgia, 'Times New Roman', Times, serif;
+
+    --style-radius-s: 6px;
+    --style-radius-m: 8px;
+    --style-radius-l: 10px;
+  }
+
+  html[data-theme='light'] {
+    --theme-bg: var(--hh-bg);
+    --theme-text: var(--hh-text);
+    --theme-input-bg: var(--hh-surface);
+  }
+}
+
+html[data-theme='light'] body {
+  background: var(--hh-bg);
+  color: var(--hh-text);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+/* Top bar — yellow band like menu section titles */
+.app-header__bg {
+  background: linear-gradient(135deg, #f0b400 0%, #f7d335 100%) !important;
+  opacity: 1 !important;
+}
+
+.app-header__content,
+.app-header__step-header,
+.step-nav,
+.step-nav__home {
+  color: var(--hh-accent-dark);
+}
+
+.app-header--show-bg .app-header__content {
+  color: var(--hh-accent-dark);
+}
+
+/* Sidebar */
+.nav-group__toggle,
+.nav-group__label {
+  color: var(--hh-text);
+  font-weight: 600;
+}
+
+.nav-group__toggle:hover {
+  color: var(--hh-accent-dark);
+}
+
+/* Dashboard & collection cards */
+.card {
+  background: var(--hh-surface);
+  border: 2px solid var(--hh-border);
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.card:hover {
+  border-color: var(--hh-border-dark);
+  background: var(--hh-cream);
+}
+
+.card__title {
+  color: var(--hh-accent-dark);
+  font-weight: 700;
+}
+
+.dashboard__label,
+.list-header__title {
+  color: var(--hh-accent-dark);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Primary actions — restaurant red */
+.btn--style-primary {
+  background: var(--hh-accent);
+  border: 2px solid var(--hh-accent-dark);
+  border-radius: 8px;
+  color: #fff;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: 700;
+}
+
+.btn--style-primary:hover:not(.btn--disabled) {
+  background: var(--hh-accent-dark);
+  border-color: var(--hh-accent-dark);
+}
+
+.btn--style-secondary {
+  background: var(--hh-surface);
+  border: 2px solid var(--hh-border-dark);
+  border-radius: 8px;
+  color: var(--hh-text);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: 700;
+}
+
+.btn--style-secondary:hover:not(.btn--disabled) {
+  background: var(--hh-yellow-soft);
+}
+
+/* Forms & tables */
+.field-type,
+.render-fields,
+.document-fields {
+  background: transparent;
+}
+
+input,
+textarea,
+select,
+.rs__control {
+  border-color: var(--hh-border) !important;
+  border-radius: 8px !important;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.table {
+  border: 2px solid var(--hh-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table__header {
+  background: linear-gradient(135deg, #f0b400 0%, #f7d335 100%);
+  color: var(--hh-accent-dark);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.table__row:hover {
+  background: var(--hh-yellow-soft);
+}
+
+/* Login / create-first-user */
+.template-minimal {
+  background: var(--hh-bg);
+}
+
+.template-minimal__wrap {
+  background: var(--hh-surface);
+  border: 2px solid var(--hh-border-dark);
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.template-minimal h1 {
+  color: var(--hh-accent-dark);
+}
+
+.create-first-user h1 {
+  color: var(--hh-accent-dark);
+}
+
+/* Links */
+a:hover {
+  color: var(--hh-accent);
+}

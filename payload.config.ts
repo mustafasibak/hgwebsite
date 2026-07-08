@@ -22,6 +22,7 @@ export default buildConfig({
   serverURL: getServerURL(),
   admin: {
     user: Users.slug,
+    theme: 'light',
     importMap: {
       baseDir: path.resolve(dirname),
     },
