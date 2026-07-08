@@ -41,6 +41,10 @@ export const MenuItems: CollectionConfig = {
     delete: adminOnly,
   },
   defaultSort: 'itemNumber',
+  defaultPopulate: {
+    category: true,
+    photo: true,
+  },
   hooks: {
     afterChange: [revalidateMenu],
     afterDelete: [revalidateMenuDelete],

@@ -16,6 +16,7 @@ import type { ListViewClientProps } from 'payload'
 import { formatAdminURL } from 'payload/shared'
 import { useRouter } from 'next/navigation'
 import React, { useCallback, useEffect } from 'react'
+import { getStaticItemPhoto } from '@/lib/menu-images'
 
 type PhotoValue = {
   alt?: string
@@ -34,9 +35,23 @@ type MenuItemDoc = {
   category?: { name?: string } | number | null
 }
 
-function photoSrc(photo: MenuItemDoc['photo']): string | null {
+function payloadPhotoSrc(photo: MenuItemDoc['photo']): string | null {
   if (!photo || typeof photo !== 'object') return null
-  return photo.url ?? null
+  const url = photo.url
+  if (!url) return null
+  if (url.startsWith('http') || url.startsWith('/')) return url
+  return null
+}
+
+/** Same sources as the public menu: /essen/ default, then CMS upload. */
+function resolvePhotoSrc(doc: MenuItemDoc): { src: string | null; source: 'static' | 'cms' | null } {
+  if (doc.itemNumber) {
+    const staticPhoto = getStaticItemPhoto(doc.itemNumber)
+    if (staticPhoto) return { src: staticPhoto, source: 'static' }
+  }
+  const cms = payloadPhotoSrc(doc.photo)
+  if (cms) return { src: cms, source: 'cms' }
+  return { src: null, source: null }
 }
 
 function categoryName(category: MenuItemDoc['category']): string | null {
@@ -126,15 +141,19 @@ export default function MenuItemsPhotoList(props: ListViewClientProps) {
         ) : (
           <div className="menu-items-photo-list__grid">
             {docs.map(doc => {
-              const src = photoSrc(doc.photo)
+              const { src, source } = resolvePhotoSrc(doc)
               const cat = categoryName(doc.category)
               return (
                 <article key={doc.id} className="menu-items-photo-list__card">
                   <button
                     type="button"
-                    className="menu-items-photo-list__photo-btn"
+                    className={`menu-items-photo-list__photo-btn${source === 'static' ? ' menu-items-photo-list__photo-btn--static' : ''}`}
                     onClick={() => router.push(editPhotoUrl(doc.id))}
-                    title="Foto bearbeiten oder ersetzen"
+                    title={
+                      source === 'static'
+                        ? 'Standardfoto von der Website – tippen zum Ersetzen'
+                        : 'Foto bearbeiten oder ersetzen'
+                    }
                   >
                     {src ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -150,6 +169,11 @@ export default function MenuItemsPhotoList(props: ListViewClientProps) {
                   <div className="menu-items-photo-list__body">
                     <div className="menu-items-photo-list__meta">
                       <span className="menu-items-photo-list__number">#{doc.itemNumber}</span>
+                      {source === 'static' && (
+                        <span className="menu-items-photo-list__badge menu-items-photo-list__badge--static">
+                          Standardfoto
+                        </span>
+                      )}
                       {!doc.published && (
                         <span className="menu-items-photo-list__badge menu-items-photo-list__badge--draft">
                           Entwurf

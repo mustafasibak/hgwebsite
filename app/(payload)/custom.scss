@@ -288,6 +288,18 @@ a:hover {
   padding: 0.1rem 0.45rem;
 }
 
+.menu-items-photo-list__badge--static {
+  background: #e8f4ea;
+  border-color: #9bc4a3;
+  color: #2d5a35;
+}
+
+.menu-items-photo-list__badge--draft {
+  background: #f5e8e8;
+  border-color: #d4a0a0;
+  color: #7a3030;
+}
+
 .menu-items-photo-list__title {
   background: none;
   border: 0;
