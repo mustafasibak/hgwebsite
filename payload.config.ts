@@ -10,6 +10,7 @@ import { MenuCategories } from './collections/MenuCategories'
 import { MenuItems } from './collections/MenuItems'
 import { Users } from './collections/Users'
 import { getDatabaseUrl } from './lib/database-url'
+import { payloadDeOverrides } from './lib/payload-de-overrides'
 import { getServerURL } from './lib/server-url'
 import { migrations } from './migrations'
 
@@ -37,7 +38,7 @@ export default buildConfig({
     supportedLanguages: { de },
     fallbackLanguage: 'de',
     translations: {
-      de: de.translations,
+      de: payloadDeOverrides,
     },
   },
   collections: [Users, Media, MenuCategories, MenuItems],

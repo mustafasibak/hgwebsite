@@ -137,6 +137,9 @@ export const MenuItems: CollectionConfig = {
       type: 'checkbox',
       defaultValue: true,
       label: 'Veröffentlicht',
+      admin: {
+        description: 'Ja = Gericht erscheint auf Speisekarte und Kiosk. Nein = ausgeblendet.',
+      },
     },
   ],
 }
