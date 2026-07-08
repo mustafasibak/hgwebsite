@@ -27,11 +27,12 @@ import { site } from '@/lib/site'
 
 type MenuMode = 'website' | 'kiosk'
 
-function cutoutFrameStyle(src: string): React.CSSProperties | undefined {
+function cutoutFrameStyle(src: string, itemId?: string): React.CSSProperties | undefined {
   if (!isCutoutPhoto(src)) return undefined
-  const { scale, shiftY } = getCutoutPhotoStyle(src)
+  const { scale, shiftX, shiftY } = getCutoutPhotoStyle(src, itemId)
   return {
     '--cutout-scale': scale,
+    '--cutout-shift-x': shiftX,
     '--cutout-shift-y': shiftY,
   } as React.CSSProperties
 }
@@ -312,7 +313,7 @@ export default function MenuEmbed({
                       {hasImageArea && (
                         <div
                           className={`menu-item-image${cutout ? ' menu-item-image--cutout' : ''}`}
-                          style={cutout ? cutoutFrameStyle(imageSrc!) : undefined}
+                          style={cutout ? cutoutFrameStyle(imageSrc!, item.id) : undefined}
                         >
                           <Image
                             key={imageSrc}
@@ -529,7 +530,7 @@ function ItemDetailModal({
         {imageSrc && (
           <div
             className={`menu-item-detail-image${cutout ? ' menu-item-detail-image--cutout' : ''}`}
-            style={cutoutFrameStyle(imageSrc)}
+            style={cutout ? cutoutFrameStyle(imageSrc, item.id) : undefined}
           >
             <Image
               src={imageSrc}
@@ -625,7 +626,7 @@ function NachtischPanel({
               <article key={item.id} className="menu-nachtisch-card">
                 <div
                   className="menu-nachtisch-card-image menu-item-image menu-item-image--cutout"
-                  style={cutoutFrameStyle(item.image)}
+                  style={cutoutFrameStyle(item.image, item.id)}
                 >
                   <Image
                     src={item.image}

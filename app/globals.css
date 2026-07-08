@@ -881,7 +881,8 @@ a { color: var(--accent-dark); }
   object-fit: contain;
   object-position: center center;
   padding: 10px;
-  transform: translateY(var(--cutout-shift-y, 0)) scale(var(--cutout-scale, 1));
+  transform: translate(var(--cutout-shift-x, 0), var(--cutout-shift-y, 0))
+    scale(var(--cutout-scale, 1));
   transform-origin: center center;
 }
 
@@ -1046,7 +1047,8 @@ a { color: var(--accent-dark); }
   object-fit: contain;
   object-position: center center;
   padding: 10px;
-  transform: translateY(var(--cutout-shift-y, 0)) scale(var(--cutout-scale, 1));
+  transform: translate(var(--cutout-shift-x, 0), var(--cutout-shift-y, 0))
+    scale(var(--cutout-scale, 1));
   transform-origin: center center;
 }
 

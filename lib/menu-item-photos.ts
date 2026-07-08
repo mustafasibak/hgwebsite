@@ -45,18 +45,59 @@ export const menuItemPhotos: Record<string, string> = {
   '444': '/essen/grosserweisskaesesalat444.png',
 }
 
-import { cutoutPhotoMetrics } from '@/lib/cutout-photo-metrics'
+import { cutoutPhotoMetrics, type CutoutPhotoMetrics } from '@/lib/cutout-photo-metrics'
 
-export function isCutoutPhoto(src: string): boolean {
-  const path = src.split('?')[0]
-  return (
-    path.includes('-removebg-preview.') ||
-    path.includes('-nobg.') ||
-    /^\/essen\/[a-z]+\d+\.png$/.test(path)
-  )
+export const defaultCutoutMetrics: CutoutPhotoMetrics = {
+  scale: 0.92,
+  shiftX: '0%',
+  shiftY: '0%',
 }
 
-export function getCutoutPhotoStyle(src: string): { scale: number; shiftY: string } {
-  const path = src.split('?')[0]
-  return cutoutPhotoMetrics[path] ?? { scale: 1, shiftY: '0%' }
+function photoBasename(src: string): string {
+  const raw = src.split('?')[0]
+  if (raw.startsWith('/')) {
+    return raw.split('/').pop() || ''
+  }
+  try {
+    return decodeURIComponent(new URL(raw).pathname.split('/').pop() || '')
+  } catch {
+    return raw.split('/').pop() || ''
+  }
+}
+
+/** Resolve metrics key for /essen/ paths, blob URLs, and Vercel random suffixes. */
+export function resolveCutoutMetricsKey(src: string, itemId?: string): string | undefined {
+  if (itemId && menuItemPhotos[itemId]) {
+    return menuItemPhotos[itemId].split('?')[0]
+  }
+
+  const basename = photoBasename(src)
+  if (!basename) return undefined
+
+  const direct = `/essen/${basename}`
+  if (cutoutPhotoMetrics[direct]) return direct
+
+  const baseStem = basename.replace(/\.[a-z]+$/i, '')
+  for (const key of Object.keys(cutoutPhotoMetrics)) {
+    const stem = key.replace('/essen/', '').replace(/\.[a-z]+$/i, '')
+    if (baseStem === stem || baseStem.startsWith(`${stem}-`) || stem.startsWith(baseStem)) {
+      return key
+    }
+  }
+
+  return undefined
+}
+
+export function isCutoutPhoto(src: string): boolean {
+  if (!src || src.startsWith('/placeholders/')) return false
+  return true
+}
+
+export function getCutoutPhotoStyle(
+  src: string,
+  itemId?: string,
+): CutoutPhotoMetrics {
+  const key = resolveCutoutMetricsKey(src, itemId)
+  if (key && cutoutPhotoMetrics[key]) return cutoutPhotoMetrics[key]
+  return defaultCutoutMetrics
 }
