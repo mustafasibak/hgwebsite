@@ -65,6 +65,8 @@ export default buildConfig({
           },
           // Browser uploads directly to Vercel Blob — required on Vercel serverless.
           clientUploads: true,
+          // Avoid "blob already exists" errors when re-uploading the same filename.
+          addRandomSuffix: true,
           token: blobToken,
         }),
       ]
