@@ -134,6 +134,7 @@ export const MenuItems: CollectionConfig = {
       name: 'showImage',
       type: 'checkbox',
       label: 'Bild anzeigen',
+      defaultValue: true,
       admin: {
         description: 'Deaktivieren für kompakte/text-only Karten',
       },

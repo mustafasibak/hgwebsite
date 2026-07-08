@@ -63,6 +63,8 @@ export default buildConfig({
               disablePayloadAccessControl: true,
             },
           },
+          // Browser uploads directly to Vercel Blob — required on Vercel serverless.
+          clientUploads: true,
           token: blobToken,
         }),
       ]

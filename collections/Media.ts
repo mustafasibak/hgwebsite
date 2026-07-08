@@ -22,9 +22,21 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      required: true,
       label: 'Alt-Text',
+      admin: {
+        description: 'Optional — wird beim Gerichte-Foto automatisch gesetzt.',
+      },
     },
   ],
+  hooks: {
+    beforeChange: [
+      ({ data }) => {
+        if (!data?.alt && data?.filename) {
+          data.alt = String(data.filename).replace(/\.[^.]+$/, '')
+        }
+        return data
+      },
+    ],
+  },
   upload: true,
 }
