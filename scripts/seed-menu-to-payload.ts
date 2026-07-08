@@ -6,6 +6,7 @@
 import { readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { staticMenuCategories } from '../lib/menu-data'
+import { menuItemEnById } from '../lib/menu-i18n'
 import { menuItemPhotos } from '../lib/menu-item-photos'
 
 import type { Payload } from 'payload'
@@ -16,11 +17,66 @@ const NACHTISCH_ITEMS = [
   {
     itemNumber: 'rote-gruetze',
     name: 'Rote Grütze mit Vanillensauce',
-    nameEn: 'Red berry compote with vanilla sauce',
+    nameEn: menuItemEnById['rote-gruetze'].nameEn,
     image: '/essen/rotegruetzemitvanillensauce-removebg-preview.png',
     imageAlt: 'Rote Grütze mit Vanillensauce',
   },
 ] as const
+
+async function syncEnglishTranslations(payload: Payload) {
+  const updates: Array<{ itemNumber: string; nameEn?: string; descriptionEn?: string }> = []
+
+  for (const cat of staticMenuCategories) {
+    for (const item of cat.items) {
+      const en = menuItemEnById[item.id]
+      const nameEn = item.nameEn ?? en?.nameEn
+      const descriptionEn = item.descEn ?? en?.descEn
+      if (nameEn || descriptionEn) {
+        updates.push({
+          itemNumber: item.id,
+          ...(nameEn ? { nameEn } : {}),
+          ...(descriptionEn ? { descriptionEn } : {}),
+        })
+      }
+    }
+  }
+
+  for (const item of NACHTISCH_ITEMS) {
+    if (item.nameEn) {
+      updates.push({ itemNumber: item.itemNumber, nameEn: item.nameEn })
+    }
+  }
+
+  let synced = 0
+  for (const patch of updates) {
+    const existing = await payload.find({
+      collection: 'menu-items',
+      where: { itemNumber: { equals: patch.itemNumber } },
+      limit: 1,
+    })
+    const doc = existing.docs[0]
+    if (!doc) continue
+
+    const data: Record<string, string> = {}
+    if (patch.nameEn && doc.nameEn !== patch.nameEn) data.nameEn = patch.nameEn
+    if (patch.descriptionEn && doc.descriptionEn !== patch.descriptionEn) {
+      data.descriptionEn = patch.descriptionEn
+    }
+    if (Object.keys(data).length === 0) continue
+
+    await payload.update({
+      collection: 'menu-items',
+      id: doc.id,
+      data,
+    })
+    synced++
+    console.log(`Updated EN: #${patch.itemNumber}`)
+  }
+
+  if (synced > 0) {
+    console.log(`Synced ${synced} English menu translation(s).`)
+  }
+}
 
 async function ensureNachtischCategory(payload: Payload) {
   const existing = await payload.find({
@@ -115,6 +171,7 @@ async function seed() {
   const payload = await getPayload({ config })
 
   await seedNachtisch(payload)
+  await syncEnglishTranslations(payload)
 
   const existingItems = await payload.find({
     collection: 'menu-items',
@@ -199,7 +256,8 @@ async function seed() {
           category: categoryId,
           name: item.name,
           description: item.desc,
-          nameEn: item.nameEn,
+          nameEn: item.nameEn ?? menuItemEnById[item.id]?.nameEn,
+          descriptionEn: item.descEn ?? menuItemEnById[item.id]?.descEn,
           price: item.price,
           priceTbd: item.priceTbd ?? false,
           badge: item.badge,
