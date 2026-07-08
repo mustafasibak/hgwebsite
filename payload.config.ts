@@ -28,10 +28,16 @@ export default buildConfig({
     meta: {
       titleSuffix: '– HHanse Grill',
     },
+    components: {
+      providers: ['@/components/payload/ForceGermanProvider'],
+    },
   },
   i18n: {
     supportedLanguages: { de },
     fallbackLanguage: 'de',
+    translations: {
+      de: de.translations,
+    },
   },
   collections: [Users, Media, MenuCategories, MenuItems],
   secret: process.env.PAYLOAD_SECRET || 'dev-secret-change-me',
