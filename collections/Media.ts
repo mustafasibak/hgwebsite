@@ -8,8 +8,9 @@ export const Media: CollectionConfig = {
     plural: 'Medien',
   },
   admin: {
+    hidden: true,
     group: 'Speisekarte',
-    description: 'Fotos werden meist direkt beim Gericht hochgeladen. Hier alle Medien verwalten.',
+    description: 'Fotos werden meist direkt beim Gericht hochgeladen. Diese Sammlung ist nur für Uploads im Hintergrund sichtbar.',
   },
   access: {
     read: () => true,

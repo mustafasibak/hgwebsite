@@ -24,7 +24,14 @@ export const MenuItems: CollectionConfig = {
     defaultColumns: ['itemNumber', 'name', 'category', 'price', 'published'],
     group: 'Speisekarte',
     description:
-      'Gericht in der Liste anklicken zum Bearbeiten. Mehrere auswählen (Checkbox links) und unten „Löschen“ zum Entfernen.',
+      'Gerichte als Fotokarten – auf ein Bild tippen zum Foto ändern, auf den Namen zum Bearbeiten.',
+    components: {
+      views: {
+        list: {
+          Component: '@/components/payload/MenuItemsPhotoList',
+        },
+      },
+    },
   },
   access: {
     read: adminOnly,

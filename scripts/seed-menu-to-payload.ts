@@ -8,7 +8,96 @@ import { join } from 'node:path'
 import { staticMenuCategories } from '../lib/menu-data'
 import { menuItemPhotos } from '../lib/menu-item-photos'
 
+import type { Payload } from 'payload'
+
 const root = join(import.meta.dirname, '..')
+
+const NACHTISCH_ITEMS = [
+  {
+    itemNumber: 'rote-gruetze',
+    name: 'Rote Grütze mit Vanillensauce',
+    nameEn: 'Red berry compote with vanilla sauce',
+    image: '/essen/rotegruetzemitvanillensauce-removebg-preview.png',
+    imageAlt: 'Rote Grütze mit Vanillensauce',
+  },
+] as const
+
+async function ensureNachtischCategory(payload: Payload) {
+  const existing = await payload.find({
+    collection: 'menu-categories',
+    where: { slug: { equals: 'nachtisch' } },
+    limit: 1,
+  })
+
+  if (existing.docs[0]) {
+    return existing.docs[0].id as number
+  }
+
+  const doc = await payload.create({
+    collection: 'menu-categories',
+    data: {
+      name: 'Nachtisch (nach Anfrage)',
+      slug: 'nachtisch',
+      icon: '🍰',
+      sortOrder: 115,
+      showImage: true,
+    },
+  })
+  console.log('Created category: Nachtisch (nach Anfrage)')
+  return doc.id as number
+}
+
+async function seedNachtisch(payload: Payload) {
+  const categoryId = await ensureNachtischCategory(payload)
+
+  for (const item of NACHTISCH_ITEMS) {
+    const existing = await payload.find({
+      collection: 'menu-items',
+      where: { itemNumber: { equals: item.itemNumber } },
+      limit: 1,
+    })
+
+    if (existing.docs[0]) {
+      console.log(`Nachtisch item exists: ${item.name}`)
+      continue
+    }
+
+    let photoId: number | undefined
+    const filePath = join(root, 'public', item.image.replace(/^\//, '').split('?')[0])
+    if (existsSync(filePath)) {
+      const buffer = readFileSync(filePath)
+      const filename = filePath.split('/').pop() || 'photo.png'
+      const media = await payload.create({
+        collection: 'media',
+        data: { alt: item.imageAlt },
+        file: {
+          data: buffer,
+          mimetype: filename.endsWith('.png') ? 'image/png' : 'image/jpeg',
+          name: filename,
+          size: buffer.length,
+        },
+      })
+      photoId = media.id as number
+    }
+
+    await payload.create({
+      collection: 'menu-items',
+      data: {
+        itemNumber: item.itemNumber,
+        category: categoryId,
+        name: item.name,
+        nameEn: item.nameEn,
+        price: 0,
+        priceTbd: true,
+        imageAlt: item.imageAlt,
+        showImage: true,
+        published: true,
+        ...(photoId ? { photo: photoId } : {}),
+      },
+    })
+    console.log(`Created Nachtisch item: ${item.name}`)
+  }
+}
 
 async function seed() {
   const { hasDatabaseUrl, getDatabaseUrl } = await import('../lib/database-url')
@@ -24,6 +113,8 @@ async function seed() {
   const { default: config } = await import('../payload.config')
   const { getPayload } = await import('payload')
   const payload = await getPayload({ config })
+
+  await seedNachtisch(payload)
 
   const existingItems = await payload.find({
     collection: 'menu-items',

@@ -8,12 +8,27 @@ export const NACHTISCH_TAB = '__nachtisch__' as const
 export type MenuTab = typeof VEGGIE_TAB | typeof NACHTISCH_TAB | string
 
 const TRAILING_CATEGORY_SLUGS = ['saucen', 'getraenke'] as const
+const NACHTISCH_SLUG = 'nachtisch'
 
 /** Category tabs with Saucen & Getränke last (after Veggie/Nachtisch). */
 export function getMenuTabOrder(categories: MenuCategory[]): MenuTab[] {
   const trailing = new Set<string>(TRAILING_CATEGORY_SLUGS)
-  const main = categories.filter(c => !trailing.has(c.slug)).map(c => c.slug)
-  return [...main, VEGGIE_TAB, NACHTISCH_TAB, ...TRAILING_CATEGORY_SLUGS]
+  const hasNachtischCategory = categories.some(c => c.slug === NACHTISCH_SLUG)
+  const main = categories
+    .filter(c => !trailing.has(c.slug) && c.slug !== NACHTISCH_SLUG)
+    .map(c => c.slug)
+
+  const tabs: MenuTab[] = [...main, VEGGIE_TAB]
+  if (hasNachtischCategory) {
+    tabs.push(NACHTISCH_SLUG)
+  } else {
+    tabs.push(NACHTISCH_TAB)
+  }
+  return [...tabs, ...TRAILING_CATEGORY_SLUGS]
+}
+
+export function isNachtischTab(tab: MenuTab): boolean {
+  return tab === NACHTISCH_TAB || tab === NACHTISCH_SLUG
 }
 
 const VEGGIE_EXCLUDE_IDS = new Set(['555'])

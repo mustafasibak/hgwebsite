@@ -18,6 +18,7 @@ type PayloadCategory = {
 
 type PayloadMedia = {
   url?: string | null
+  filename?: string | null
   updatedAt?: string
 }
 
@@ -39,15 +40,52 @@ type PayloadMenuItem = {
   category: PayloadCategory | number | string
 }
 
+function withCacheBust(url: string, updatedAt?: string | null): string {
+  if (!updatedAt) return url
+  const sep = url.includes('?') ? '&' : '?'
+  return `${url}${sep}v=${encodeURIComponent(updatedAt)}`
+}
+
+function blobUrlFromFilename(filename: string): string | undefined {
+  const token = process.env.BLOB_READ_WRITE_TOKEN
+  if (!token) return undefined
+  const storeId = token.match(/^vercel_blob_rw_([a-z\d]+)/i)?.[1]?.toLowerCase()
+  if (!storeId) return undefined
+  return `https://${storeId}.public.blob.vercel-storage.com/${encodeURIComponent(filename)}`
+}
+
 function mediaUrl(photo: PayloadMenuItem['photo']): string | undefined {
   if (!photo || typeof photo === 'number' || typeof photo === 'string') return undefined
-  const url = photo.url
-  if (!url) return undefined
-  if (photo.updatedAt) {
-    const sep = url.includes('?') ? '&' : '?'
-    return `${url}${sep}v=${encodeURIComponent(photo.updatedAt)}`
+
+  let url = photo.url ?? undefined
+  const filename = photo.filename ?? undefined
+
+  // Payload proxy URLs fail on Vercel when files live in blob storage.
+  if (
+    url &&
+    (url.startsWith('/api/media/file/') ||
+      url.includes('/api/media/file/'))
+  ) {
+    const derivedFilename =
+      filename ?? url.split('/').pop()?.split('?')[0]
+    if (derivedFilename) {
+      const blobUrl = blobUrlFromFilename(derivedFilename)
+      if (blobUrl) url = blobUrl
+    }
   }
-  return url
+
+  if (!url && filename) {
+    url = blobUrlFromFilename(filename)
+  }
+
+  if (!url) return undefined
+
+  // Keep absolute blob/CDN and static public paths as-is.
+  if (url.startsWith('http') || url.startsWith('/')) {
+    return withCacheBust(url, photo.updatedAt)
+  }
+
+  return withCacheBust(url, photo.updatedAt)
 }
 
 function mapItem(doc: PayloadMenuItem): MenuItem {

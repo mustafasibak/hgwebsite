@@ -57,7 +57,11 @@ export default buildConfig({
     ? [
         vercelBlobStorage({
           collections: {
-            media: true,
+            media: {
+              // Serve direct Vercel Blob URLs instead of /api/media/file/* proxy routes
+              // (proxy routes 404/500 on Vercel when disableLocalStorage is active).
+              disablePayloadAccessControl: true,
+            },
           },
           token: blobToken,
         }),

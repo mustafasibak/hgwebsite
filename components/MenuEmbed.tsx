@@ -10,6 +10,7 @@ import {
   getMenuTabOrder,
   categoryLabel,
   formatItemPrice,
+  isNachtischTab,
   isVeggieItem,
   sortVeggieEntries,
   itemAltText,
@@ -141,6 +142,15 @@ export default function MenuEmbed({
       return []
     }
 
+    if (activeTab === 'nachtisch') {
+      const cat = menuCategories.find(c => c.slug === 'nachtisch')
+      if (!cat) return []
+      return [{
+        heading: undefined,
+        items: cat.items.map(item => ({ item, cat })),
+      }]
+    }
+
     const cat = menuCategories.find(c => c.slug === activeTab)
     if (!cat) return []
     return [{
@@ -232,15 +242,19 @@ export default function MenuEmbed({
                       </button>
                     )
                   }
-                  if (tab === NACHTISCH_TAB) {
+                  if (tab === NACHTISCH_TAB || tab === 'nachtisch') {
+                    const nachtischCat = menuCategories.find(c => c.slug === 'nachtisch')
+                    const label = nachtischCat
+                      ? categoryLabel(nachtischCat.name, locale)
+                      : t(locale, 'nachtischTab')
                     return (
                       <button
                         key={tab}
                         type="button"
-                        className={`menu-category-tab menu-category-tab--nachtisch${activeTab === NACHTISCH_TAB ? ' menu-category-tab--active' : ''}`}
-                        onClick={() => setActiveTab(NACHTISCH_TAB)}
+                        className={`menu-category-tab menu-category-tab--nachtisch${isNachtischTab(activeTab) ? ' menu-category-tab--active' : ''}`}
+                        onClick={() => setActiveTab(tab)}
                       >
-                        {t(locale, 'nachtischTab')}
+                        {label}
                       </button>
                     )
                   }
@@ -262,8 +276,8 @@ export default function MenuEmbed({
         )}
 
         <div>
-          {activeTab === NACHTISCH_TAB && !search.trim() && !showAllCategories && (
-            <NachtischPanel locale={locale} />
+          {isNachtischTab(activeTab) && !search.trim() && !showAllCategories && (
+            <NachtischPanel locale={locale} showHardcodedItems={activeTab === NACHTISCH_TAB} />
           )}
 
           {displayGroups.map(group => (
@@ -349,7 +363,7 @@ export default function MenuEmbed({
             </div>
           ))}
 
-          {search && displayGroups.length === 0 && activeTab !== NACHTISCH_TAB && (
+          {search && displayGroups.length === 0 && !isNachtischTab(activeTab) && (
             <div className="menu-empty-search">
               {locale === 'en' ? t(locale, 'emptySearch') : 'Kein Gericht gefunden für'} &quot;{search}&quot;
             </div>
@@ -588,7 +602,13 @@ const NACHTISCH_ITEMS = [
   },
 ] as const
 
-function NachtischPanel({ locale }: { locale: 'de' | 'en' }) {
+function NachtischPanel({
+  locale,
+  showHardcodedItems = true,
+}: {
+  locale: 'de' | 'en'
+  showHardcodedItems?: boolean
+}) {
   return (
     <div className="menu-nachtisch-panel">
       <div className="menu-nachtisch-window">
@@ -596,28 +616,30 @@ function NachtischPanel({ locale }: { locale: 'de' | 'en' }) {
         <p className="menu-nachtisch-hint">{t(locale, 'nachtischHint')}</p>
       </div>
 
-      <div className="menu-nachtisch-grid">
-        {NACHTISCH_ITEMS.map(item => {
-          const name = locale === 'de' ? item.nameDe : item.nameEn
-          return (
-            <article key={item.id} className="menu-nachtisch-card">
-              <div
-                className="menu-nachtisch-card-image menu-item-image menu-item-image--cutout"
-                style={cutoutFrameStyle(item.image)}
-              >
-                <Image
-                  src={item.image}
-                  alt={name}
-                  width={320}
-                  height={240}
-                  sizes="(max-width: 600px) 45vw, 200px"
-                />
-              </div>
-              <p className="menu-nachtisch-card-name">{name}</p>
-            </article>
-          )
-        })}
-      </div>
+      {showHardcodedItems && (
+        <div className="menu-nachtisch-grid">
+          {NACHTISCH_ITEMS.map(item => {
+            const name = locale === 'de' ? item.nameDe : item.nameEn
+            return (
+              <article key={item.id} className="menu-nachtisch-card">
+                <div
+                  className="menu-nachtisch-card-image menu-item-image menu-item-image--cutout"
+                  style={cutoutFrameStyle(item.image)}
+                >
+                  <Image
+                    src={item.image}
+                    alt={name}
+                    width={320}
+                    height={240}
+                    sizes="(max-width: 600px) 45vw, 200px"
+                  />
+                </div>
+                <p className="menu-nachtisch-card-name">{name}</p>
+              </article>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

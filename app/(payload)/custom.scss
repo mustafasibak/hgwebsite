@@ -205,3 +205,142 @@ select,
 a:hover {
   color: var(--hh-accent);
 }
+
+/* Gerichte photo-card list view */
+.menu-items-photo-list__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.menu-items-photo-list__card {
+  background: var(--hh-surface);
+  border: 2px solid var(--hh-border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-items-photo-list__photo-btn {
+  aspect-ratio: 4 / 3;
+  background: var(--hh-cream);
+  border: 0;
+  cursor: pointer;
+  display: block;
+  padding: 0;
+  width: 100%;
+}
+
+.menu-items-photo-list__photo-btn img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.menu-items-photo-list__photo-placeholder {
+  align-items: center;
+  color: var(--hh-muted);
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+  font-weight: 700;
+  gap: 0.35rem;
+  height: 100%;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+}
+
+.menu-items-photo-list__photo-placeholder small {
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.menu-items-photo-list__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem;
+}
+
+.menu-items-photo-list__meta {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.menu-items-photo-list__number {
+  color: var(--hh-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.menu-items-photo-list__badge {
+  background: var(--hh-yellow-soft);
+  border: 1px solid var(--hh-border-dark);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+}
+
+.menu-items-photo-list__title {
+  background: none;
+  border: 0;
+  color: var(--hh-accent-dark);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0;
+  text-align: left;
+}
+
+.menu-items-photo-list__category {
+  color: var(--hh-muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.menu-items-photo-list__price {
+  color: var(--hh-text);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.menu-items-photo-list__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.35rem;
+}
+
+.menu-items-photo-list__action {
+  background: var(--hh-surface);
+  border: 2px solid var(--hh-border-dark);
+  border-radius: 8px;
+  color: var(--hh-text);
+  cursor: pointer;
+  flex: 1;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.35rem 0.5rem;
+}
+
+.menu-items-photo-list__action--primary {
+  background: var(--hh-accent);
+  border-color: var(--hh-accent-dark);
+  color: #fff;
+}
+
+.menu-items-photo-list__empty {
+  color: var(--hh-muted);
+  margin: 2rem 0;
+  text-align: center;
+}
