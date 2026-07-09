@@ -26,7 +26,7 @@ export const cutoutPhotoMetrics: Record<string, CutoutPhotoMetrics> = {
   '/essen/fitpfanne112.png': { scale: 1.12, shiftX: '3.1%', shiftY: '7%' },
   '/essen/bauernfruehstuck129-removebg-preview.png': { scale: 0.992, shiftX: '-0.8%', shiftY: '-5.1%' },
   '/essen/mixgrill252.png': { scale: 1.367, shiftX: '-9.3%', shiftY: '2%' },
-  '/essen/adana312.png': { scale: 0.948, shiftX: '0.5%', shiftY: '1.9%' },
+  '/essen/adana312.png': { scale: 0.948, shiftX: '-1.9%', shiftY: '0.5%' },
   '/essen/cheeseburgermenu257.png': { scale: 1.336, shiftX: '-3.2%', shiftY: '-7.9%' },
   '/essen/currywurstpommes314.png': { scale: 1.04, shiftX: '-1.7%', shiftY: '0.6%' },
   '/essen/bratkartoffeln30.png': { scale: 0.911, shiftX: '0.1%', shiftY: '0.4%' },
