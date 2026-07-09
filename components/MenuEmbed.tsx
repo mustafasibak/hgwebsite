@@ -37,6 +37,12 @@ function cutoutFrameStyle(src: string, itemId?: string): React.CSSProperties | u
   } as React.CSSProperties
 }
 
+/** Vercel's image optimizer caches old /essen/ transforms; serve dish PNGs directly. */
+function dishPhotoUnoptimized(src: string): boolean {
+  if (!src || src.startsWith('/placeholders/')) return false
+  return src.includes('/essen/') || src.includes('.blob.vercel-storage.com')
+}
+
 type MenuEmbedProps = {
   menuCategories: MenuCategory[]
   mode?: MenuMode
@@ -322,6 +328,7 @@ export default function MenuEmbed({
                             width={400}
                             height={300}
                             sizes="(max-width: 600px) 100vw, 280px"
+                            unoptimized={dishPhotoUnoptimized(imageSrc!)}
                           />
                         </div>
                       )}
@@ -539,6 +546,7 @@ function ItemDetailModal({
               height={600}
               priority
               sizes="(max-width: 700px) 100vw, 560px"
+              unoptimized={dishPhotoUnoptimized(imageSrc)}
             />
           </div>
         )}
@@ -634,6 +642,7 @@ function NachtischPanel({
                     width={320}
                     height={240}
                     sizes="(max-width: 600px) 45vw, 200px"
+                    unoptimized={dishPhotoUnoptimized(item.image)}
                   />
                 </div>
                 <p className="menu-nachtisch-card-name">{name}</p>
