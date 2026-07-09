@@ -3,6 +3,7 @@ import { hasDatabaseUrl } from '@/lib/database-url'
 import { getPayload } from 'payload'
 import {
   staticMenuCategories,
+  sortMenuItemsForCategory,
   type MenuCategory,
   type MenuItem,
 } from '@/lib/menu-data'
@@ -164,7 +165,10 @@ async function getMenuFromPayload(): Promise<MenuCategory[]> {
   }
 
   return (categories as PayloadCategory[]).map(cat =>
-    mapCategory(cat, itemsByCategoryId.get(String(cat.id)) ?? []),
+    mapCategory(
+      cat,
+      sortMenuItemsForCategory(cat.slug, itemsByCategoryId.get(String(cat.id)) ?? []),
+    ),
   )
 }
 

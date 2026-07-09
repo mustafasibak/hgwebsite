@@ -290,3 +290,22 @@ export const staticMenuCategories: MenuCategory[] = [
     ]
   },
 ]
+
+const staticItemOrderByCategory = new Map(
+  staticMenuCategories.map(cat => [
+    cat.slug,
+    new Map(cat.items.map((item, index) => [item.id, index])),
+  ]),
+)
+
+/** Preserve printed-menu order; Payload's itemNumber sort misplaces #100 / #300 etc. */
+export function sortMenuItemsForCategory(slug: string, items: MenuItem[]): MenuItem[] {
+  const order = staticItemOrderByCategory.get(slug)
+  if (!order) return items
+  return [...items].sort((a, b) => {
+    const ai = order.get(a.id) ?? 9999
+    const bi = order.get(b.id) ?? 9999
+    if (ai !== bi) return ai - bi
+    return a.id.localeCompare(b.id, undefined, { numeric: true })
+  })
+}
