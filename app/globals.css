@@ -368,9 +368,29 @@ a { color: var(--accent-dark); }
 }
 
 /* ---- Kiosk terminal ---- */
+html.kiosk-root {
+  scroll-behavior: auto;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 .kiosk-shell {
   min-height: 100vh;
   background: var(--bg);
+  touch-action: manipulation;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kiosk-shell button,
+.kiosk-shell input,
+.kiosk-shell .menu-category-tabs {
+  touch-action: manipulation;
+}
+
+.kiosk-shell .menu-category-tabs {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 .kiosk-header {
@@ -769,6 +789,37 @@ a { color: var(--accent-dark); }
 
 .menu-layout--kiosk .menu-hint--browse {
   font-size: 15px;
+}
+
+/* Kiosk: no hover lift; snappier tap feedback (touch screens feel lighter) */
+.menu-layout--kiosk .menu-item {
+  transition: border-color 0.08s ease, background-color 0.08s ease, box-shadow 0.08s ease;
+}
+
+.menu-layout--kiosk .menu-item:hover {
+  transform: none;
+  border-color: var(--border);
+  box-shadow: 0 1px 3px rgba(58, 44, 16, 0.08);
+}
+
+.menu-layout--kiosk .menu-item:active {
+  transform: none;
+  border-color: var(--accent);
+  background: var(--yellow-soft);
+  box-shadow: 0 2px 8px rgba(168, 23, 14, 0.15);
+}
+
+.menu-layout--kiosk .menu-category-tab {
+  transition: background-color 0.08s ease, border-color 0.08s ease, color 0.08s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menu-layout--kiosk .menu-category-tab:active {
+  transform: scale(0.98);
+}
+
+.menu-layout--kiosk .lang-toggle-btn:active {
+  transform: scale(0.98);
 }
 
 .menu-layout {
