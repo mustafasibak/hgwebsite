@@ -1,5 +1,6 @@
 import MenuEmbed from '@/components/MenuEmbed'
 import KioskHeader from '@/components/KioskHeader'
+import KioskLocaleRoot from '@/components/KioskLocaleRoot'
 import { MenuLocaleProvider } from '@/components/MenuLocaleContext'
 import { getMenu } from '@/lib/menu-api'
 
@@ -16,10 +17,12 @@ export default async function KioskPage() {
 
   return (
     <MenuLocaleProvider>
-      <KioskHeader />
-      <div className="kiosk-menu">
-        <MenuEmbed mode="kiosk" menuCategories={menuCategories} />
-      </div>
+      <KioskLocaleRoot>
+        <KioskHeader />
+        <div className="kiosk-menu">
+          <MenuEmbed mode="kiosk" menuCategories={menuCategories} />
+        </div>
+      </KioskLocaleRoot>
     </MenuLocaleProvider>
   )
 }

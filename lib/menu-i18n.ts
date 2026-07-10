@@ -1,7 +1,7 @@
 import type { MenuCategory, MenuItem } from '@/lib/menu-data'
 import { compareSaladItems } from '@/lib/salad-order'
 
-export type Locale = 'de' | 'en'
+export type Locale = 'de' | 'en' | 'ar'
 
 export const VEGGIE_TAB = '__veggie__' as const
 export const NACHTISCH_TAB = '__nachtisch__' as const
@@ -78,6 +78,25 @@ const categoryEn: Record<string, string> = {
   'Getränke': 'Drinks',
   Veggie: 'Veggie',
   'Nachtisch (nach Anfrage)': 'Desserts',
+}
+
+const categoryAr: Record<string, string> = {
+  'Klassiker': 'كلاسيك',
+  'Grillgerichte': 'مشاوي',
+  'Grillplatten': 'صواني مشاوي',
+  'Snacks': 'سناك',
+  'Wings/Strips': 'أجنحة وستريبس',
+  'Croque': 'كروك',
+  'Pasta': 'باستا',
+  'Fisch': 'سمك',
+  'Salate': 'سلطات',
+  'Super-Spar-Menüs': 'عروض التوفير',
+  'Menü mit Pommes + Getränk (0,3 l)': 'وجبة + بطاطس ومشروب',
+  'Beilagen': 'إضافات',
+  'Saucen': 'صلصات',
+  'Getränke': 'مشروبات',
+  Veggie: 'نباتي',
+  'Nachtisch (nach Anfrage)': 'حلويات',
 }
 
 const tagEn: Record<string, string> = {
@@ -170,19 +189,35 @@ const ui = {
     nachtischLead: 'Rotating selection – ask at the counter what\'s available today.',
     nachtischHint: 'Prices and availability at the counter.',
   },
+  ar: {
+    kioskNotice: 'لا يُطلب من هنا — يُرجى الطلب من الكاشير',
+    footerPriceNote: 'الأسعار غير ملزمة — تسري أسعار اليوم في المطعم',
+    footerImageNote: 'صور الأطباق للعرض فقط',
+    veggieTab: 'نباتي',
+    nachtischTab: 'حلويات',
+    additiveLegendHeading: 'مواد مضافة',
+    additiveLegendNote: 'الأرقام على الأطباق تشير إلى هذا الجدول',
+  },
 } as const
 
-export function t(locale: Locale, key: keyof typeof ui.de): string {
-  return ui[locale][key]
+type UiKey = keyof typeof ui.de
+
+export function t(locale: Locale, key: UiKey): string {
+  if (locale === 'ar' && key in ui.ar) {
+    return ui.ar[key as keyof typeof ui.ar]
+  }
+  if (locale === 'en') return ui.en[key]
+  return ui.de[key]
 }
 
 export function categoryLabel(name: string, locale: Locale): string {
   if (locale === 'de') return name
+  if (locale === 'ar') return categoryAr[name] ?? name
   return categoryEn[name] ?? name
 }
 
 export function translateTag(tag: string, locale: Locale): string {
-  if (locale === 'de') return tag
+  if (locale === 'de' || locale === 'ar') return tag
   return tagEn[tag] ?? tag
 }
 
@@ -583,7 +618,7 @@ function translateDesc(text: string, locale: Locale): string {
 }
 
 export function itemLabel(item: MenuItem, locale: Locale): { name: string; desc?: string } {
-  if (locale === 'de') {
+  if (locale === 'de' || locale === 'ar') {
     return { name: item.name, desc: item.desc }
   }
   const en = menuItemEnById[item.id]

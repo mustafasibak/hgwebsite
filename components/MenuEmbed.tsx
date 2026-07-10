@@ -17,6 +17,7 @@ import {
   itemLabel,
   t,
   translateTag,
+  type Locale,
   type MenuTab,
 } from '@/lib/menu-i18n'
 import { resolveItemAllergens, saladHasDressingNote } from '@/lib/allergen-info'
@@ -62,7 +63,7 @@ function normalizeIdQuery(q: string): string | null {
   return String(parseInt(stripped, 10))
 }
 
-function itemMatchesSearch(item: MenuItem, q: string, locale: 'de' | 'en'): boolean {
+function itemMatchesSearch(item: MenuItem, q: string, locale: Locale): boolean {
   const idNorm = normalizeIdQuery(q)
   if (idNorm && item.id === idNorm) return true
 
@@ -73,7 +74,7 @@ function itemMatchesSearch(item: MenuItem, q: string, locale: 'de' | 'en'): bool
     (item.desc || '').toLowerCase().includes(q)
 }
 
-function displayPrice(item: MenuItem, locale: 'de' | 'en'): string {
+function displayPrice(item: MenuItem, locale: Locale): string {
   const tbd = formatItemPrice(item, locale)
   if (tbd) return tbd
   return fmt(item.price)
@@ -498,7 +499,7 @@ function ItemDetailModal({
   item: MenuItem
   cat: MenuCategory
   isKiosk: boolean
-  locale: 'de' | 'en'
+  locale: Locale
   onClose: () => void
   onAdd?: () => void
 }) {
@@ -611,7 +612,7 @@ function NachtischPanel({
   locale,
   showHardcodedItems = true,
 }: {
-  locale: 'de' | 'en'
+  locale: Locale
   showHardcodedItems?: boolean
 }) {
   return (
@@ -624,7 +625,7 @@ function NachtischPanel({
       {showHardcodedItems && (
         <div className="menu-nachtisch-grid">
           {NACHTISCH_ITEMS.map(item => {
-            const name = locale === 'de' ? item.nameDe : item.nameEn
+            const name = locale === 'en' ? item.nameEn : item.nameDe
             return (
               <article key={item.id} className="menu-nachtisch-card">
                 <div

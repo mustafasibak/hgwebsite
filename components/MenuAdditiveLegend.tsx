@@ -12,7 +12,7 @@ export default function MenuAdditiveLegend({ locale }: { locale: Locale }) {
         {COUNTER_ADDITIVE_LEGEND.map(entry => (
           <div key={entry.code} className="menu-additive-legend-item">
             <dt>{entry.code}</dt>
-            <dd>{locale === 'de' ? entry.de : entry.en}</dd>
+            <dd>{locale === 'en' ? entry.en : entry.de}</dd>
           </div>
         ))}
       </dl>

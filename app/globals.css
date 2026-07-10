@@ -423,42 +423,101 @@ html.kiosk-root {
   line-height: 1.35;
 }
 
-.lang-toggle {
-  display: flex;
-  gap: 6px;
+.lang-picker {
+  position: relative;
   flex-shrink: 0;
 }
 
-.lang-toggle-btn {
+.lang-picker-btn {
   display: flex;
   align-items: center;
   gap: 6px;
   min-height: 48px;
+  min-width: 72px;
   padding: 8px 14px;
   background: var(--surface);
-  border: 2px solid var(--border);
+  border: 2px solid var(--border-dark);
   border-radius: 8px;
   font-family: inherit;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: var(--text);
   cursor: pointer;
 }
 
-.lang-toggle-btn--active {
-  background: var(--accent);
-  border-color: var(--accent-dark);
-  color: #fff;
+.lang-picker-code {
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
-.lang-flag {
-  font-size: 1.25rem;
+.lang-picker-caret {
+  font-size: 0.75rem;
+  color: var(--muted);
   line-height: 1;
 }
 
-.lang-code {
-  font-weight: 700;
-  letter-spacing: 0.04em;
+.lang-picker-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  min-width: 148px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--surface);
+  border: 2px solid var(--border-dark);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(43, 35, 16, 0.18);
+}
+
+[dir='rtl'] .lang-picker-menu {
+  right: auto;
+  left: 0;
+}
+
+.lang-picker-option {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: start;
+  cursor: pointer;
+}
+
+.lang-picker-option--active,
+.lang-picker-option:hover {
+  background: var(--yellow-soft);
+}
+
+.lang-picker-option--active {
+  color: var(--accent-dark);
+}
+
+.kiosk-locale-root[dir='rtl'] .kiosk-header-bar {
+  flex-direction: row-reverse;
+}
+
+.kiosk-locale-root[dir='rtl'] .menu-category-tabs-inner {
+  direction: rtl;
+}
+
+.kiosk-locale-root[dir='rtl'] .menu-item,
+.kiosk-locale-root[dir='rtl'] .menu-item-body,
+.kiosk-locale-root[dir='rtl'] .menu-item-name,
+.kiosk-locale-root[dir='rtl'] .menu-item-desc {
+  text-align: right;
+}
+
+.kiosk-locale-root[dir='rtl'] .menu-item-meta,
+.kiosk-locale-root[dir='rtl'] .menu-item-tags {
+  justify-content: flex-end;
 }
 
 .menu-lang-bar {
@@ -819,6 +878,10 @@ html.kiosk-root {
 }
 
 .menu-layout--kiosk .lang-toggle-btn:active {
+  transform: scale(0.98);
+}
+
+.menu-layout--kiosk .lang-picker-btn:active {
   transform: scale(0.98);
 }
 
