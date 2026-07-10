@@ -211,11 +211,6 @@ export default function MenuEmbed({
               : 'Tippen Sie auf ein Gericht für Details und zur Bestellung.'}
           </p>
         )}
-        {isKiosk && (
-          <p className="menu-hint menu-hint--browse">
-            {t(locale, 'browseHint')}
-          </p>
-        )}
         <p className="menu-hint menu-hint--meta">
           {locale === 'en' ? t(locale, 'metaHint') : 'Alle Preise inkl. MwSt. · Halal-zertifiziert'}
         </p>
