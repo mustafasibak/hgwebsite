@@ -42,8 +42,7 @@ const JAEGER_SAUCE = ['Gluten', 'Sellerie', 'Senf', 'Sahne'] as const satisfies 
 const CURRYWURST = ['Gluten', 'Senf', 'Sellerie'] as const satisfies readonly AllergenTag[]
 const BRATWURST = ['Gluten', 'Senf', 'Sellerie'] as const satisfies readonly AllergenTag[]
 const BURGER_BUN = ['Gluten', 'Sesam', 'Senf'] as const satisfies readonly AllergenTag[]
-/** Kitchen sheet: „Hähnchen Filet“ (breaded) – not plain Gyros Fleisch. */
-const CHICKEN_FILET = ['Gluten', 'Senf'] as const satisfies readonly AllergenTag[]
+const WINGS_STRIPS = ['Gluten'] as const satisfies readonly AllergenTag[]
 const SCHNITZEL = ['Gluten', 'Ei', 'Senf'] as const satisfies readonly AllergenTag[]
 const HAEHNSCHNITZEL = ['Gluten', 'Ei'] as const satisfies readonly AllergenTag[]
 const CROQUE = ['Gluten', 'Milch', 'Ei'] as const satisfies readonly AllergenTag[]
@@ -121,7 +120,7 @@ function resolveFromKitchenSheet(item: MenuItem, cat: MenuCategory): AllergenTag
   }
 
   if (cat.slug === 'wings-strips' && has(item, /wings|strips|crispy/i)) {
-    parts.push([...CHICKEN_FILET])
+    parts.push([...WINGS_STRIPS])
   }
 
   if (has(item, /hamburger|cheeseburger|big cheese|big hamburger|burger menü|burger\(rind\)|fitnessburger|vitaminburger|chili burger|kebab burger|veggieburger|vegan burger|strips burger|lachs burger/i)) {
