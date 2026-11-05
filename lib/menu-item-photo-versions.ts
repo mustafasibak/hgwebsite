@@ -14,7 +14,7 @@ export const menuItemPhotoVersions: Record<string, string> = {
   '/essen/chickenburger51-nobg.png': '1793854928226',
   '/essen/bigcheeseburger58-removebg-preview-removebg-preview.png': '1793854928198',
   '/essen/chiliburger455-nobg.png': '1793891770748',
-  '/essen/kebabburger658-nobg.png': '1793892853478',
+  '/essen/kebabburger658-nobg.png': '1793892885962',
   '/essen/gyrospita127.png': '1793854928258',
   '/essen/croquegyros68.png': '1793854928226',
   '/essen/bolognese49.png': '1793854928198',
