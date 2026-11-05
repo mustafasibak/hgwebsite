@@ -58,6 +58,11 @@ export const defaultCutoutMetrics: CutoutPhotoMetrics = {
   shiftY: '0%',
 }
 
+/** Full-frame scene photos that must not be auto-zoomed by cutout metrics. */
+const cutoutPhotoOverrides: Record<string, CutoutPhotoMetrics> = {
+  '/essen/ganzgrillhaehnchen111.png': { scale: 1, shiftX: '0%', shiftY: '0%' },
+}
+
 function photoBasename(src: string): string {
   const raw = src.split('?')[0]
   if (raw.startsWith('/')) {
@@ -103,6 +108,7 @@ export function getCutoutPhotoStyle(
   itemId?: string,
 ): CutoutPhotoMetrics {
   const key = resolveCutoutMetricsKey(src, itemId)
+  if (key && cutoutPhotoOverrides[key]) return cutoutPhotoOverrides[key]
   if (key && cutoutPhotoMetrics[key]) return cutoutPhotoMetrics[key]
   return defaultCutoutMetrics
 }
