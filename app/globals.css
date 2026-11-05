@@ -843,6 +843,7 @@ html.kiosk-root {
   bottom: 0;
   width: auto;
   z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .menu-layout--kiosk .menu-cart-inner {
@@ -852,7 +853,7 @@ html.kiosk-root {
   border-radius: 14px 14px 0 0;
   border-bottom: none;
   /* Compact sheet, but always keep Summe + disclaimer visible (only lines scroll) */
-  max-height: min(34vh, 300px);
+  max-height: min(36vh, 310px);
   overflow: hidden;
   box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.2);
 }
@@ -925,7 +926,7 @@ html.kiosk-root {
 
 .menu-layout--kiosk .menu-cart-actions {
   flex-shrink: 0;
-  padding: 6px 16px 8px;
+  padding: 6px 16px 12px;
 }
 
 .menu-layout--kiosk .menu-cart-disclaimer {
