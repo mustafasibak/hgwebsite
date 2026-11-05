@@ -849,9 +849,19 @@ html.kiosk-root {
   position: static;
   border-radius: 14px 14px 0 0;
   border-bottom: none;
-  max-height: 70vh;
+  /* Keep estimate sheet short so the menu stays usable on kiosk screens */
+  max-height: min(28vh, 240px);
   overflow-y: auto;
   box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.2);
+}
+
+.menu-layout--kiosk .menu-cart-body {
+  padding-bottom: 6px;
+}
+
+.menu-layout--kiosk .menu-cart-lines {
+  max-height: 96px;
+  overflow-y: auto;
 }
 
 .menu-layout--kiosk .menu-cart-bar {
@@ -1292,6 +1302,134 @@ html.kiosk-root {
     cursor: pointer;
   }
   .menu-cart[data-open="false"] .menu-cart-body { display: none; }
+}
+
+/* Mittagstisch week plan (kiosk tab + shared view) */
+.mittagstisch-week {
+  display: grid;
+  gap: 16px;
+}
+
+.mittagstisch-week-intro {
+  border-top: none;
+  margin: 0;
+}
+
+.mittagstisch-week-lead {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.mittagstisch-week-hours {
+  margin: 10px 0 0;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+
+.mittagstisch-week-fallback {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.mittagstisch-week-days {
+  display: grid;
+  gap: 14px;
+}
+
+.mittagstisch-day {
+  padding: 0;
+  overflow: hidden;
+  margin: 0;
+}
+
+.mittagstisch-day--today {
+  border-color: var(--accent);
+  box-shadow: 0 2px 12px rgba(224, 112, 0, 0.25);
+}
+
+.mittagstisch-day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 18px;
+  background: var(--surface2);
+  color: var(--text);
+  border-bottom: 2px solid var(--border);
+}
+
+.mittagstisch-day--today .mittagstisch-day-header {
+  background: var(--accent);
+  color: #fff;
+}
+
+.mittagstisch-day-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.mittagstisch-day-badge {
+  margin-left: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: #fff;
+  color: var(--accent-dark);
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+}
+
+.mittagstisch-meal {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mittagstisch-meal:last-child {
+  border-bottom: none;
+}
+
+.mittagstisch-meal-name {
+  font-weight: 600;
+}
+
+.mittagstisch-meal-roman {
+  color: var(--accent-dark);
+  margin-right: 8px;
+}
+
+.mittagstisch-meal-desc {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.mittagstisch-meal-price {
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--accent-dark);
+  font-size: 1.02rem;
+}
+
+.menu-layout--kiosk .mittagstisch-week--compact .mittagstisch-day-name {
+  font-size: 1.1rem;
+}
+
+.menu-layout--kiosk .mittagstisch-week--compact .mittagstisch-meal {
+  padding: 14px 18px;
+  min-height: 52px;
+  align-items: center;
+}
+
+.menu-category-tab--mittagstisch.menu-category-tab--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 
 ::-webkit-scrollbar { width: 8px; }

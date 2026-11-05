@@ -5,20 +5,34 @@ export type Locale = 'de' | 'en' | 'ar'
 
 export const VEGGIE_TAB = '__veggie__' as const
 export const NACHTISCH_TAB = '__nachtisch__' as const
-export type MenuTab = typeof VEGGIE_TAB | typeof NACHTISCH_TAB | string
+export const MITTAGSTISCH_TAB = '__mittagstisch__' as const
+export type MenuTab =
+  | typeof VEGGIE_TAB
+  | typeof NACHTISCH_TAB
+  | typeof MITTAGSTISCH_TAB
+  | string
 
 const TRAILING_CATEGORY_SLUGS = ['saucen', 'getraenke'] as const
 const NACHTISCH_SLUG = 'nachtisch'
 
 /** Category tabs with Saucen & Getränke last (after Veggie/Nachtisch). */
-export function getMenuTabOrder(categories: MenuCategory[]): MenuTab[] {
+export function getMenuTabOrder(
+  categories: MenuCategory[],
+  options?: { includeMittagstisch?: boolean },
+): MenuTab[] {
   const trailing = new Set<string>(TRAILING_CATEGORY_SLUGS)
   const hasNachtischCategory = categories.some(c => c.slug === NACHTISCH_SLUG)
   const main = categories
     .filter(c => !trailing.has(c.slug) && c.slug !== NACHTISCH_SLUG)
     .map(c => c.slug)
 
-  const tabs: MenuTab[] = [...main, VEGGIE_TAB]
+  const tabs: MenuTab[] = [...main]
+  if (options?.includeMittagstisch) {
+    const klassikerIdx = tabs.indexOf('klassiker')
+    if (klassikerIdx >= 0) tabs.splice(klassikerIdx + 1, 0, MITTAGSTISCH_TAB)
+    else tabs.unshift(MITTAGSTISCH_TAB)
+  }
+  tabs.push(VEGGIE_TAB)
   if (hasNachtischCategory) {
     tabs.push(NACHTISCH_SLUG)
   } else {
@@ -29,6 +43,10 @@ export function getMenuTabOrder(categories: MenuCategory[]): MenuTab[] {
 
 export function isNachtischTab(tab: MenuTab): boolean {
   return tab === NACHTISCH_TAB || tab === NACHTISCH_SLUG
+}
+
+export function isMittagstischTab(tab: MenuTab): boolean {
+  return tab === MITTAGSTISCH_TAB
 }
 
 const VEGGIE_EXCLUDE_IDS = new Set(['555'])
@@ -175,6 +193,13 @@ const ui = {
     nachtischTab: 'Nachtisch (nach Anfrage)',
     nachtischLead: 'Wechselndes Angebot – bitte an der Kasse nachfragen.',
     nachtischHint: 'Preise & Verfügbarkeit erhalten Sie direkt an der Theke.',
+    mittagstischTab: 'Mittagstisch',
+    mittagstischLead:
+      'Unser Mittagstisch wechselt täglich – jeden Tag vier frisch zubereitete Gerichte zum günstigen Preis.',
+    mittagstischHours: 'Mo – So · ab 11:30 Uhr · solange der Vorrat reicht',
+    mittagstischFallback:
+      'Beispielwoche – das aktuelle Tagesangebot erfragen Sie an der Kasse.',
+    mittagstischToday: 'Heute',
   },
   en: {
     kioskNotice: 'No ordering here – please order at the counter.',
@@ -214,6 +239,13 @@ const ui = {
     nachtischTab: 'Desserts',
     nachtischLead: 'Rotating selection – ask at the counter what\'s available today.',
     nachtischHint: 'Prices and availability at the counter.',
+    mittagstischTab: 'Lunch specials',
+    mittagstischLead:
+      'Our lunch specials change daily – four freshly prepared dishes at a good price every day.',
+    mittagstischHours: 'Mon – Sun · from 11:30 · while stocks last',
+    mittagstischFallback:
+      'Sample week – please ask at the counter for today’s specials.',
+    mittagstischToday: 'Today',
   },
   ar: {
     kioskNotice: 'لا يُطلب من هنا — يُرجى الطلب من الكاشير',
@@ -221,6 +253,9 @@ const ui = {
     footerImageNote: 'صور الأطباق للعرض فقط',
     veggieTab: 'نباتي',
     nachtischTab: 'حلويات',
+    mittagstischTab: 'غداء اليوم',
+    mittagstischToday: 'اليوم',
+    mittagstischHours: 'يومياً من ١١:٣٠ — بينما الكمية متوفرة',
     additiveLegendHeading: 'مواد مضافة',
     additiveLegendNote: 'الأرقام على الأطباق تشير إلى هذا الجدول',
     cartTitleEstimate: 'طلبك',

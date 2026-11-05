@@ -7,10 +7,12 @@ import { getCutoutPhotoStyle, isCutoutPhoto } from '@/lib/menu-item-photos'
 import {
   VEGGIE_TAB,
   NACHTISCH_TAB,
+  MITTAGSTISCH_TAB,
   getMenuTabOrder,
   categoryLabel,
   formatItemPrice,
   isNachtischTab,
+  isMittagstischTab,
   isVeggieItem,
   sortVeggieEntries,
   itemAltText,
@@ -20,9 +22,11 @@ import {
   type Locale,
   type MenuTab,
 } from '@/lib/menu-i18n'
+import type { LunchDay } from '@/lib/mittagstisch-data'
 import { resolveItemAllergens, saladHasDressingNote } from '@/lib/allergen-info'
 import { formatAdditiveCodes, resolveItemAdditiveCodes } from '@/lib/additive-info'
 import MenuAdditiveLegend from '@/components/MenuAdditiveLegend'
+import MittagstischWeekView from '@/components/MittagstischWeekView'
 import { useMenuLocale } from '@/components/MenuLocaleContext'
 import { site } from '@/lib/site'
 
@@ -49,6 +53,8 @@ type MenuEmbedProps = {
   mode?: MenuMode
   showSearch?: boolean
   showAllCategories?: boolean
+  /** Same week plan as /mittagstisch — enables the Mittagstisch tab when set. */
+  weekPlan?: { week: LunchDay[]; live: boolean }
 }
 
 type CartLine = { id: string; name: string; price: number; qty: number }
@@ -87,10 +93,15 @@ export default function MenuEmbed({
   mode = 'website',
   showSearch = true,
   showAllCategories = false,
+  weekPlan,
 }: MenuEmbedProps) {
   const isKiosk = mode === 'kiosk'
   const { locale } = useMenuLocale()
-  const tabOrder = useMemo(() => getMenuTabOrder(menuCategories), [menuCategories])
+  const includeMittagstisch = Boolean(weekPlan?.week?.length)
+  const tabOrder = useMemo(
+    () => getMenuTabOrder(menuCategories, { includeMittagstisch }),
+    [menuCategories, includeMittagstisch],
+  )
   const [activeTab, setActiveTab] = useState<MenuTab>(() => menuCategories[0]?.slug ?? tabOrder[0])
   const [search, setSearch] = useState('')
   const [cart, setCart] = useState<CartLine[]>([])
@@ -187,7 +198,7 @@ export default function MenuEmbed({
       }]
     }
 
-    if (activeTab === NACHTISCH_TAB) {
+    if (isMittagstischTab(activeTab) || activeTab === NACHTISCH_TAB) {
       return []
     }
 
@@ -277,6 +288,18 @@ export default function MenuEmbed({
           <div className="menu-category-tabs">
             <div className="menu-category-tabs-inner">
               {tabOrder.map(tab => {
+                  if (tab === MITTAGSTISCH_TAB) {
+                    return (
+                      <button
+                        key={tab}
+                        type="button"
+                        className={`menu-category-tab menu-category-tab--mittagstisch${isMittagstischTab(activeTab) ? ' menu-category-tab--active' : ''}`}
+                        onClick={() => setActiveTab(MITTAGSTISCH_TAB)}
+                      >
+                        {t(locale, 'mittagstischTab')}
+                      </button>
+                    )
+                  }
                   if (tab === VEGGIE_TAB) {
                     if (veggieEntries.length === 0) return null
                     return (
@@ -324,6 +347,15 @@ export default function MenuEmbed({
         )}
 
         <div>
+          {isMittagstischTab(activeTab) && !search.trim() && !showAllCategories && weekPlan && (
+            <MittagstischWeekView
+              week={weekPlan.week}
+              live={weekPlan.live}
+              locale={locale}
+              compact={isKiosk}
+            />
+          )}
+
           {isNachtischTab(activeTab) && !search.trim() && !showAllCategories && (
             <NachtischPanel locale={locale} showHardcodedItems={activeTab === NACHTISCH_TAB} />
           )}

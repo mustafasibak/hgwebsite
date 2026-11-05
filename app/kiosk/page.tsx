@@ -3,6 +3,7 @@ import KioskHeader from '@/components/KioskHeader'
 import KioskLocaleRoot from '@/components/KioskLocaleRoot'
 import { MenuLocaleProvider } from '@/components/MenuLocaleContext'
 import { getMenu } from '@/lib/menu-api'
+import { getWeekPlan } from '@/lib/mittagstisch'
 
 export const metadata = {
   title: 'Speisekarte – Kiosk | HHanse Grill',
@@ -13,14 +14,14 @@ export const metadata = {
 export const revalidate = 0
 
 export default async function KioskPage() {
-  const menuCategories = await getMenu()
+  const [menuCategories, weekPlan] = await Promise.all([getMenu(), getWeekPlan()])
 
   return (
     <MenuLocaleProvider>
       <KioskLocaleRoot>
         <KioskHeader />
         <div className="kiosk-menu">
-          <MenuEmbed mode="kiosk" menuCategories={menuCategories} />
+          <MenuEmbed mode="kiosk" menuCategories={menuCategories} weekPlan={weekPlan} />
         </div>
       </KioskLocaleRoot>
     </MenuLocaleProvider>
