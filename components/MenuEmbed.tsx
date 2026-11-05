@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import Image from 'next/image'
 import type { MenuCategory, MenuItem } from '@/lib/menu-data'
 import { getItemImage, itemHasPhoto } from '@/lib/menu-images'
@@ -56,6 +56,8 @@ type DetailSelection = { item: MenuItem; cat: MenuCategory }
 type DisplayEntry = { item: MenuItem; cat: MenuCategory }
 
 const fmt = (n: number) => n.toFixed(2).replace('.', ',') + ' €'
+/** Kiosk estimate cart auto-clears after this idle period so the next guest starts fresh. */
+const KIOSK_CART_IDLE_MS = 3 * 60 * 1000
 
 function normalizeIdQuery(q: string): string | null {
   const stripped = q.replace(/^#/, '').trim()
@@ -96,6 +98,21 @@ export default function MenuEmbed({
   const [open, setOpen] = useState(false)
   const [detail, setDetail] = useState<DetailSelection | null>(null)
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const clearCart = useCallback(() => {
+    setCart([])
+    setOpen(false)
+  }, [])
+
+  const bumpKioskIdle = useCallback(() => {
+    if (!isKiosk) return
+    if (idleTimer.current) clearTimeout(idleTimer.current)
+    idleTimer.current = setTimeout(() => {
+      setCart([])
+      setOpen(false)
+    }, KIOSK_CART_IDLE_MS)
+  }, [isKiosk])
 
   const veggieEntries = useMemo<DisplayEntry[]>(() => {
     const seen = new Set<string>()
@@ -117,6 +134,30 @@ export default function MenuEmbed({
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = prev }
   }, [detail])
+
+  useEffect(() => {
+    if (!isKiosk) return
+    if (cart.length === 0) {
+      if (idleTimer.current) clearTimeout(idleTimer.current)
+      idleTimer.current = null
+      return
+    }
+    bumpKioskIdle()
+    const onActivity = () => bumpKioskIdle()
+    window.addEventListener('pointerdown', onActivity)
+    window.addEventListener('keydown', onActivity)
+    return () => {
+      window.removeEventListener('pointerdown', onActivity)
+      window.removeEventListener('keydown', onActivity)
+    }
+  }, [isKiosk, cart.length, bumpKioskIdle])
+
+  useEffect(() => {
+    return () => {
+      if (idleTimer.current) clearTimeout(idleTimer.current)
+      if (flashTimer.current) clearTimeout(flashTimer.current)
+    }
+  }, [])
 
   const displayGroups = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -169,16 +210,18 @@ export default function MenuEmbed({
 
   function addItem(item: MenuItem) {
     if (item.priceTbd) return
+    const label = itemLabel(item, locale)
     setCart(prev => {
       const found = prev.find(l => l.id === item.id)
       if (found) {
         return prev.map(l => l.id === item.id ? { ...l, qty: l.qty + 1 } : l)
       }
-      return [...prev, { id: item.id, name: item.name, price: item.price, qty: 1 }]
+      return [...prev, { id: item.id, name: label.name, price: item.price, qty: 1 }]
     })
     setFlash(item.id)
     if (flashTimer.current) clearTimeout(flashTimer.current)
     flashTimer.current = setTimeout(() => setFlash(null), 600)
+    if (isKiosk) bumpKioskIdle()
   }
 
   function changeQty(id: string, delta: number) {
@@ -187,10 +230,12 @@ export default function MenuEmbed({
         .map(l => l.id === id ? { ...l, qty: l.qty + delta } : l)
         .filter(l => l.qty > 0)
     )
+    if (isKiosk) bumpKioskIdle()
   }
 
   function removeItem(id: string) {
     setCart(prev => prev.filter(l => l.id !== id))
+    if (isKiosk) bumpKioskIdle()
   }
 
   const count = cart.reduce((s, l) => s + l.qty, 0)
@@ -308,9 +353,9 @@ export default function MenuEmbed({
                       key={`${cat.slug}-${item.id}`}
                       type="button"
                       className={`menu-item${hasImageArea ? ' menu-item--with-image' : ''}${item.compactCard ? ' menu-item--compact' : ''}`}
-                      data-flash={!isKiosk && flash === item.id}
+                      data-flash={flash === item.id}
                       onClick={() => setDetail({ item, cat })}
-                      aria-label={`${alt} – ${locale === 'en' ? t(locale, 'detailsLabel') : 'Details anzeigen'}`}
+                      aria-label={`${alt} – ${t(locale, 'detailsLabel')}`}
                     >
                       {hasImageArea && (
                         <div
@@ -384,91 +429,102 @@ export default function MenuEmbed({
         </p>
       </div>
 
-      {!isKiosk && (
-        <aside className="menu-cart" data-empty={empty} data-open={open}>
-          <div className="menu-cart-inner">
-            <button
-              type="button"
-              className="menu-cart-bar"
-              onClick={() => setOpen(o => !o)}
-              aria-expanded={open}
-            >
-              <span>{count} {count === 1 ? 'Artikel' : 'Artikel'} · {fmt(total)}</span>
-              <span aria-hidden="true">{open ? '▾' : '▴'}</span>
-            </button>
+      <aside className="menu-cart" data-empty={empty} data-open={open} data-kiosk={isKiosk || undefined}>
+        <div className="menu-cart-inner">
+          <button
+            type="button"
+            className="menu-cart-bar"
+            onClick={() => {
+              setOpen(o => !o)
+              if (isKiosk) bumpKioskIdle()
+            }}
+            aria-expanded={open}
+          >
+            <span>
+              {count}{' '}
+              {count === 1 ? t(locale, 'cartItemSingular') : t(locale, 'cartItemPlural')}
+              {' · '}
+              {fmt(total)}
+            </span>
+            <span aria-hidden="true">{open ? '▾' : '▴'}</span>
+          </button>
 
-            <div className="menu-cart-body">
-              <div className="menu-cart-header">
-                <strong>Ihre Bestellung</strong>
-                {!empty && (
-                  <button
-                    type="button"
-                    className="menu-cart-clear"
-                    onClick={() => { setCart([]); setOpen(false) }}
-                  >
-                    Leeren
-                  </button>
-                )}
-              </div>
-
-              {empty ? (
-                <p className="menu-cart-empty">
-                  Noch keine Gerichte ausgewählt.<br />
-                  Tippen Sie auf ein Gericht, um es hinzuzufügen.
-                </p>
-              ) : (
-                <>
-                  <div className="menu-cart-lines">
-                    {cart.map(line => (
-                      <div key={line.id} className="menu-cart-line">
-                        <div className="menu-cart-line-info">
-                          <div className="menu-cart-line-name">{line.name}</div>
-                          <div className="menu-cart-line-price">{fmt(line.price)}</div>
-                        </div>
-                        <div className="menu-cart-line-qty">
-                          <button type="button" onClick={() => changeQty(line.id, -1)} style={qtyBtn} aria-label="weniger">−</button>
-                          <span>{line.qty}</span>
-                          <button type="button" onClick={() => changeQty(line.id, +1)} style={qtyBtn} aria-label="mehr">+</button>
-                        </div>
-                        <button
-                          type="button"
-                          className="menu-cart-line-remove"
-                          onClick={() => removeItem(line.id)}
-                          aria-label="entfernen"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="menu-cart-total">
-                    <span>Summe</span>
-                    <span>{fmt(total)}</span>
-                  </div>
-
-                  <div className="menu-cart-actions">
-                    <a href={`tel:${site.phoneRaw}`} className="btn btn-primary">
-                      Vorbestellen &amp; Abholen
-                    </a>
-                    <a
-                      href={site.maps}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-secondary"
-                    >
-                      Vor Ort bestellen
-                    </a>
-                    <p className="menu-cart-disclaimer">
-                      Bestellung telefonisch oder vor Ort · keine Online-Zahlung · keine Lieferung
-                    </p>
-                  </div>
-                </>
+          <div className="menu-cart-body">
+            <div className="menu-cart-header">
+              <strong>{isKiosk ? t(locale, 'cartTitleEstimate') : t(locale, 'cartTitle')}</strong>
+              {!empty && (
+                <button
+                  type="button"
+                  className="menu-cart-clear"
+                  onClick={clearCart}
+                >
+                  {t(locale, 'cartClear')}
+                </button>
               )}
             </div>
+
+            {empty ? (
+              <p className="menu-cart-empty">
+                {t(locale, 'cartEmpty')}
+                <br />
+                {t(locale, 'cartEmptyHint')}
+              </p>
+            ) : (
+              <>
+                <div className="menu-cart-lines">
+                  {cart.map(line => (
+                    <div key={line.id} className="menu-cart-line">
+                      <div className="menu-cart-line-info">
+                        <div className="menu-cart-line-name">{line.name}</div>
+                        <div className="menu-cart-line-price">{fmt(line.price)}</div>
+                      </div>
+                      <div className="menu-cart-line-qty">
+                        <button type="button" onClick={() => changeQty(line.id, -1)} style={qtyBtn} aria-label="−">−</button>
+                        <span>{line.qty}</span>
+                        <button type="button" onClick={() => changeQty(line.id, +1)} style={qtyBtn} aria-label="+">+</button>
+                      </div>
+                      <button
+                        type="button"
+                        className="menu-cart-line-remove"
+                        onClick={() => removeItem(line.id)}
+                        aria-label="×"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="menu-cart-total">
+                  <span>{t(locale, 'cartTotal')}</span>
+                  <span>{fmt(total)}</span>
+                </div>
+
+                <div className="menu-cart-actions">
+                  {!isKiosk && (
+                    <>
+                      <a href={`tel:${site.phoneRaw}`} className="btn btn-primary">
+                        Vorbestellen &amp; Abholen
+                      </a>
+                      <a
+                        href={site.maps}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-secondary"
+                      >
+                        Vor Ort bestellen
+                      </a>
+                    </>
+                  )}
+                  <p className="menu-cart-disclaimer">
+                    {isKiosk ? t(locale, 'cartKioskDisclaimer') : t(locale, 'cartDisclaimer')}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
-        </aside>
-      )}
+        </div>
+      </aside>
 
       {detail && (
         <ItemDetailModal
@@ -477,7 +533,7 @@ export default function MenuEmbed({
           isKiosk={isKiosk}
           locale={locale}
           onClose={() => setDetail(null)}
-          onAdd={isKiosk ? undefined : () => {
+          onAdd={detail.item.priceTbd ? undefined : () => {
             addItem(detail.item)
             setDetail(null)
             setOpen(true)
@@ -507,7 +563,7 @@ function ItemDetailModal({
   const cutout = imageSrc ? isCutoutPhoto(imageSrc) : false
   const label = itemLabel(item, locale)
   const alt = locale === 'en' ? itemAltText(item, locale) : (item.imageAlt || (item.desc ? `${item.name} – ${item.desc}` : item.name))
-  const canOrder = !isKiosk && !item.priceTbd
+  const canAdd = Boolean(onAdd) && !item.priceTbd
   const allergens = resolveItemAllergens(item, cat)
   const additiveCodes = formatAdditiveCodes(resolveItemAdditiveCodes(item))
   const dressingNote = saladHasDressingNote(item, cat)
@@ -525,7 +581,7 @@ function ItemDetailModal({
           type="button"
           className="menu-item-detail-close"
           onClick={onClose}
-          aria-label={locale === 'en' ? t(locale, 'close') : 'Schließen'}
+          aria-label={t(locale, 'close')}
         >
           ×
         </button>
@@ -575,22 +631,22 @@ function ItemDetailModal({
           <p className={`menu-item-detail-price${item.priceTbd ? ' menu-item-price--tbd' : ''}`}>
             {displayPrice(item, locale)}
           </p>
-          {isKiosk ? (
+          {canAdd ? (
             <>
-              <p className="menu-item-detail-kiosk-notice">
-                {t(locale, 'kioskDetailNotice')}
-              </p>
-              <button type="button" className="btn btn-secondary menu-item-detail-add" onClick={onClose}>
-                {t(locale, 'close')}
+              {isKiosk && (
+                <p className="menu-item-detail-kiosk-notice">
+                  {t(locale, 'kioskDetailNotice')}
+                </p>
+              )}
+              <button type="button" className="btn btn-primary menu-item-detail-add" onClick={onAdd}>
+                {isKiosk ? t(locale, 'cartAddEstimate') : t(locale, 'cartAdd')}
               </button>
             </>
-          ) : canOrder ? (
-            <button type="button" className="btn btn-primary menu-item-detail-add" onClick={onAdd}>
-              {locale === 'en' ? 'Add to order' : 'Zur Bestellung hinzufügen'}
-            </button>
           ) : (
             <p className="menu-item-detail-kiosk-notice">
-              {locale === 'en' ? 'Price not yet set – please ask at the counter.' : 'Preis noch nicht hinterlegt – bitte an der Kasse erfragen.'}
+              {locale === 'en'
+                ? 'Price not yet set – please ask at the counter.'
+                : 'Preis noch nicht hinterlegt – bitte an der Kasse erfragen.'}
             </p>
           )}
         </div>

@@ -831,6 +831,58 @@ html.kiosk-root {
   padding-bottom: 0;
 }
 
+/* Kiosk price-estimate cart: always a bottom bar (touch-first), not a side panel */
+.menu-layout--kiosk:has(.menu-cart:not([data-empty="true"])) .menu-main {
+  padding-bottom: 96px;
+}
+
+.menu-layout--kiosk .menu-cart {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  z-index: 50;
+}
+
+.menu-layout--kiosk .menu-cart-inner {
+  position: static;
+  border-radius: 14px 14px 0 0;
+  border-bottom: none;
+  max-height: 70vh;
+  overflow-y: auto;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.2);
+}
+
+.menu-layout--kiosk .menu-cart-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 16px 20px;
+  min-height: 56px;
+  cursor: pointer;
+}
+
+.menu-layout--kiosk .menu-cart[data-open="false"] .menu-cart-body {
+  display: none;
+}
+
+.menu-layout--kiosk .menu-cart-header strong {
+  font-size: 1.05rem;
+}
+
+.menu-layout--kiosk .menu-cart-total {
+  font-size: 1.1rem;
+}
+
 .menu-layout--kiosk .menu-category-tab {
   padding: 12px 18px;
   font-size: 15px;
@@ -1209,7 +1261,6 @@ html.kiosk-root {
 @media (max-width: 900px) {
   .menu-layout { display: block; }
   .menu-layout:not(.menu-layout--kiosk) .menu-main { padding-bottom: 84px; }
-  .menu-layout--kiosk .menu-main { padding-bottom: 0; }
   .menu-cart {
     position: fixed;
     left: 0; right: 0; bottom: 0;
