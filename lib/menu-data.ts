@@ -41,6 +41,7 @@ export const staticMenuCategories: MenuCategory[] = [
       { id: '12', name: 'Schaschlik Pute', desc: 'Frittiert', price: 5.9 },
       { id: '14', name: 'Riesen-Currywurst.(Geflügelfleisch)', price: 4.0 },
       { id: '15', name: 'Kleine-Currywurst (Geflügelfleisch)', price: 3.0 },
+      { id: '13', name: 'Geflügel-Bockwurst', desc: '2 Stk.', price: 2.5 },
       { id: '19', name: 'Bratwurst (Geflügelfleisch) O.Ketchup.', desc: 'nach Thüringer-Art', price: 3.0 },
       { id: '20', name: 'Frikadelle', desc: '(Rind)', price: 3.5, tags: ['Gluten', 'Ei', 'Senf'] },
       { id: '404', name: 'Falafelteller (4 St)', desc: 'Salat, Tzatziki,Pommes', price: 8.5, tags: ['Milch', 'Sesam'] },
@@ -94,6 +95,7 @@ export const staticMenuCategories: MenuCategory[] = [
       { id: '459', name: 'Strips Burger', desc: 'Strips,Hähnchenbrust,Scharf Sauce, Salat', price: 5.5 },
       { id: '327', name: 'Schawarma Sandwich.', desc: 'Tomaten, Gurke, Salat. Sauce', price: 6.9 },
       { id: '127', name: 'Gyros Pita', desc: 'Tzatziki, Krautsalat,Tomate, Gurke', price: 5.9 },
+      { id: '210', name: 'Gyrostüte', price: 5.9, tags: ['Milch'] },
       { id: '51', name: 'Chickenburger (Hähnchen)', price: 5.9, tags: ['Gluten', 'Ei'] },
       { id: '55', name: 'Hamburger(Rind)', price: 3.9, tags: ['Gluten', 'Milch', 'Sesam'] },
       { id: '56', name: 'Big Hamburger', price: 5.3, tags: ['Gluten', 'Sesam'] },
@@ -215,6 +217,7 @@ export const staticMenuCategories: MenuCategory[] = [
       { id: '146', name: 'Gemüse-Teller', desc: 'Folienkartoffel,Sour Cream, Rahmchampignon, weißer käse überbacken', price: 8.5, tags: ['Milch'] },
       { id: '112', name: 'Fit Pfanne(Pute)', desc: 'Überbackene Kartoffeln, Sour Cream,Rahmchampignons, gegrillte Putenstreifen', price: 9.5, tags: ['Milch'] },
       { id: '11', name: 'Reis-Pfanne', desc: 'Gemüse, Hähnchenbrust,Reis', price: 9.5, tags: ['Gluten', 'Milch', 'Ei'] },
+      { id: '254', name: 'Mix Hähnchen-Teller', desc: '2 Crispy-Chicken, 3 Wings, 1 Crispy-Schnitzel, Pommes, Sauce', price: 11.0, tags: ['Gluten', 'Ei'] },
     ]
   },
   {
@@ -254,6 +257,7 @@ export const staticMenuCategories: MenuCategory[] = [
       { id: '40', name: 'Bauernsalat', price: 2.5, tags: ['Milch'] },
       { id: '46', name: 'Folienkartoffel', desc: 'mit Sour Cream', price: 4.0, tags: ['Milch'] },
       { id: '47', name: 'Knoblauchbrot', price: 1.5, badge: 'Veggie' },
+      { id: '147', name: 'Knoblauchbrot mit Käse, Dip', price: 3.0, badge: 'Veggie', tags: ['Gluten', 'Milch'] },
     ]
   },
   {
