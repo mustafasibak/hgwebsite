@@ -34,6 +34,7 @@ export const cutoutPhotoMetrics: Record<string, CutoutPhotoMetrics> = {
   '/essen/currywurstpommes314.png': { scale: 1.04, shiftX: '-1.7%', shiftY: '0.6%' },
   '/essen/bratkartoffeln30.png': { scale: 0.911, shiftX: '0.1%', shiftY: '0.4%' },
   '/essen/knobibrot47-removebg-preview.png': { scale: 0.88, shiftX: '0%', shiftY: '-11.1%' },
+  '/essen/ketchupmayo33-nobg.png': { scale: 1.55, shiftX: '-0.4%', shiftY: '-0.3%' },
   '/essen/grosserchefsalat44.png': { scale: 1.28, shiftX: '-0.9%', shiftY: '2.3%' },
   '/essen/grosserfitnesssalat144.png': { scale: 0.88, shiftX: '-0.7%', shiftY: '-0.3%' },
   '/essen/grosserweisskaesesalat444.png': { scale: 0.986, shiftX: '-4.1%', shiftY: '-9.5%' },

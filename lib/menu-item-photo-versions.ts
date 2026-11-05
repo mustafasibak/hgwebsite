@@ -32,6 +32,7 @@ export const menuItemPhotoVersions: Record<string, string> = {
   '/essen/currywurstpommes314.png': '1793854928226',
   '/essen/bratkartoffeln30.png': '1793854928198',
   '/essen/knobibrot47-removebg-preview.png': '1793854928258',
+  '/essen/ketchupmayo33-nobg.png': '1793895866705',
   '/essen/grosserchefsalat44.png': '1793854928254',
   '/essen/grosserfitnesssalat144.png': '1793854928254',
   '/essen/grosserweisskaesesalat444.png': '1793854928258',

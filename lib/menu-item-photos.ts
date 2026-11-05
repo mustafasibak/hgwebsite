@@ -42,6 +42,8 @@ export const menuItemPhotos: Record<string, string> = {
   // Beilagen
   '30': '/essen/bratkartoffeln30.png',
   '47': '/essen/knobibrot47-removebg-preview.png',
+  // Saucen
+  '33': '/essen/ketchupmayo33-nobg.png',
   // Salate
   '44': '/essen/grosserchefsalat44.png',
   '144': '/essen/grosserfitnesssalat144.png',

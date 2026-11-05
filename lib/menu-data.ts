@@ -263,7 +263,7 @@ export const staticMenuCategories: MenuCategory[] = [
     icon: '🫙',
     items: [
       { id: '245', name: 'Zigeunersauce oder Jägersauce', price: 1.8, showImage: false, compactCard: true, tags: ['Gluten', 'Ei', 'Sellerie'] },
-      { id: '33', name: 'Ketchup oder Mayonnaise Portion', price: 0.5, showImage: false, compactCard: true, tags: ['Ei', 'Senf'] },
+      { id: '33', name: 'Ketchup oder Mayonnaise Portion', price: 0.5, tags: ['Ei', 'Senf'] },
       { id: '133', name: 'Extra Ketchup oder Mayonnaise', price: 1.0, showImage: false, compactCard: true, tags: ['Ei', 'Senf'] },
       { id: '45', name: 'Sauce: Sour Cream, Tzatziki, Knoblauch, Remoulade (Cocktail), Hanse-Sauce (scharf)', desc: 'Portion 100 g', price: 1.5, showImage: false, compactCard: true, tags: ['Milch'] },
     ]
