@@ -16,6 +16,13 @@ type MittagstischWeekViewProps = {
   compact?: boolean
 }
 
+/** Put today first, then the rest of the week in original order. */
+function orderWeekWithTodayFirst(week: LunchDay[], today: string): LunchDay[] {
+  const idx = week.findIndex(d => d.date === today)
+  if (idx <= 0) return week
+  return [...week.slice(idx), ...week.slice(0, idx)]
+}
+
 /** Shared week plan UI — same data as /mittagstisch (API + fallback). */
 export default function MittagstischWeekView({
   week,
@@ -24,6 +31,7 @@ export default function MittagstischWeekView({
   compact = false,
 }: MittagstischWeekViewProps) {
   const today = new Date().toISOString().slice(0, 10)
+  const orderedWeek = orderWeekWithTodayFirst(week, today)
 
   return (
     <div className={`mittagstisch-week${compact ? ' mittagstisch-week--compact' : ''}`}>
@@ -42,7 +50,7 @@ export default function MittagstischWeekView({
       </div>
 
       <div className="mittagstisch-week-days">
-        {week.map(day => {
+        {orderedWeek.map(day => {
           const isToday = day.date === today
           return (
             <div
