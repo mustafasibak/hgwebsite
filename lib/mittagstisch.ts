@@ -48,7 +48,8 @@ export async function getWeekPlan(): Promise<{ week: LunchDay[]; live: boolean }
   try {
     const res = await fetch(API_URL, {
       signal: AbortSignal.timeout(5000),
-      next: { revalidate: 1800 },
+      // Short TTL so newly entered days (e.g. Freitag) show up quickly after CMS edits
+      next: { revalidate: 120 },
     })
     if (!res.ok) throw new Error(`API ${res.status}`)
     const data: { weekPlan: ApiDay[] } = await res.json()
