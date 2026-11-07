@@ -1,5 +1,5 @@
 import { site } from '@/lib/site'
-import { getWeekPlan } from '@/lib/mittagstisch'
+import { berlinToday, getWeekPlan } from '@/lib/mittagstisch'
 
 export const metadata = {
   title: 'Mittagstisch – HHanse Grill Hamburg Bergedorf',
@@ -14,7 +14,7 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI']
 
 export default async function MittagstischPage() {
   const { week, live } = await getWeekPlan()
-  const today = new Date().toISOString().slice(0, 10)
+  const today = berlinToday()
 
   return (
     <div className="container" style={{ padding: '32px 20px 48px' }}>
