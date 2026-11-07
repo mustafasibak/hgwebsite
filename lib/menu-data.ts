@@ -123,7 +123,7 @@ export const staticMenuCategories: MenuCategory[] = [
     icon: '🍗',
     showImage: false,
     items: [
-      { id: 'buffalo-strips-4', name: 'Buffalo Strips (4 Stk.)', desc: '+ Sauce', price: 6.5 },
+      { id: 'buffalo-strips-4', name: 'Buffalo Strips (4 Stk.)', desc: 'Buffalo-Sauce', price: 6.5 },
       { id: '260', name: 'Chicken Wings/Strips (4 Stk.)', desc: '+ Sauce', price: 5.0 },
       { id: '261', name: 'Chicken Wings/Strips (6 Stk.)', desc: '+ Sauce', price: 6.9 },
       { id: '262', name: 'Chicken Wings/Strips (9 Stk.)', desc: '+ Sauce', price: 9.9 },

@@ -74,7 +74,16 @@ function includesDairySauce(item: MenuItem): boolean {
   return has(item, /tzatziki|sour cream/i) || has(item, /gyros teller|gyros pita/i)
 }
 
+/** #80 — Knobi + Brot: only bread gluten (sauce bundle must not add Ei/Senf here). */
+const ITEM_80_ONLY: Record<string, AllergenTag[]> = {
+  '80': ['Gluten'],
+}
+
 function resolveFromKitchenSheet(item: MenuItem, cat: MenuCategory): AllergenTag[] {
+  if (ITEM_80_ONLY[item.id]) {
+    return [...ITEM_80_ONLY[item.id]]
+  }
+
   const parts: AllergenTag[][] = []
 
   if (cat.slug === 'croque' || has(item, /croque|groque/i)) {
@@ -213,7 +222,7 @@ function resolveFromKitchenSheet(item: MenuItem, cat: MenuCategory): AllergenTag
     parts.push([...HANSE_SAUCE])
   }
 
-  if (has(item, /knoblauch/i) && has(item, /sauce|saucen/i)) {
+  if (has(item, /knobi[\s-]*sauce|knoblauch[\s-]*sauce/i)) {
     parts.push([...KNOBLAUCH_SAUCE])
   }
 

@@ -58,10 +58,7 @@ export default function KioskAttractOverlay() {
         />
         <p className="kiosk-attract__brand">{site.name}</p>
         <p className="kiosk-attract__tagline">{site.tagline}</p>
-        <p className="kiosk-attract__cta">
-          Zum Menü tippen
-          <span className="kiosk-attract__cta-hint">Speisekarte durchstöbern</span>
-        </p>
+        <p className="kiosk-attract__cta">Tippen, um die Speisekarte anzusehen</p>
       </div>
     </button>
   )
