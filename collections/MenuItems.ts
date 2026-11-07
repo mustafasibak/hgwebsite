@@ -22,7 +22,7 @@ export const MenuItems: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['itemNumber', 'name', 'category', 'price', 'published'],
-    listSearchableFields: ['itemNumber', 'name', 'description', 'searchKeywords'],
+    listSearchableFields: ['itemNumber', 'name', 'description'],
     group: 'Speisekarte',
     description:
       'Fotokarten: Bild tippen = Foto, Name tippen = Bearbeiten. Eigenes Foto ersetzt das Standardbild auf Speisekarte/Kiosk. Unter „Suchbegriffe“ Nicknames ergänzen (z. B. knobi) — die Suche nutzt Name, Nr. und diese Wörter.',
