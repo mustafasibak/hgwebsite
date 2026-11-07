@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Logo from '@/components/Logo'
 import { site } from '@/lib/site'
 import { getMenu } from '@/lib/menu-api'
-import { getWeekPlan } from '@/lib/mittagstisch'
+import { berlinToday, getWeekPlan } from '@/lib/mittagstisch'
 
 function formatPrice(p: number) {
   return p.toFixed(2).replace('.', ',') + ' €'
@@ -13,7 +13,7 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI']
 export default async function HomePage() {
   const { week } = await getWeekPlan()
   const menuCategories = await getMenu()
-  const today = new Date().toISOString().slice(0, 10)
+  const today = berlinToday()
   const todayPlan = week.find(d => d.date === today)
 
   return (

@@ -1,4 +1,5 @@
 import type { LunchDay } from '@/lib/mittagstisch-data'
+import { berlinToday } from '@/lib/mittagstisch'
 import type { Locale } from '@/lib/menu-i18n'
 import { t } from '@/lib/menu-i18n'
 
@@ -30,7 +31,7 @@ export default function MittagstischWeekView({
   locale = 'de',
   compact = false,
 }: MittagstischWeekViewProps) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = berlinToday()
   const orderedWeek = orderWeekWithTodayFirst(week, today)
 
   return (
