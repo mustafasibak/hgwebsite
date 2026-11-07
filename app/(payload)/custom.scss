@@ -207,6 +207,20 @@ a:hover {
 }
 
 /* Gerichte photo-card list view */
+.menu-items-photo-list__admin-note {
+  margin: 0.75rem 0 0;
+  max-width: 52rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--theme-elevation-800, #444);
+}
+
+.menu-items-photo-list__admin-note em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--hh-accent-dark, #2d3f5a);
+}
+
 .menu-items-photo-list__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -286,6 +300,12 @@ a:hover {
   font-size: 0.7rem;
   font-weight: 700;
   padding: 0.1rem 0.45rem;
+}
+
+.menu-items-photo-list__badge--cms {
+  background: #e8eef8;
+  border-color: #9bb0d4;
+  color: #2d3f5a;
 }
 
 .menu-items-photo-list__badge--static {

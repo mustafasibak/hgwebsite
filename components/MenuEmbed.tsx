@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import Image from 'next/image'
 import type { MenuCategory, MenuItem } from '@/lib/menu-data'
+import { menuItemShowsNumber } from '@/lib/menu-data'
 import { getItemImage, itemHasPhoto } from '@/lib/menu-images'
 import { getCutoutPhotoStyle, isCutoutPhoto } from '@/lib/menu-item-photos'
 import {
@@ -29,6 +30,9 @@ import MenuAdditiveLegend from '@/components/MenuAdditiveLegend'
 import MittagstischWeekView from '@/components/MittagstischWeekView'
 import { useMenuLocale } from '@/components/MenuLocaleContext'
 import { site } from '@/lib/site'
+import { itemMatchesSearch } from '@/lib/menu-search'
+import { KIOSK_RESET_EVENT } from '@/lib/kiosk-session'
+import { useKioskIdleReset } from '@/hooks/useKioskIdleReset'
 
 type MenuMode = 'website' | 'kiosk'
 
@@ -65,23 +69,6 @@ const fmt = (n: number) => n.toFixed(2).replace('.', ',') + ' €'
 /** Kiosk estimate cart auto-clears after this idle period so the next guest starts fresh. */
 const KIOSK_CART_IDLE_MS = 3 * 60 * 1000
 
-function normalizeIdQuery(q: string): string | null {
-  const stripped = q.replace(/^#/, '').trim()
-  if (!/^\d+$/.test(stripped)) return null
-  return String(parseInt(stripped, 10))
-}
-
-function itemMatchesSearch(item: MenuItem, q: string, locale: Locale): boolean {
-  const idNorm = normalizeIdQuery(q)
-  if (idNorm && item.id === idNorm) return true
-
-  const { name, desc } = itemLabel(item, locale)
-  return name.toLowerCase().includes(q) ||
-    (desc || '').toLowerCase().includes(q) ||
-    item.name.toLowerCase().includes(q) ||
-    (item.desc || '').toLowerCase().includes(q)
-}
-
 function displayPrice(item: MenuItem, locale: Locale): string {
   const tbd = formatItemPrice(item, locale)
   if (tbd) return tbd
@@ -110,6 +97,8 @@ export default function MenuEmbed({
   const [detail, setDetail] = useState<DetailSelection | null>(null)
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const defaultTab = tabOrder[0] ?? menuCategories[0]?.slug ?? 'klassiker'
 
   const clearCart = useCallback(() => {
     setCart([])
@@ -124,6 +113,32 @@ export default function MenuEmbed({
       setOpen(false)
     }, KIOSK_CART_IDLE_MS)
   }, [isKiosk])
+
+  const resetKioskView = useCallback(() => {
+    setSearch('')
+    setActiveTab(defaultTab)
+    setDetail(null)
+    setOpen(false)
+    setFlash(null)
+    setCart([])
+    if (flashTimer.current) clearTimeout(flashTimer.current)
+    if (idleTimer.current) clearTimeout(idleTimer.current)
+    if (searchInputRef.current) searchInputRef.current.blur()
+    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+    const shell = document.querySelector('.kiosk-shell')
+    if (shell instanceof HTMLElement) shell.scrollTop = 0
+  }, [defaultTab])
+
+  useEffect(() => {
+    if (!isKiosk) return
+    const onReset = () => resetKioskView()
+    window.addEventListener(KIOSK_RESET_EVENT, onReset)
+    return () => window.removeEventListener(KIOSK_RESET_EVENT, onReset)
+  }, [isKiosk, resetKioskView])
+
+  useKioskIdleReset(isKiosk, resetKioskView)
 
   const veggieEntries = useMemo<DisplayEntry[]>(() => {
     const seen = new Set<string>()
@@ -171,7 +186,7 @@ export default function MenuEmbed({
   }, [])
 
   const displayGroups = useMemo(() => {
-    const q = search.trim().toLowerCase()
+    const q = search.trim()
 
     if (q) {
       return menuCategories
@@ -275,8 +290,13 @@ export default function MenuEmbed({
         {showSearch && (
           <div className="menu-search menu-search--sticky">
             <input
+              ref={isKiosk ? searchInputRef : undefined}
               type="text"
-              placeholder={locale === 'en' ? t(locale, 'searchPlaceholder') : 'Gericht suchen...'}
+              placeholder={
+                isKiosk || locale === 'en'
+                  ? t(locale, 'searchPlaceholder')
+                  : 'Gericht suchen...'
+              }
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="menu-search-input"
@@ -407,7 +427,9 @@ export default function MenuEmbed({
                       )}
                       <div className="menu-item-body">
                         <div className="menu-item-meta">
-                          <span className="menu-item-id">#{item.id}</span>
+                          {menuItemShowsNumber(item.id) && (
+                            <span className="menu-item-id">#{item.id}</span>
+                          )}
                           {item.badge && <span className="menu-item-badge">{item.badge}</span>}
                         </div>
                         <div className="menu-item-name">{label.name}</div>
@@ -637,7 +659,9 @@ function ItemDetailModal({
 
         <div className="menu-item-detail-content">
           <div className="menu-item-meta">
-            <span className="menu-item-id">#{item.id}</span>
+            {menuItemShowsNumber(item.id) && (
+              <span className="menu-item-id">#{item.id}</span>
+            )}
             {item.badge && <span className="menu-item-badge">{item.badge}</span>}
           </div>
           <h2 id="menu-detail-title" className="menu-item-detail-title">{label.name}</h2>

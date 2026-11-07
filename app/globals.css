@@ -409,6 +409,136 @@ html.kiosk-root {
   flex-wrap: wrap;
 }
 
+/* Kiosk attract / screensaver (long idle) */
+.kiosk-attract {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  margin: 0;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background: #1a1208;
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+.kiosk-attract__slides {
+  position: absolute;
+  inset: 0;
+}
+
+.kiosk-attract__slide {
+  position: absolute;
+  inset: -8%;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+  transform: scale(1.05);
+}
+
+.kiosk-attract__slide--active {
+  opacity: 1;
+  animation: kiosk-attract-kenburns 18s ease-in-out infinite alternate;
+}
+
+.kiosk-attract__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.kiosk-attract__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 14, 8, 0.55) 0%,
+    rgba(20, 14, 8, 0.35) 40%,
+    rgba(20, 14, 8, 0.82) 100%
+  );
+  pointer-events: none;
+}
+
+.kiosk-attract__content {
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 24px 14vh;
+  pointer-events: none;
+}
+
+.kiosk-attract__logo {
+  width: min(200px, 42vw);
+  height: auto;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45));
+}
+
+.kiosk-attract__brand {
+  margin: 12px 0 0;
+  font-family: Georgia, serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.kiosk-attract__tagline {
+  margin: 0;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.kiosk-attract__cta {
+  margin: auto 0 0;
+  padding: 18px 28px;
+  border-radius: 14px;
+  background: var(--yellow-soft);
+  color: var(--accent-dark);
+  border: 3px solid var(--border-dark);
+  font-size: clamp(1.25rem, 4vw, 1.65rem);
+  font-weight: 800;
+  line-height: 1.25;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  animation: kiosk-attract-cta-pulse 2.2s ease-in-out infinite;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: min(420px, 92vw);
+}
+
+.kiosk-attract__cta-hint {
+  font-size: 0.85em;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+@keyframes kiosk-attract-kenburns {
+  from {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes kiosk-attract-cta-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
 .kiosk-notice {
   flex: 1;
   min-width: 200px;

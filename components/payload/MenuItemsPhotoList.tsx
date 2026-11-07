@@ -43,14 +43,14 @@ function payloadPhotoSrc(photo: MenuItemDoc['photo']): string | null {
   return null
 }
 
-/** Same sources as the public menu: /essen/ default, then CMS upload. */
+/** Same priority as the public menu: CMS upload wins, then /essen/ default. */
 function resolvePhotoSrc(doc: MenuItemDoc): { src: string | null; source: 'static' | 'cms' | null } {
+  const cms = payloadPhotoSrc(doc.photo)
+  if (cms) return { src: cms, source: 'cms' }
   if (doc.itemNumber) {
     const staticPhoto = getStaticItemPhoto(doc.itemNumber)
     if (staticPhoto) return { src: staticPhoto, source: 'static' }
   }
-  const cms = payloadPhotoSrc(doc.photo)
-  if (cms) return { src: cms, source: 'cms' }
   return { src: null, source: null }
 }
 
@@ -117,6 +117,11 @@ export default function MenuItemsPhotoList(props: ListViewClientProps) {
   return (
     <div className="menu-items-photo-list">
       <Gutter className="menu-items-photo-list__wrap">
+        <p className="menu-items-photo-list__admin-note">
+          Eigenes Foto ersetzt das Standardbild auf Speisekarte und Kiosk. Suchbegriffe (z. B.{' '}
+          <em>knobi</em>, <em>halbes</em>) helfen Gästen beim Suchen — ergänzen Sie sie im
+          Gericht unter „Suchbegriffe“.
+        </p>
         <ListHeader
           collectionConfig={collectionConfig}
           Description={Description}
@@ -151,8 +156,10 @@ export default function MenuItemsPhotoList(props: ListViewClientProps) {
                     onClick={() => router.push(editPhotoUrl(doc.id))}
                     title={
                       source === 'static'
-                        ? 'Standardfoto von der Website – tippen zum Ersetzen'
-                        : 'Foto bearbeiten oder ersetzen'
+                        ? 'Standardfoto – tippen zum Hochladen eines eigenen Fotos'
+                        : source === 'cms'
+                          ? 'Eigenes Foto – tippen zum Ersetzen'
+                          : 'Foto hochladen'
                     }
                   >
                     {src ? (
@@ -169,6 +176,11 @@ export default function MenuItemsPhotoList(props: ListViewClientProps) {
                   <div className="menu-items-photo-list__body">
                     <div className="menu-items-photo-list__meta">
                       <span className="menu-items-photo-list__number">#{doc.itemNumber}</span>
+                      {source === 'cms' && (
+                        <span className="menu-items-photo-list__badge menu-items-photo-list__badge--cms">
+                          Eigenes Foto
+                        </span>
+                      )}
                       {source === 'static' && (
                         <span className="menu-items-photo-list__badge menu-items-photo-list__badge--static">
                           Standardfoto

@@ -136,6 +136,8 @@ export const menuItemEnById: Record<string, MenuItemEn> = {
   '1': { nameEn: '1/2 grilled chicken with sauce' },
   '2': { nameEn: '1/2 grilled chicken with fries' },
   '102': { nameEn: '1/2 grilled chicken' },
+  '80': { nameEn: '1/2 grilled chicken special', descEn: 'garlic sauce, garlic bread' },
+  'buffalo-strips-4': { nameEn: 'Buffalo strips (4 pcs.)', descEn: '+ sauce' },
   // Getränke
   '76': { nameEn: 'Coffee' },
   '77': { nameEn: 'Hot chocolate', descEn: 'with milk' },
@@ -440,7 +442,7 @@ const descPhrasePairs: [string, string][] = [
   ['Sauce', 'sauce'],
 ]
 
-const WINGS_ITEM_IDS = /^26[0-3]$|^46[0-3]$/
+const WINGS_ITEM_IDS = /^26[0-3]$|^46[0-3]$|^buffalo-strips-4$/
 
 /** Full dish names and name fragments (longer phrases first). */
 const namePhrasePairs: [string, string][] = [

@@ -12,6 +12,13 @@ export type MenuItem = {
   image?: string
   imageAlt?: string
   showImage?: boolean
+  /** Extra search terms (CMS or static); not shown on cards. */
+  searchKeywords?: string[]
+}
+
+/** Printed menu number — hide # on kiosk for slug ids (e.g. buffalo-strips-4). */
+export function menuItemShowsNumber(id: string): boolean {
+  return /^\d+$/.test(id)
 }
 
 export type MenuCategory = {
@@ -30,6 +37,7 @@ export const staticMenuCategories: MenuCategory[] = [
     icon: '⭐',
     items: [
       { id: '102', name: '1/2 Grillhähnchen', price: 5.9 },
+      { id: '80', name: '1/2 Grill Hähnchen Spezial', desc: 'Knobi-Sauce, Knoblauchbrot', price: 7.9 },
       { id: '1', name: '1/2 Grillhähnchen mit Sauce', price: 6.5 },
       { id: '2', name: '1/2 Grillhähnchen mit Pommes', price: 8.9 },
       { id: '111', name: 'Ganz Grillhähnchen', price: 11.0 },
@@ -115,6 +123,7 @@ export const staticMenuCategories: MenuCategory[] = [
     icon: '🍗',
     showImage: false,
     items: [
+      { id: 'buffalo-strips-4', name: 'Buffalo Strips (4 Stk.)', desc: '+ Sauce', price: 6.5 },
       { id: '260', name: 'Chicken Wings/Strips (4 Stk.)', desc: '+ Sauce', price: 5.0 },
       { id: '261', name: 'Chicken Wings/Strips (6 Stk.)', desc: '+ Sauce', price: 6.9 },
       { id: '262', name: 'Chicken Wings/Strips (9 Stk.)', desc: '+ Sauce', price: 9.9 },

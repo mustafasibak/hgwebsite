@@ -1,6 +1,7 @@
 /** Item photos in public/essen – keyed by menu item id */
 export const menuItemPhotos: Record<string, string> = {
   // Klassiker
+  '80': '/essen/haehnchenspezial80.png',
   '2': '/essen/halbespommes2.png',
   '111': '/essen/ganzgrillhaehnchen111.png',
   '116': '/essen/schnitzel116-nobg.png',
@@ -9,7 +10,7 @@ export const menuItemPhotos: Record<string, string> = {
   // Grillgerichte
   '54': '/essen/putensteak54.png',
   '110': '/essen/gyrosteller110-removebg-preview.png',
-  '126': '/essen/leberkaese126-removebg-preview.png',
+  '126': '/essen/leberkaese126.png',
   '215': '/essen/rumpsteak215.png',
   '323': '/essen/lammkotelett323.png',
   // Grillplatten
@@ -27,6 +28,7 @@ export const menuItemPhotos: Record<string, string> = {
   '49': '/essen/bolognese49.png',
   '249': '/essen/makaronipfanne249.png',
   '349': '/essen/makaroninapoli349.png',
+  '449': '/essen/makaroniveggie449.png',
   // Fisch
   '23': '/essen/seelachsfilet23.png',
   '28': '/essen/calamares28-removebg-preview.png',

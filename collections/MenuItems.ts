@@ -22,10 +22,10 @@ export const MenuItems: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['itemNumber', 'name', 'category', 'price', 'published'],
-    listSearchableFields: ['itemNumber', 'name', 'description'],
+    listSearchableFields: ['itemNumber', 'name', 'description', 'searchKeywords'],
     group: 'Speisekarte',
     description:
-      'Gerichte als Fotokarten – auf ein Bild tippen zum Foto ändern, auf den Namen zum Bearbeiten.',
+      'Fotokarten: Bild tippen = Foto, Name tippen = Bearbeiten. Eigenes Foto ersetzt das Standardbild auf Speisekarte/Kiosk. Unter „Suchbegriffe“ Nicknames ergänzen (z. B. knobi) — die Suche nutzt Name, Nr. und diese Wörter.',
     components: {
       views: {
         list: {
@@ -126,8 +126,25 @@ export const MenuItems: CollectionConfig = {
       label: 'Foto',
       admin: {
         description:
-          'Nach dem Hochladen unten auf Speichern klicken. Erscheint auf Speisekarte/Kiosk (sofern „Bild anzeigen“ aktiv ist).',
+          'Eigenes Foto ersetzt das Standardbild aus /essen/ auf Speisekarte und Kiosk. Nach dem Hochladen unten auf Speichern klicken.',
       },
+    },
+    {
+      name: 'searchKeywords',
+      type: 'array',
+      label: 'Suchbegriffe',
+      admin: {
+        description:
+          'Nicknames & Suchwörter für dieses Gericht (z. B. knobi, halbes). Die Suche erkennt außerdem automatisch Leerzeichen in zusammengesetzten Namen und gängige Kurzformen wie „halbes“ → „1/2“.',
+      },
+      fields: [
+        {
+          name: 'keyword',
+          type: 'text',
+          required: true,
+          label: 'Begriff',
+        },
+      ],
     },
     {
       name: 'imageAlt',

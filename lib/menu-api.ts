@@ -8,6 +8,7 @@ import {
   type MenuItem,
 } from '@/lib/menu-data'
 import { getStaticItemPhoto } from '@/lib/menu-images'
+import { mergeSearchKeywords } from '@/lib/menu-item-search-defaults'
 
 type PayloadCategory = {
   id: number | string
@@ -39,6 +40,7 @@ type PayloadMenuItem = {
   compactCard?: boolean | null
   published?: boolean | null
   photo?: PayloadMedia | number | string | null
+  searchKeywords?: { keyword?: string | null; id?: string }[] | null
   category: PayloadCategory | number | string
 }
 
@@ -101,14 +103,18 @@ function mediaUrl(photo: PayloadMenuItem['photo']): string | undefined {
 function resolveItemImage(doc: PayloadMenuItem): string | undefined {
   const payloadImage = mediaUrl(doc.photo)
   const staticImage = getStaticItemPhoto(doc.itemNumber)
-  // Mapped /essen/ photos: deploy via git (e.g. rotated PNGs). Admin upload wins elsewhere.
-  if (staticImage) return staticImage
-  return payloadImage
+  if (payloadImage) return payloadImage
+  return staticImage
 }
 
 function mapItem(doc: PayloadMenuItem): MenuItem {
   const image = resolveItemImage(doc)
   const tags = doc.allergenTags?.length ? [...doc.allergenTags] : undefined
+  const cmsKeywords =
+    doc.searchKeywords
+      ?.map(row => row.keyword?.trim())
+      .filter((k): k is string => Boolean(k)) ?? []
+  const searchKeywords = mergeSearchKeywords(doc.itemNumber, cmsKeywords)
 
   return {
     id: doc.itemNumber,
@@ -120,6 +126,7 @@ function mapItem(doc: PayloadMenuItem): MenuItem {
     ...(doc.priceTbd ? { priceTbd: true } : {}),
     ...(doc.badge ? { badge: doc.badge } : {}),
     ...(tags ? { tags } : {}),
+    ...(searchKeywords?.length ? { searchKeywords } : {}),
     ...(doc.compactCard ? { compactCard: true } : {}),
     ...(doc.showImage === false ? { showImage: false } : {}),
     ...(image ? { image, imageAlt: doc.imageAlt || doc.name } : {}),
