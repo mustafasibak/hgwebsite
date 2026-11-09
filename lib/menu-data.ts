@@ -36,7 +36,6 @@ export const staticMenuCategories: MenuCategory[] = [
     slug: 'klassiker',
     icon: '⭐',
     items: [
-      { id: '102', name: '1/2 Grillhähnchen', price: 5.9 },
       { id: '80', name: '1/2 Grill Hähnchen Spezial', desc: 'Knobi-Sauce, Knoblauchbrot', price: 7.9 },
       { id: '1', name: '1/2 Grillhähnchen mit Sauce', price: 6.5 },
       { id: '2', name: '1/2 Grillhähnchen mit Pommes', price: 8.9 },

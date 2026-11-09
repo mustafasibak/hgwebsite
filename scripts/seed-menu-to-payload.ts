@@ -279,6 +279,28 @@ async function ensureStaticMenuItems(payload: Payload) {
   }
 }
 
+/** Items removed from the printed/static Speisekarte — hide on deploy seed. */
+const RETIRED_ITEM_NUMBERS = ['102']
+
+async function unpublishRetiredItems(payload: Payload) {
+  for (const itemNumber of RETIRED_ITEM_NUMBERS) {
+    const existing = await payload.find({
+      collection: 'menu-items',
+      where: { itemNumber: { equals: itemNumber } },
+      limit: 10,
+    })
+    for (const doc of existing.docs) {
+      if (doc.published === false) continue
+      await payload.update({
+        collection: 'menu-items',
+        id: doc.id,
+        data: { published: false },
+      })
+      console.log(`Unpublished retired item: #${itemNumber}`)
+    }
+  }
+}
+
 async function seedNachtisch(payload: Payload) {
   const categoryId = await ensureNachtischCategory(payload)
 
@@ -350,6 +372,7 @@ async function seed() {
   await syncEnglishTranslations(payload)
   await syncSearchKeywords(payload)
   await ensureStaticMenuItems(payload)
+  await unpublishRetiredItems(payload)
   await syncStaticDishPhotos(payload)
 
   const existingItems = await payload.find({

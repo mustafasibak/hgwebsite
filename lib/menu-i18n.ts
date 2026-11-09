@@ -135,7 +135,6 @@ export const menuItemEnById: Record<string, MenuItemEn> = {
   '111': { nameEn: 'Whole grilled chicken' },
   '1': { nameEn: '1/2 grilled chicken with sauce' },
   '2': { nameEn: '1/2 grilled chicken with fries' },
-  '102': { nameEn: '1/2 grilled chicken' },
   '80': { nameEn: '1/2 grilled chicken special', descEn: 'garlic sauce, garlic bread' },
   'buffalo-strips-4': { nameEn: 'Buffalo strips (4 pcs.)', descEn: 'Buffalo sauce' },
   // Getränke
