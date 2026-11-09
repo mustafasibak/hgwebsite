@@ -62,30 +62,20 @@ export default function MittagstischWeekView({
                 </span>
               </div>
               <div className="mittagstisch-day-meals">
-                {day.meals.length === 0 ? (
-                  <div className="mittagstisch-meal mittagstisch-meal--empty">
+                {day.meals.map((meal, i) => (
+                  <div key={`${day.date}-${i}`} className="mittagstisch-meal">
                     <div className="mittagstisch-meal-info">
-                      <div className="mittagstisch-meal-desc">
-                        {t(locale, 'mittagstischEmptyDay')}
+                      <div className="mittagstisch-meal-name">
+                        <span className="mittagstisch-meal-roman">{ROMAN[i] ?? i + 1}.</span>
+                        {meal.name}
                       </div>
+                      {meal.desc && (
+                        <div className="mittagstisch-meal-desc">{meal.desc}</div>
+                      )}
                     </div>
+                    <div className="mittagstisch-meal-price">{formatPrice(meal.price)}</div>
                   </div>
-                ) : (
-                  day.meals.map((meal, i) => (
-                    <div key={`${day.date}-${i}`} className="mittagstisch-meal">
-                      <div className="mittagstisch-meal-info">
-                        <div className="mittagstisch-meal-name">
-                          <span className="mittagstisch-meal-roman">{ROMAN[i] ?? i + 1}.</span>
-                          {meal.name}
-                        </div>
-                        {meal.desc && (
-                          <div className="mittagstisch-meal-desc">{meal.desc}</div>
-                        )}
-                      </div>
-                      <div className="mittagstisch-meal-price">{formatPrice(meal.price)}</div>
-                    </div>
-                  ))
-                )}
+                ))}
               </div>
             </div>
           )

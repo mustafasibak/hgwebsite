@@ -201,7 +201,6 @@ const ui = {
     mittagstischFallback:
       'Beispielwoche – das aktuelle Tagesangebot erfragen Sie an der Kasse.',
     mittagstischToday: 'Heute',
-    mittagstischEmptyDay: 'Noch kein Angebot eingetragen.',
   },
   en: {
     kioskNotice: 'No ordering here – please order at the counter.',
@@ -248,7 +247,6 @@ const ui = {
     mittagstischFallback:
       'Sample week – please ask at the counter for today’s specials.',
     mittagstischToday: 'Today',
-    mittagstischEmptyDay: 'No dishes listed yet.',
   },
   ar: {
     kioskNotice: 'لا يُطلب من هنا — يُرجى الطلب من الكاشير',

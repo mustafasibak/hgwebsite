@@ -32,6 +32,7 @@ function cleanText(s: string): string {
   return s
     .replace(/["„“']/g, '')
     .replace(/\s*,\s*/g, ', ')
+    .replace(/(,\s*){2,}/g, ', ')
     .replace(/\s+/g, ' ')
     .replace(/^[\s,.]+|[\s,.]+$/g, '')
 }
@@ -59,8 +60,8 @@ function toLunchDay(d: ApiDay): LunchDay {
 
 /**
  * Live Wochenplan from the restaurant CMS.
- * Keeps every day the API returns (including empty ones) so the full week
- * is visible; owner edits on the old site show up within ~1 minute.
+ * Only days that have dishes are shown — no empty “Noch kein Angebot” cards.
+ * Owner edits on the old site show up within ~1 minute.
  */
 export async function getWeekPlan(): Promise<{ week: LunchDay[]; live: boolean }> {
   try {
@@ -72,10 +73,11 @@ export async function getWeekPlan(): Promise<{ week: LunchDay[]; live: boolean }
     const data: { weekPlan: ApiDay[] } = await res.json()
     const week = (data.weekPlan ?? [])
       .map(toLunchDay)
+      .filter(d => d.meals.length > 0)
       .sort((a, b) => a.date.localeCompare(b.date))
     if (week.length === 0) throw new Error('Leerer Wochenplan')
     return { week, live: true }
   } catch {
-    return { week: fallbackWeekPlan, live: false }
+    return { week: fallbackWeekPlan.filter(d => d.meals.length > 0), live: false }
   }
 }
