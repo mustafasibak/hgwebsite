@@ -474,7 +474,7 @@ const namePhrasePairs: [string, string][] = [
   ['Riesen-Currywurst.(Geflügelfleisch)', 'Jumbo currywurst (poultry)'],
   ['Kleine-Currywurst (Geflügelfleisch)', 'Small currywurst (poultry)'],
   ['Bratwurst (Geflügelfleisch) O.Ketchup.', 'Bratwurst (poultry) with ketchup'],
-  ['Falafelteller (4 St)', 'Falafel plate (4 pcs)'],
+  ['Falafelteller', 'Falafel plate'],
   ['Frikadelle „Jäger Art"(Rind)', 'Meatball hunter style (beef)'],
   ['Schnitzel HHanse-Art', 'Schnitzel HHanse style'],
   ['HHanse Grillteller Rind', 'HHanse grill plate beef'],
