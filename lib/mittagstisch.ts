@@ -69,7 +69,8 @@ function toLunchDay(d: ApiDay): LunchDay {
 
 /**
  * The restaurant CMS weekplan often only returns Mo–Fr.
- * Fill Sa/So from fallback (same week’s dates) when missing.
+ * Fill Sa/So from fallback only when that fallback entry is for *this*
+ * week's weekend date — never reuse last week's Saturday dishes.
  */
 function mergeMissingWeekendDays(week: LunchDay[]): LunchDay[] {
   if (week.length === 0) return week
@@ -89,13 +90,12 @@ function mergeMissingWeekendDays(week: LunchDay[]): LunchDay[] {
 
   for (const dayName of ['Samstag', 'Sonntag'] as const) {
     if (present.has(dayName)) continue
-    const template = fallbackWeekPlan.find(d => d.day === dayName && d.meals.length > 0)
+    const date = addIsoDays(monday, WEEKDAY_OFFSET[dayName])
+    const template = fallbackWeekPlan.find(
+      d => d.day === dayName && d.date === date && d.meals.length > 0,
+    )
     if (!template) continue
-    result.push({
-      day: dayName,
-      date: addIsoDays(monday, WEEKDAY_OFFSET[dayName]),
-      meals: template.meals,
-    })
+    result.push({ day: dayName, date, meals: template.meals })
   }
 
   return result.sort((a, b) => a.date.localeCompare(b.date))
