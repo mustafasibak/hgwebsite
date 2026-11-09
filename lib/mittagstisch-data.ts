@@ -10,8 +10,7 @@ export type LunchDay = {
   meals: LunchMeal[]
 }
 
-// Fallback when the live API is down. Weekend entries are only merged into a
-// live Mo–Fr week when their `date` matches that week’s Sa/So (see mittagstisch.ts).
+// Offline fallback only — live site always uses api.hhansegrill-halal.de/weekplan.
 export const fallbackWeekPlan: LunchDay[] = [
   {
     day: 'Montag',
@@ -58,15 +57,6 @@ export const fallbackWeekPlan: LunchDay[] = [
     meals: [
       { name: '2 Adana Spieße', desc: 'Reis, Tzatziki salatbeilage', price: 13.0 },
       { name: 'Rinder Gulasch', desc: 'Champignon, Makkaroni, Gewürzgurke, Salatbeilage', price: 8.5 },
-      { name: 'Lachspfanne', desc: 'Lachsfilet, Dill, Makkaroni, Sahnesauce, Salatbeil', price: 11.0 },
-      { name: 'Linsensuppe', desc: 'Brot', price: 4.0 },
-    ]
-  },
-  {
-    day: 'Samstag',
-    date: '2026-11-07',
-    meals: [
-      { name: '4 Stk. Lammkotelett', desc: 'Reis, Tzatziki, Salatbeilage', price: 14.0 },
       { name: 'Lachspfanne', desc: 'Lachsfilet, Dill, Makkaroni, Sahnesauce, Salatbeil', price: 11.0 },
       { name: 'Linsensuppe', desc: 'Brot', price: 4.0 },
     ]

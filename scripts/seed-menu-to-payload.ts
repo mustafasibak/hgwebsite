@@ -230,7 +230,27 @@ async function ensureStaticMenuItems(payload: Payload) {
         where: { itemNumber: { equals: item.id } },
         limit: 1,
       })
-      if (existing.docs[0]) continue
+      const en = menuItemEnById[item.id]
+      const doc = existing.docs[0]
+      if (doc) {
+        const data: Record<string, unknown> = {}
+        if (item.name && doc.name !== item.name) data.name = item.name
+        if ((item.desc ?? null) !== (doc.description ?? null)) data.description = item.desc ?? null
+        if (item.price != null && Number(doc.price) !== item.price) data.price = item.price
+        const nameEn = item.nameEn ?? en?.nameEn
+        const descriptionEn = item.descEn ?? en?.descEn
+        if (nameEn && doc.nameEn !== nameEn) data.nameEn = nameEn
+        if (descriptionEn && doc.descriptionEn !== descriptionEn) data.descriptionEn = descriptionEn
+        if (Object.keys(data).length > 0) {
+          await payload.update({
+            collection: 'menu-items',
+            id: doc.id,
+            data,
+          })
+          console.log(`Updated menu item fields: #${item.id}`)
+        }
+        continue
+      }
 
       let photoId: number | undefined
       const staticPhoto = item.image || menuItemPhotos[item.id]
@@ -253,7 +273,6 @@ async function ensureStaticMenuItems(payload: Payload) {
         }
       }
 
-      const en = menuItemEnById[item.id]
       await payload.create({
         collection: 'menu-items',
         data: {
@@ -280,7 +299,7 @@ async function ensureStaticMenuItems(payload: Payload) {
 }
 
 /** Items removed from the printed/static Speisekarte — hide on deploy seed. */
-const RETIRED_ITEM_NUMBERS = ['102']
+const RETIRED_ITEM_NUMBERS = ['102', '103']
 
 async function unpublishRetiredItems(payload: Payload) {
   for (const itemNumber of RETIRED_ITEM_NUMBERS) {
