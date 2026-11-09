@@ -135,7 +135,7 @@ export const menuItemEnById: Record<string, MenuItemEn> = {
   '111': { nameEn: 'Whole grilled chicken' },
   '1': { nameEn: '1/2 grilled chicken with sauce' },
   '2': { nameEn: '1/2 grilled chicken with fries' },
-  '80': { nameEn: '1/2 grilled chicken special', descEn: 'garlic sauce, garlic bread' },
+  '80': { nameEn: '1/2 grilled chicken special', descEn: 'garlic sauce, butter, bread' },
   'buffalo-strips-4': { nameEn: 'Buffalo strips (4 pcs.)', descEn: 'Buffalo sauce' },
   // Getränke
   '76': { nameEn: 'Coffee' },
@@ -201,6 +201,7 @@ const ui = {
     mittagstischFallback:
       'Beispielwoche – das aktuelle Tagesangebot erfragen Sie an der Kasse.',
     mittagstischToday: 'Heute',
+    mittagstischEmptyDay: 'Noch kein Angebot eingetragen.',
   },
   en: {
     kioskNotice: 'No ordering here – please order at the counter.',
@@ -247,6 +248,7 @@ const ui = {
     mittagstischFallback:
       'Sample week – please ask at the counter for today’s specials.',
     mittagstischToday: 'Today',
+    mittagstischEmptyDay: 'No dishes listed yet.',
   },
   ar: {
     kioskNotice: 'لا يُطلب من هنا — يُرجى الطلب من الكاشير',

@@ -10,11 +10,14 @@ function formatPrice(p: number) {
 
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI']
 
+/** Refresh Mittagstisch within a minute of CMS edits on the old site. */
+export const revalidate = 60
+
 export default async function HomePage() {
   const { week } = await getWeekPlan()
   const menuCategories = await getMenu()
   const today = berlinToday()
-  const todayPlan = week.find(d => d.date === today)
+  const todayPlan = week.find(d => d.date === today && d.meals.length > 0)
 
   return (
     <>

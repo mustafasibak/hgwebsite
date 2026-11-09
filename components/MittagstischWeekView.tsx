@@ -1,5 +1,5 @@
 import type { LunchDay } from '@/lib/mittagstisch-data'
-import { berlinToday } from '@/lib/mittagstisch'
+import { berlinToday, orderWeekWithTodayFirst } from '@/lib/mittagstisch'
 import type { Locale } from '@/lib/menu-i18n'
 import { t } from '@/lib/menu-i18n'
 
@@ -15,13 +15,6 @@ type MittagstischWeekViewProps = {
   locale?: Locale
   /** Compact layout for kiosk tab */
   compact?: boolean
-}
-
-/** Put today first, then the rest of the week in original order. */
-function orderWeekWithTodayFirst(week: LunchDay[], today: string): LunchDay[] {
-  const idx = week.findIndex(d => d.date === today)
-  if (idx <= 0) return week
-  return [...week.slice(idx), ...week.slice(0, idx)]
 }
 
 /** Shared week plan UI — same data as /mittagstisch (API + fallback). */
@@ -69,20 +62,30 @@ export default function MittagstischWeekView({
                 </span>
               </div>
               <div className="mittagstisch-day-meals">
-                {day.meals.map((meal, i) => (
-                  <div key={`${day.date}-${i}`} className="mittagstisch-meal">
+                {day.meals.length === 0 ? (
+                  <div className="mittagstisch-meal mittagstisch-meal--empty">
                     <div className="mittagstisch-meal-info">
-                      <div className="mittagstisch-meal-name">
-                        <span className="mittagstisch-meal-roman">{ROMAN[i] ?? i + 1}.</span>
-                        {meal.name}
+                      <div className="mittagstisch-meal-desc">
+                        {t(locale, 'mittagstischEmptyDay')}
                       </div>
-                      {meal.desc && (
-                        <div className="mittagstisch-meal-desc">{meal.desc}</div>
-                      )}
                     </div>
-                    <div className="mittagstisch-meal-price">{formatPrice(meal.price)}</div>
                   </div>
-                ))}
+                ) : (
+                  day.meals.map((meal, i) => (
+                    <div key={`${day.date}-${i}`} className="mittagstisch-meal">
+                      <div className="mittagstisch-meal-info">
+                        <div className="mittagstisch-meal-name">
+                          <span className="mittagstisch-meal-roman">{ROMAN[i] ?? i + 1}.</span>
+                          {meal.name}
+                        </div>
+                        {meal.desc && (
+                          <div className="mittagstisch-meal-desc">{meal.desc}</div>
+                        )}
+                      </div>
+                      <div className="mittagstisch-meal-price">{formatPrice(meal.price)}</div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )

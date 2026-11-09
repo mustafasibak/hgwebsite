@@ -1,10 +1,13 @@
 import { site } from '@/lib/site'
-import { berlinToday, getWeekPlan } from '@/lib/mittagstisch'
+import { berlinToday, getWeekPlan, orderWeekWithTodayFirst } from '@/lib/mittagstisch'
 
 export const metadata = {
   title: 'Mittagstisch – HHanse Grill Hamburg Bergedorf',
   description: 'Wöchentlich wechselnder Mittagstisch – immer ab 11:00 Uhr, solange der Vorrat reicht.',
 }
+
+/** Refresh within a minute of CMS edits on the old site. */
+export const revalidate = 60
 
 function formatPrice(p: number) {
   return p.toFixed(2).replace('.', ',') + ' €'
@@ -15,6 +18,7 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI']
 export default async function MittagstischPage() {
   const { week, live } = await getWeekPlan()
   const today = berlinToday()
+  const orderedWeek = orderWeekWithTodayFirst(week, today)
 
   return (
     <div className="container" style={{ padding: '32px 20px 48px' }}>
@@ -36,7 +40,7 @@ export default async function MittagstischPage() {
       </div>
 
       <div style={{ display: 'grid', gap: 16 }}>
-        {week.map(day => {
+        {orderedWeek.map(day => {
           const isToday = day.date === today
           return (
             <div
@@ -69,31 +73,37 @@ export default async function MittagstischPage() {
               </div>
 
               <div>
-                {day.meals.map((meal, i) => (
-                  <div key={i} style={{
-                    display: 'flex', justifyContent: 'space-between', gap: 16,
-                    padding: '12px 20px',
-                    borderBottom: i < day.meals.length - 1 ? '1px solid var(--border)' : 'none',
-                  }}>
-                    <div>
-                      <div style={{ fontWeight: 600 }}>
-                        <span style={{ color: 'var(--accent-dark)', marginRight: 8 }}>{ROMAN[i] ?? i + 1}.</span>
-                        {meal.name}
-                      </div>
-                      {meal.desc && (
-                        <div style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: 2 }}>
-                          {meal.desc}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{
-                      fontWeight: 700, whiteSpace: 'nowrap',
-                      color: 'var(--accent-dark)', fontSize: '1.02rem',
-                    }}>
-                      {formatPrice(meal.price)}
-                    </div>
+                {day.meals.length === 0 ? (
+                  <div style={{ padding: '12px 20px', color: 'var(--muted)', fontSize: '0.9rem' }}>
+                    Noch kein Angebot eingetragen.
                   </div>
-                ))}
+                ) : (
+                  day.meals.map((meal, i) => (
+                    <div key={i} style={{
+                      display: 'flex', justifyContent: 'space-between', gap: 16,
+                      padding: '12px 20px',
+                      borderBottom: i < day.meals.length - 1 ? '1px solid var(--border)' : 'none',
+                    }}>
+                      <div>
+                        <div style={{ fontWeight: 600 }}>
+                          <span style={{ color: 'var(--accent-dark)', marginRight: 8 }}>{ROMAN[i] ?? i + 1}.</span>
+                          {meal.name}
+                        </div>
+                        {meal.desc && (
+                          <div style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: 2 }}>
+                            {meal.desc}
+                          </div>
+                        )}
+                      </div>
+                      <div style={{
+                        fontWeight: 700, whiteSpace: 'nowrap',
+                        color: 'var(--accent-dark)', fontSize: '1.02rem',
+                      }}>
+                        {formatPrice(meal.price)}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )

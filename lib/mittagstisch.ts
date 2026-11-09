@@ -11,16 +11,6 @@ type ApiMeal = {
 }
 type ApiDay = { day: string; date: string; meals: ApiMeal[] }
 
-const WEEKDAY_OFFSET: Record<string, number> = {
-  Montag: 0,
-  Dienstag: 1,
-  Mittwoch: 2,
-  Donnerstag: 3,
-  Freitag: 4,
-  Samstag: 5,
-  Sonntag: 6,
-}
-
 /** Calendar date in Europe/Berlin as YYYY-MM-DD */
 export function berlinToday(): string {
   return new Intl.DateTimeFormat('en-CA', {
@@ -31,11 +21,11 @@ export function berlinToday(): string {
   }).format(new Date())
 }
 
-function addIsoDays(isoDate: string, days: number): string {
-  const [y, m, d] = isoDate.split('-').map(Number)
-  const dt = new Date(Date.UTC(y, m - 1, d))
-  dt.setUTCDate(dt.getUTCDate() + days)
-  return dt.toISOString().slice(0, 10)
+/** Put today first, then the rest of the week in original order. */
+export function orderWeekWithTodayFirst(week: LunchDay[], today = berlinToday()): LunchDay[] {
+  const idx = week.findIndex(d => d.date === today)
+  if (idx <= 0) return week
+  return [...week.slice(idx), ...week.slice(0, idx)]
 }
 
 function cleanText(s: string): string {
@@ -54,7 +44,7 @@ function titleCase(s: string): string {
 }
 
 function toLunchDay(d: ApiDay): LunchDay {
-  const meals: LunchMeal[] = [...d.meals]
+  const meals: LunchMeal[] = [...(d.meals ?? [])]
     .sort((a, b) => (a.row_order ?? 0) - (b.row_order ?? 0))
     .map(m => {
       const desc = cleanText(m.ingredients.map(i => i.ingredient ?? '').join(', '))
@@ -68,55 +58,21 @@ function toLunchDay(d: ApiDay): LunchDay {
 }
 
 /**
- * The restaurant CMS weekplan often only returns Mo–Fr.
- * Fill Sa/So from fallback only when that fallback entry is for *this*
- * week's weekend date — never reuse last week's Saturday dishes.
- */
-function mergeMissingWeekendDays(week: LunchDay[]): LunchDay[] {
-  if (week.length === 0) return week
-
-  let monday: string | null = null
-  for (const d of week) {
-    const off = WEEKDAY_OFFSET[d.day]
-    if (off != null) {
-      monday = addIsoDays(d.date, -off)
-      break
-    }
-  }
-  if (!monday) return week
-
-  const present = new Set(week.map(d => d.day))
-  const result = [...week]
-
-  for (const dayName of ['Samstag', 'Sonntag'] as const) {
-    if (present.has(dayName)) continue
-    const date = addIsoDays(monday, WEEKDAY_OFFSET[dayName])
-    const template = fallbackWeekPlan.find(
-      d => d.day === dayName && d.date === date && d.meals.length > 0,
-    )
-    if (!template) continue
-    result.push({ day: dayName, date, meals: template.meals })
-  }
-
-  return result.sort((a, b) => a.date.localeCompare(b.date))
-}
-
-/**
- * Holt den aktuellen Wochenplan vom bestehenden Backend des Restaurants.
- * Fällt auf die gebündelten Beispieldaten zurück, wenn die API nicht erreichbar ist.
+ * Live Wochenplan from the restaurant CMS.
+ * Keeps every day the API returns (including empty ones) so the full week
+ * is visible; owner edits on the old site show up within ~1 minute.
  */
 export async function getWeekPlan(): Promise<{ week: LunchDay[]; live: boolean }> {
   try {
     const res = await fetch(API_URL, {
       signal: AbortSignal.timeout(5000),
-      // Short TTL so newly entered days show up quickly after CMS edits
-      next: { revalidate: 120 },
+      next: { revalidate: 60 },
     })
     if (!res.ok) throw new Error(`API ${res.status}`)
     const data: { weekPlan: ApiDay[] } = await res.json()
-    const week = mergeMissingWeekendDays(
-      data.weekPlan.map(toLunchDay).filter(d => d.meals.length > 0),
-    )
+    const week = (data.weekPlan ?? [])
+      .map(toLunchDay)
+      .sort((a, b) => a.date.localeCompare(b.date))
     if (week.length === 0) throw new Error('Leerer Wochenplan')
     return { week, live: true }
   } catch {
