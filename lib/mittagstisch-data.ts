@@ -10,7 +10,8 @@ export type LunchDay = {
   meals: LunchMeal[]
 }
 
-// Fallback: Wochenplan KW 45 / 2026-11-02 (Mo–Fr live via API; Sa oft nicht in der API)
+// Fallback when the live API is down. Weekend entries are only merged into a
+// live Mo–Fr week when their `date` matches that week’s Sa/So (see mittagstisch.ts).
 export const fallbackWeekPlan: LunchDay[] = [
   {
     day: 'Montag',
