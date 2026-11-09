@@ -34,10 +34,13 @@ function has(item: MenuItem, pattern: RegExp): boolean {
 }
 
 /** Kitchen sheet bundles (Allergenkennzeichnung). */
-const SALAD = ['Gluten', 'Ei', 'Senf'] as const satisfies readonly AllergenTag[]
+/** Plain mixed salad — no inherent gluten; dressing allergens are separate. */
+const SALAD = [] as const satisfies readonly AllergenTag[]
 const DRESSING = ['Milch', 'Ei', 'Senf'] as const satisfies readonly AllergenTag[]
+/** Shared fryer — kitchen notes gluten risk on fried sides. */
 const POMMES = ['Gluten'] as const satisfies readonly AllergenTag[]
-const BRATKARTOFFELN = ['Senf', 'Ei'] as const satisfies readonly AllergenTag[]
+/** Fried potatoes themselves aren’t egg/mustard — don’t invent those. */
+const BRATKARTOFFELN = [] as const satisfies readonly AllergenTag[]
 const JAEGER_SAUCE = ['Gluten', 'Sellerie', 'Senf', 'Sahne'] as const satisfies readonly AllergenTag[]
 const CURRYWURST = ['Gluten', 'Senf', 'Sellerie'] as const satisfies readonly AllergenTag[]
 const BRATWURST = ['Gluten', 'Senf', 'Sellerie'] as const satisfies readonly AllergenTag[]
@@ -86,7 +89,8 @@ function resolveFromKitchenSheet(item: MenuItem, cat: MenuCategory): AllergenTag
 
   const parts: AllergenTag[][] = []
 
-  if (cat.slug === 'croque' || has(item, /croque|groque/i)) {
+  // Only real croques — not extras like #300 Extra Beilage in the croque tab.
+  if (has(item, /croque|groque/i)) {
     parts.push([...CROQUE])
   }
 
@@ -132,7 +136,11 @@ function resolveFromKitchenSheet(item: MenuItem, cat: MenuCategory): AllergenTag
     parts.push([...WINGS_STRIPS])
   }
 
-  if (has(item, /hamburger|cheeseburger|big cheese|big hamburger|burger menü|burger\(rind\)|fitnessburger|vitaminburger|chili burger|kebab burger|veggieburger|vegan burger|strips burger|lachs burger/i)) {
+  // Do not match “Schnitzel Hamburger Art” — only actual burgers.
+  if (
+    has(item, /\bburger\b|cheeseburger|hamburger\(rind\)|big hamburger|big cheese/i) &&
+    !has(item, /schnitzel/i)
+  ) {
     parts.push([...BURGER_BUN])
   }
 
@@ -182,7 +190,11 @@ function resolveFromKitchenSheet(item: MenuItem, cat: MenuCategory): AllergenTag
     parts.push([...KARTOFFEL_NUDEL_SALAT])
   }
 
-  if (has(item, /bratkartoffeln|bauernfrühstück|spiegelei/i) && item.id !== '30') {
+  if (has(item, /spiegelei/i)) {
+    parts.push(['Ei'])
+  }
+
+  if (has(item, /bratkartoffeln|bauernfrühstück/i) && item.id !== '30') {
     parts.push([...BRATKARTOFFELN])
   }
 
@@ -198,11 +210,13 @@ function resolveFromKitchenSheet(item: MenuItem, cat: MenuCategory): AllergenTag
     parts.push([...GRILLTELLER])
   }
 
-  if (has(item, /jägersauce|zigeunersauce|jäger art|balkan art/i)) {
+  if (has(item, /jägersauce|zigeunersauce/i) || (has(item, /jäger art|balkan art/i) && has(item, /schnitzel|frikadelle/i))) {
     parts.push([...JAEGER_ZIGEUNER])
   }
 
-  if (has(item, /rahmsauce|rahmschampignon|champignonrahmsauce|dillsahne|sahnesauce|gorgonzola|fit pfanne|gemüse-teller|gemüseteller|makkaroni|reis-pfanne|gemüsepfanne|putensteak.*folien|rumpsteak.*sour|gurke in sahne/i)) {
+  if (has(item, /rahmsauce|rahmchampignon|champignonrahmsauce|dillsahne|sahnesauce|gorgonzola|fit pfanne|gemüse-teller|gemüseteller|reis-pfanne|gemüsepfanne|gurke in sahne/i)) {
+    parts.push([...RAHMSAUCE])
+  } else if (has(item, /makkaroni/i) && has(item, /sahne|gorgonzola|überbacken|käse/i)) {
     parts.push([...RAHMSAUCE])
   }
 
@@ -222,7 +236,9 @@ function resolveFromKitchenSheet(item: MenuItem, cat: MenuCategory): AllergenTag
     parts.push([...HANSE_SAUCE])
   }
 
-  if (has(item, /knobi[\s-]*sauce|knoblauch[\s-]*sauce/i)) {
+  // Only apply garlic-sauce allergens for standalone sauce items / dips —
+  // not every dish that mentions Knoblauchsauce as a side (e.g. Calamares).
+  if (cat.slug === 'saucen' && has(item, /knobi[\s-]*sauce|knoblauch[\s-]*sauce|knoblauch(?!\s*brot)/i)) {
     parts.push([...KNOBLAUCH_SAUCE])
   }
 
@@ -252,11 +268,17 @@ function resolveFromKitchenSheet(item: MenuItem, cat: MenuCategory): AllergenTag
   return union(...parts)
 }
 
+/**
+ * Prefer curated tags from menu-data (printed Speisekarte) when present.
+ * Kitchen-sheet heuristics are a fallback only — they previously overrode
+ * careful tags (e.g. Calamares + Knoblauchsauce → invented Milch/Ei/Senf).
+ */
 export function resolveItemAllergens(item: MenuItem, cat: MenuCategory): AllergenTag[] {
-  const fromSheet = resolveFromKitchenSheet(item, cat)
-  if (fromSheet.length > 0) return fromSheet
+  if (item.tags && item.tags.length > 0) {
+    return sortAllergens(item.tags)
+  }
 
-  return sortAllergens(item.tags ?? [])
+  return resolveFromKitchenSheet(item, cat)
 }
 
 export function saladHasDressingNote(item: MenuItem, cat: MenuCategory): boolean {
