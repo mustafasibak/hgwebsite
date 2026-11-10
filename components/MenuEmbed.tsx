@@ -370,7 +370,6 @@ export default function MenuEmbed({
           {isMittagstischTab(activeTab) && !search.trim() && !showAllCategories && weekPlan && (
             <MittagstischWeekView
               week={weekPlan.week}
-              live={weekPlan.live}
               locale={locale}
               compact={isKiosk}
             />

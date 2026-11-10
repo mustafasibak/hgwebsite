@@ -1,4 +1,4 @@
-import { fallbackWeekPlan, type LunchDay, type LunchMeal } from '@/lib/mittagstisch-data'
+import type { LunchDay, LunchMeal } from '@/lib/mittagstisch-data'
 
 const API_URL = 'https://api.hhansegrill-halal.de/api/weekplan/0'
 
@@ -11,8 +11,8 @@ type ApiMeal = {
 }
 type ApiDay = { day: string; date: string; meals: ApiMeal[] }
 
-/** Calendar date in Europe/Berlin as YYYY-MM-DD */
-export function berlinToday(): string {
+/** Today as YYYY-MM-DD (same calendar day as the restaurant CMS dates). */
+function todayIsoDate(): string {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Berlin',
     year: 'numeric',
@@ -21,11 +21,11 @@ export function berlinToday(): string {
   }).format(new Date())
 }
 
-/** Put today first, then the rest of the week in original order. */
-export function orderWeekWithTodayFirst(week: LunchDay[], today = berlinToday()): LunchDay[] {
-  const idx = week.findIndex(d => d.date === today)
-  if (idx <= 0) return week
-  return [...week.slice(idx), ...week.slice(0, idx)]
+/** Today’s row from the API week plan, only when that date has meals. */
+export function lunchDayForToday(week: LunchDay[]): LunchDay | undefined {
+  const day = week.find(d => d.date === todayIsoDate())
+  if (!day || day.meals.length === 0) return undefined
+  return day
 }
 
 function cleanText(s: string): string {
@@ -59,8 +59,7 @@ function toLunchDay(d: ApiDay): LunchDay {
 }
 
 /**
- * Live Wochenplan from the restaurant CMS.
- * Only days that have dishes are shown — no empty “Noch kein Angebot” cards.
+ * Live week plan from the restaurant CMS — only days that have dishes.
  * Owner edits on the old site show up within ~1 minute.
  */
 export async function getWeekPlan(): Promise<{ week: LunchDay[]; live: boolean }> {
@@ -75,9 +74,8 @@ export async function getWeekPlan(): Promise<{ week: LunchDay[]; live: boolean }
       .map(toLunchDay)
       .filter(d => d.meals.length > 0)
       .sort((a, b) => a.date.localeCompare(b.date))
-    if (week.length === 0) throw new Error('Leerer Wochenplan')
     return { week, live: true }
   } catch {
-    return { week: fallbackWeekPlan.filter(d => d.meals.length > 0), live: false }
+    return { week: [], live: false }
   }
 }

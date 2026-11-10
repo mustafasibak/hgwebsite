@@ -133,9 +133,9 @@ export type MenuItemEn = { nameEn: string; descEn?: string }
 /** Authoritative EN copy by item id (static menu + Payload fallback). */
 export const menuItemEnById: Record<string, MenuItemEn> = {
   '111': { nameEn: 'Whole grilled chicken' },
-  '1': { nameEn: '1/2 grilled chicken with sauce' },
+  '1': { nameEn: '1/2 grilled chicken' },
   '2': { nameEn: '1/2 grilled chicken with fries' },
-  '80': { nameEn: '1/2 grilled chicken special', descEn: 'garlic sauce, butter, bread' },
+  '80': { nameEn: '1/2 grilled chicken special', descEn: 'garlic sauce, garlic bread' },
   'buffalo-strips-4': { nameEn: 'Buffalo strips (4 pcs.)', descEn: 'Buffalo sauce' },
   // Getränke
   '76': { nameEn: 'Coffee' },

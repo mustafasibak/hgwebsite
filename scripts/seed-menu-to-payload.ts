@@ -207,6 +207,70 @@ async function syncStaticDishPhotos(payload: Payload) {
   }
 }
 
+/** No longer on printed menu — hide in Payload when static menu drops them. */
+const LEGACY_UNPUBLISHED_ITEM_NUMBERS = ['102'] as const
+
+async function syncStaticMenuItemFields(payload: Payload) {
+  let updated = 0
+
+  for (const cat of staticMenuCategories) {
+    for (const item of cat.items) {
+      const existing = await payload.find({
+        collection: 'menu-items',
+        where: { itemNumber: { equals: item.id } },
+        limit: 1,
+      })
+      const doc = existing.docs[0]
+      if (!doc) continue
+
+      const en = menuItemEnById[item.id]
+      const data: Record<string, unknown> = {}
+
+      if (doc.name !== item.name) data.name = item.name
+      const desc = item.desc ?? null
+      if ((doc.description ?? null) !== desc) data.description = desc
+      if (doc.price !== item.price) data.price = item.price
+      if (en?.nameEn && doc.nameEn !== en.nameEn) data.nameEn = en.nameEn
+      if (en?.descEn && (doc.descriptionEn ?? null) !== en.descEn) {
+        data.descriptionEn = en.descEn
+      }
+      if (item.priceTbd) data.priceTbd = true
+      else if (doc.priceTbd) data.priceTbd = false
+
+      if (Object.keys(data).length === 0) continue
+
+      await payload.update({
+        collection: 'menu-items',
+        id: doc.id,
+        data,
+      })
+      updated++
+      console.log(`Synced menu item #${item.id}: ${item.name}`)
+    }
+  }
+
+  for (const itemNumber of LEGACY_UNPUBLISHED_ITEM_NUMBERS) {
+    const existing = await payload.find({
+      collection: 'menu-items',
+      where: { itemNumber: { equals: itemNumber } },
+      limit: 1,
+    })
+    const doc = existing.docs[0]
+    if (!doc?.published) continue
+    await payload.update({
+      collection: 'menu-items',
+      id: doc.id,
+      data: { published: false },
+    })
+    console.log(`Unpublished legacy item #${itemNumber}`)
+    updated++
+  }
+
+  if (updated > 0) {
+    console.log(`Synced ${updated} menu item field(s) from static menu.`)
+  }
+}
+
 /** Add dishes that exist in menu-data but are missing from Payload (e.g. new #80). */
 async function ensureStaticMenuItems(payload: Payload) {
   const categoryIdBySlug = new Map<string, number>()
@@ -392,6 +456,7 @@ async function seed() {
   await syncSearchKeywords(payload)
   await ensureStaticMenuItems(payload)
   await unpublishRetiredItems(payload)
+  await syncStaticMenuItemFields(payload)
   await syncStaticDishPhotos(payload)
 
   const existingItems = await payload.find({
