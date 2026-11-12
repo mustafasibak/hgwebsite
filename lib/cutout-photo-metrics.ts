@@ -3,7 +3,7 @@ export type CutoutPhotoMetrics = { scale: number; shiftX: string; shiftY: string
 
 export const cutoutPhotoMetrics: Record<string, CutoutPhotoMetrics> = {
   '/essen/haehnchenspezial80.png': { scale: 0.919, shiftX: '0.5%', shiftY: '2%' },
-  '/essen/halbespommes2.png': { scale: 1.071, shiftX: '0.3%', shiftY: '0.2%' },
+  '/essen/halbespommes2-nobg.png': { scale: 0.95, shiftX: '-0.1%', shiftY: '0%' },
   '/essen/ganzgrillhaehnchen111.png': { scale: 0.88, shiftX: '0%', shiftY: '0%' },
   '/essen/schnitzel5-nobg.png': { scale: 0.949, shiftX: '0%', shiftY: '0%' },
   '/essen/schnitzel7-nobg.png': { scale: 0.94, shiftX: '0%', shiftY: '0%' },
