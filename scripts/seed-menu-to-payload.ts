@@ -16,9 +16,14 @@ const root = join(import.meta.dirname, '..')
 
 /** Deploy sync: repo /essen/ → Payload when filename changed. */
 const STATIC_DISH_PHOTOS: { itemNumber: string; path: string; alt: string }[] = [
+  { itemNumber: '2', path: '/essen/halbespommes2-nobg.png', alt: '1/2 Grillhähnchen mit Pommes' },
+  { itemNumber: '5', path: '/essen/schnitzel5-nobg.png', alt: 'Schnitzel Wiener Art' },
+  { itemNumber: '7', path: '/essen/schnitzel7-nobg.png', alt: 'Schnitzel Balkan Art' },
+  { itemNumber: '12', path: '/essen/schaschlik12-nobg.png', alt: 'Schaschlik Pute' },
   { itemNumber: '49', path: '/essen/bolognese49.png', alt: 'Spaghetti Bolognese' },
   { itemNumber: '80', path: '/essen/haehnchenspezial80.png', alt: '1/2 Grill Hähnchen Spezial' },
   { itemNumber: '126', path: '/essen/leberkaese126.png', alt: 'Leberkäse mit Spiegelei und Bratkartoffeln' },
+  { itemNumber: '213', path: '/essen/schnitzel213-nobg.png', alt: 'Schnitzel Hamburger Art' },
   { itemNumber: '449', path: '/essen/makaroniveggie449.png', alt: 'Makkaroni Vegi. mit Tomatensauce und Salat' },
   { itemNumber: '252', path: '/essen/mixgrill252.png', alt: 'Mix Grill-Teller' },
 ]

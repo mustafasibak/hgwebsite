@@ -2,10 +2,13 @@
 export const menuItemPhotos: Record<string, string> = {
   // Klassiker
   '80': '/essen/haehnchenspezial80.png',
-  '2': '/essen/halbespommes2.png',
+  '2': '/essen/halbespommes2-nobg.png',
   '111': '/essen/ganzgrillhaehnchen111.png',
+  '5': '/essen/schnitzel5-nobg.png',
+  '7': '/essen/schnitzel7-nobg.png',
+  '12': '/essen/schaschlik12-nobg.png',
   '116': '/essen/schnitzel116-nobg.png',
-  '213': '/essen/schnitzel213-removebg-preview.png',
+  '213': '/essen/schnitzel213-nobg.png',
   '404': '/essen/falafelteller404-nobg.png',
   // Grillgerichte
   '54': '/essen/putensteak54.png',

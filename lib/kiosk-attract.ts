@@ -1,20 +1,21 @@
-import { menuItemPhotoVersions } from '@/lib/menu-item-photo-versions'
-
-/** Rotating dish photos on kiosk attract screen (paths under /essen). */
+/**
+ * Rotating dish photos on kiosk attract screen.
+ * Use padded /kiosk-attract composites (not raw menu cutouts) so plates
+ * stay fully readable at fullscreen without heavy crop/zoom.
+ */
 const ATTRACT_PHOTO_PATHS = [
-  '/essen/mixgrill252.png',
-  '/essen/leberkaese126.png',
-  '/essen/bolognese49.png',
-  '/essen/gyrosteller110-removebg-preview.png',
-  '/essen/adana312.png',
-  '/essen/falafelteller404-nobg.png',
-  '/essen/grillplatter666-removebg-preview-removebg-preview.png',
-  '/essen/haehnchenspezial80.png',
+  '/kiosk-attract/110-gyrosteller.jpg',
+  '/kiosk-attract/312-adana.jpg',
+  '/kiosk-attract/404-falafelteller.jpg',
+  '/kiosk-attract/116-schnitzel.jpg',
+  '/kiosk-attract/51-chickenburger.jpg',
+  '/kiosk-attract/2-halbespommes.jpg',
+  '/kiosk-attract/455-chiliburger.jpg',
+  '/kiosk-attract/111-ganzhaehnchen.jpg',
 ] as const
 
 export function kioskAttractPhotoUrl(path: string): string {
-  const v = menuItemPhotoVersions[path]
-  return v ? `${path}?v=${v}` : path
+  return path
 }
 
 export const kioskAttractPhotos = ATTRACT_PHOTO_PATHS.map(kioskAttractPhotoUrl)
