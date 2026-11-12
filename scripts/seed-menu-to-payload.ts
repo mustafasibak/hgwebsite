@@ -16,6 +16,7 @@ const root = join(import.meta.dirname, '..')
 
 /** Deploy sync: repo /essen/ → Payload when filename changed. */
 const STATIC_DISH_PHOTOS: { itemNumber: string; path: string; alt: string }[] = [
+  { itemNumber: '2', path: '/essen/halbespommes2-nobg.png', alt: '1/2 Grillhähnchen mit Pommes' },
   { itemNumber: '49', path: '/essen/bolognese49.png', alt: 'Spaghetti Bolognese' },
   { itemNumber: '80', path: '/essen/haehnchenspezial80.png', alt: '1/2 Grill Hähnchen Spezial' },
   { itemNumber: '126', path: '/essen/leberkaese126.png', alt: 'Leberkäse mit Spiegelei und Bratkartoffeln' },
