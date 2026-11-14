@@ -1588,6 +1588,19 @@ html.kiosk-root {
   font-size: 1.02rem;
 }
 
+.mittagstisch-meal--sold-out {
+  opacity: 0.7;
+  text-decoration: line-through;
+}
+
+.mittagstisch-meal-sold-out {
+  text-decoration: none;
+  margin-left: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 .menu-layout--kiosk .mittagstisch-week--compact .mittagstisch-day-name {
   font-size: 1.1rem;
 }
