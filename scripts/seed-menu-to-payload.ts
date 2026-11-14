@@ -18,6 +18,7 @@ const root = join(import.meta.dirname, '..')
 const STATIC_DISH_PHOTOS: { itemNumber: string; path: string; alt: string }[] = [
   { itemNumber: '49', path: '/essen/bolognese49.png', alt: 'Spaghetti Bolognese' },
   { itemNumber: '80', path: '/essen/haehnchenspezial80.png', alt: '1/2 Grill Hähnchen Spezial' },
+  { itemNumber: '117', path: '/essen/schnitzel117-nobg.png', alt: 'Schnitzel Balkan Art mit Pommes' },
   { itemNumber: '126', path: '/essen/leberkaese126.png', alt: 'Leberkäse mit Spiegelei und Bratkartoffeln' },
   { itemNumber: '449', path: '/essen/makaroniveggie449.png', alt: 'Makkaroni Vegi. mit Tomatensauce und Salat' },
   { itemNumber: '252', path: '/essen/mixgrill252.png', alt: 'Mix Grill-Teller' },

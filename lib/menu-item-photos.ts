@@ -5,6 +5,7 @@ export const menuItemPhotos: Record<string, string> = {
   '2': '/essen/halbespommes2.png',
   '111': '/essen/ganzgrillhaehnchen111.png',
   '116': '/essen/schnitzel116-nobg.png',
+  '117': '/essen/schnitzel117-nobg.png',
   '213': '/essen/schnitzel213-removebg-preview.png',
   '404': '/essen/falafelteller404-nobg.png',
   // Grillgerichte
