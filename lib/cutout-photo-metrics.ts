@@ -6,6 +6,7 @@ export const cutoutPhotoMetrics: Record<string, CutoutPhotoMetrics> = {
   '/essen/halbespommes2.png': { scale: 1.071, shiftX: '0.3%', shiftY: '0.2%' },
   '/essen/ganzgrillhaehnchen111.png': { scale: 0.88, shiftX: '0%', shiftY: '0%' },
   '/essen/schnitzel116-nobg.png': { scale: 1.051, shiftX: '0.6%', shiftY: '7.3%' },
+  '/essen/schnitzel117-nobg.png': { scale: 1.139, shiftX: '0%', shiftY: '0%' },
   '/essen/schnitzel213-removebg-preview.png': { scale: 0.88, shiftX: '0.2%', shiftY: '0.2%' },
   '/essen/falafelteller404-nobg.png': { scale: 0.902, shiftX: '-0.9%', shiftY: '2.5%' },
   '/essen/putensteak54.png': { scale: 1.054, shiftX: '-2.4%', shiftY: '3.8%' },
