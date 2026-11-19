@@ -235,6 +235,7 @@ export const staticMenuCategories: MenuCategory[] = [
     items: [
       { id: '357', name: 'Fischburger Menü', desc: 'Ketchup / Mayo zur Wahl', price: 10.0 },
       { id: '3', name: '1/2 Hähnchen Menü', desc: 'Ketchup / Mayo zur Wahl', price: 12.5 },
+      { id: '81', name: '1/2 Grill Hähnchen Spezial Menü', desc: 'Ketchup / Mayo zur Wahl', price: 14.5, tags: ['Gluten'] },
       { id: '314', name: 'XXL Currywurst Menü', desc: 'Ketchup / Mayo zur Wahl', price: 10.0 },
       { id: '310', name: 'Gyros Teller Menü', desc: 'Ketchup / Mayo zur Wahl', price: 14.0 },
       { id: '255', name: 'Hamburger Menü', desc: 'Ketchup / Mayo zur Wahl', price: 10.0 },
