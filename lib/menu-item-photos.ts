@@ -1,9 +1,11 @@
 /** Item photos in public/essen – keyed by menu item id */
 export const menuItemPhotos: Record<string, string> = {
   // Klassiker
+  '1': '/essen/halbeshaehnchen1-nobg.png',
   '80': '/essen/haehnchenspezial80.png',
   '2': '/essen/halbespommes2.png',
   '111': '/essen/ganzgrillhaehnchen111.png',
+  '14': '/essen/currywurst14-nobg.png',
   '116': '/essen/schnitzel116-nobg.png',
   '213': '/essen/schnitzel213-removebg-preview.png',
   '404': '/essen/falafelteller404-nobg.png',

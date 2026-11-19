@@ -2,9 +2,11 @@
 export type CutoutPhotoMetrics = { scale: number; shiftX: string; shiftY: string }
 
 export const cutoutPhotoMetrics: Record<string, CutoutPhotoMetrics> = {
+  '/essen/halbeshaehnchen1-nobg.png': { scale: 0.88, shiftX: '0.2%', shiftY: '0.1%' },
   '/essen/haehnchenspezial80.png': { scale: 0.919, shiftX: '0.5%', shiftY: '2%' },
   '/essen/halbespommes2.png': { scale: 1.071, shiftX: '0.3%', shiftY: '0.2%' },
   '/essen/ganzgrillhaehnchen111.png': { scale: 0.88, shiftX: '0%', shiftY: '0%' },
+  '/essen/currywurst14-nobg.png': { scale: 0.88, shiftX: '1.3%', shiftY: '-0.9%' },
   '/essen/schnitzel116-nobg.png': { scale: 1.051, shiftX: '0.6%', shiftY: '7.3%' },
   '/essen/schnitzel213-removebg-preview.png': { scale: 0.88, shiftX: '0.2%', shiftY: '0.2%' },
   '/essen/falafelteller404-nobg.png': { scale: 0.902, shiftX: '-0.9%', shiftY: '2.5%' },
