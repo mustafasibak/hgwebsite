@@ -77,9 +77,10 @@ function includesDairySauce(item: MenuItem): boolean {
   return has(item, /tzatziki|sour cream/i) || has(item, /gyros teller|gyros pita/i)
 }
 
-/** #80 — Knobi + Brot: only bread gluten (sauce bundle must not add Ei/Senf here). */
+/** #80/#81 — Knobi + Brot: only bread gluten (sauce bundle must not add Ei/Senf here). */
 const ITEM_80_ONLY: Record<string, AllergenTag[]> = {
   '80': ['Gluten'],
+  '81': ['Gluten'],
 }
 
 function resolveFromKitchenSheet(item: MenuItem, cat: MenuCategory): AllergenTag[] {
