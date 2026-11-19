@@ -1,5 +1,5 @@
 import type { MenuCategory, MenuItem } from '@/lib/menu-data'
-import { menuItemPhotos } from '@/lib/menu-item-photos'
+import { menuItemPhotoExtras, menuItemPhotos } from '@/lib/menu-item-photos'
 import { menuItemPhotoVersions } from '@/lib/menu-item-photo-versions'
 
 const PLACEHOLDER_DIR = '/placeholders'
@@ -54,6 +54,27 @@ export function getItemImage(
     return getCategoryPlaceholder(cat)
   }
   return null
+}
+
+/** Primary + optional extra slides for the item detail modal. */
+export function getItemGalleryImages(
+  item: MenuItem,
+  cat: MenuCategory,
+): string[] {
+  const primary = getItemImage(item, cat)
+  if (!primary || primary.startsWith('/placeholders/')) {
+    return primary ? [primary] : []
+  }
+  const extras = (menuItemPhotoExtras[item.id] ?? []).map(src => withPhotoCacheBust(src))
+  const seen = new Set<string>()
+  const gallery: string[] = []
+  for (const src of [primary, ...extras]) {
+    const key = src.split('?')[0]
+    if (seen.has(key)) continue
+    seen.add(key)
+    gallery.push(src)
+  }
+  return gallery
 }
 
 export function getItemAlt(item: MenuItem, _cat: MenuCategory): string {
