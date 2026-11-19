@@ -40,5 +40,6 @@ export const cutoutPhotoMetrics: Record<string, CutoutPhotoMetrics> = {
   '/essen/grosserchefsalat44.png': { scale: 1.28, shiftX: '-0.9%', shiftY: '2.3%' },
   '/essen/grosserfitnesssalat144.png': { scale: 0.88, shiftX: '-0.7%', shiftY: '-0.3%' },
   '/essen/grosserweisskaesesalat444.png': { scale: 0.986, shiftX: '-4.1%', shiftY: '-9.5%' },
+  '/essen/chiliburger758-open-nobg.png': { scale: 0.917, shiftX: '0%', shiftY: '0%' },
   '/essen/rotegruetzemitvanillensauce-removebg-preview.png': { scale: 0.919, shiftX: '0.1%', shiftY: '5.7%' },
 }
