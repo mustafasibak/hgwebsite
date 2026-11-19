@@ -7,6 +7,7 @@ export const menuItemPhotoVersions: Record<string, string> = {
   '/essen/schnitzel7-nobg.png': '1795107168061',
   '/essen/schaschlik12-nobg.png': '1795107168057',
   '/essen/schnitzel116-nobg.png': '1795032510527',
+  '/essen/schnitzel117-nobg.png': '1795107183881',
   '/essen/schnitzel213-nobg.png': '1795107168057',
   '/essen/falafelteller404-nobg.png': '1795032510567',
   '/essen/putensteak54.png': '1795032510491',

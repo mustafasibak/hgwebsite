@@ -8,6 +8,7 @@ export const menuItemPhotos: Record<string, string> = {
   '7': '/essen/schnitzel7-nobg.png',
   '12': '/essen/schaschlik12-nobg.png',
   '116': '/essen/schnitzel116-nobg.png',
+  '117': '/essen/schnitzel117-nobg.png',
   '213': '/essen/schnitzel213-nobg.png',
   '404': '/essen/falafelteller404-nobg.png',
   // Grillgerichte
