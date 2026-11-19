@@ -25,6 +25,8 @@ export const menuItemPhotos: Record<string, string> = {
   '56': '/essen/bighamburger56-nobg.png',
   '58': '/essen/bigcheeseburger58-removebg-preview-removebg-preview.png',
   '455': '/essen/chiliburger455-nobg.png',
+  /** Chili Burger (Hähnchen) — assembled plate; open view is in extras. */
+  '758': '/essen/chiliburger455-nobg.png',
   '658': '/essen/kebabburger658-nobg.png',
   '127': '/essen/gyrospita127.png',
   // Croque
@@ -57,6 +59,14 @@ export const menuItemPhotos: Record<string, string> = {
   '444': '/essen/grosserweisskaesesalat444.png',
 }
 
+/**
+ * Extra detail-only slides after the primary photo.
+ * Only items listed here get left/right arrows in the item modal.
+ */
+export const menuItemPhotoExtras: Record<string, string[]> = {
+  '758': ['/essen/chiliburger758-open-nobg.png'],
+}
+
 import { cutoutPhotoMetrics, type CutoutPhotoMetrics } from '@/lib/cutout-photo-metrics'
 
 export const defaultCutoutMetrics: CutoutPhotoMetrics = {
@@ -84,22 +94,27 @@ function photoBasename(src: string): string {
 
 /** Resolve metrics key for /essen/ paths, blob URLs, and Vercel random suffixes. */
 export function resolveCutoutMetricsKey(src: string, itemId?: string): string | undefined {
-  if (itemId && menuItemPhotos[itemId]) {
-    return menuItemPhotos[itemId].split('?')[0]
+  const basename = photoBasename(src)
+  if (basename) {
+    const direct = `/essen/${basename}`
+    if (cutoutPhotoMetrics[direct]) return direct
+
+    const baseStem = basename.replace(/\.[a-z]+$/i, '')
+    for (const key of Object.keys(cutoutPhotoMetrics)) {
+      const stem = key.replace('/essen/', '').replace(/\.[a-z]+$/i, '')
+      if (baseStem === stem || baseStem.startsWith(`${stem}-`) || stem.startsWith(baseStem)) {
+        return key
+      }
+    }
+
+    // Prefer the actual slide path (incl. gallery extras) over the item primary.
+    if (src.includes('/essen/') || direct.startsWith('/essen/')) {
+      return direct
+    }
   }
 
-  const basename = photoBasename(src)
-  if (!basename) return undefined
-
-  const direct = `/essen/${basename}`
-  if (cutoutPhotoMetrics[direct]) return direct
-
-  const baseStem = basename.replace(/\.[a-z]+$/i, '')
-  for (const key of Object.keys(cutoutPhotoMetrics)) {
-    const stem = key.replace('/essen/', '').replace(/\.[a-z]+$/i, '')
-    if (baseStem === stem || baseStem.startsWith(`${stem}-`) || stem.startsWith(baseStem)) {
-      return key
-    }
+  if (itemId && menuItemPhotos[itemId]) {
+    return menuItemPhotos[itemId].split('?')[0]
   }
 
   return undefined

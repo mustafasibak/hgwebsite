@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import Image from 'next/image'
 import type { MenuCategory, MenuItem } from '@/lib/menu-data'
 import { menuItemShowsNumber } from '@/lib/menu-data'
-import { getItemImage, itemHasPhoto } from '@/lib/menu-images'
+import { getItemGalleryImages, getItemImage, itemHasPhoto } from '@/lib/menu-images'
 import { getCutoutPhotoStyle, isCutoutPhoto } from '@/lib/menu-item-photos'
 import {
   VEGGIE_TAB,
@@ -612,14 +612,21 @@ function ItemDetailModal({
   onClose: () => void
   onAdd?: () => void
 }) {
-  const imageSrc = getItemImage(item, cat)
+  const gallery = getItemGalleryImages(item, cat)
+  const [slide, setSlide] = useState(0)
+  const imageSrc = gallery[slide] ?? gallery[0] ?? null
   const cutout = imageSrc ? isCutoutPhoto(imageSrc) : false
+  const hasGallery = gallery.length > 1
   const label = itemLabel(item, locale)
   const alt = locale === 'en' ? itemAltText(item, locale) : (item.imageAlt || (item.desc ? `${item.name} – ${item.desc}` : item.name))
   const canAdd = Boolean(onAdd) && !item.priceTbd
   const allergens = resolveItemAllergens(item, cat)
   const additiveCodes = formatAdditiveCodes(resolveItemAdditiveCodes(item))
   const dressingNote = saladHasDressingNote(item, cat)
+
+  useEffect(() => {
+    setSlide(0)
+  }, [item.id])
 
   return (
     <div
@@ -641,10 +648,11 @@ function ItemDetailModal({
 
         {imageSrc && (
           <div
-            className={`menu-item-detail-image${cutout ? ' menu-item-detail-image--cutout' : ''}`}
+            className={`menu-item-detail-image${cutout ? ' menu-item-detail-image--cutout' : ''}${hasGallery ? ' menu-item-detail-image--gallery' : ''}`}
             style={cutout ? cutoutFrameStyle(imageSrc, item.id) : undefined}
           >
             <Image
+              key={imageSrc}
               src={imageSrc}
               alt={alt}
               width={800}
@@ -653,6 +661,26 @@ function ItemDetailModal({
               sizes="(max-width: 700px) 100vw, 560px"
               unoptimized={dishPhotoUnoptimized(imageSrc)}
             />
+            {hasGallery && slide < gallery.length - 1 && (
+              <button
+                type="button"
+                className="menu-item-detail-gallery-arrow menu-item-detail-gallery-arrow--next"
+                onClick={() => setSlide(s => Math.min(gallery.length - 1, s + 1))}
+                aria-label={locale === 'en' ? 'Next photo' : 'Nächstes Foto'}
+              >
+                ›
+              </button>
+            )}
+            {hasGallery && slide > 0 && (
+              <button
+                type="button"
+                className="menu-item-detail-gallery-arrow menu-item-detail-gallery-arrow--prev"
+                onClick={() => setSlide(s => Math.max(0, s - 1))}
+                aria-label={locale === 'en' ? 'Previous photo' : 'Vorheriges Foto'}
+              >
+                ‹
+              </button>
+            )}
           </div>
         )}
 

@@ -43,4 +43,5 @@ export const menuItemPhotoVersions: Record<string, string> = {
   '/essen/grosserchefsalat44.png': '1795032510583',
   '/essen/grosserfitnesssalat144.png': '1795032510583',
   '/essen/grosserweisskaesesalat444.png': '1795032510583',
+  '/essen/chiliburger758-open-nobg.png': '1795107193169',
 }
