@@ -19,6 +19,7 @@ export const cutoutPhotoMetrics: Record<string, CutoutPhotoMetrics> = {
   '/essen/grillplatter666-removebg-preview-removebg-preview.png': { scale: 1.18, shiftX: '0.1%', shiftY: '-2.2%' },
   '/essen/hotdog4.png': { scale: 0.911, shiftX: '0.5%', shiftY: '-10.6%' },
   '/essen/chickenburger51-nobg.png': { scale: 1.08, shiftX: '0.8%', shiftY: '8.1%' },
+  '/essen/bighamburger56-nobg.png': { scale: 1.066, shiftX: '0%', shiftY: '0%' },
   '/essen/bigcheeseburger58-removebg-preview-removebg-preview.png': { scale: 1.213, shiftX: '1.8%', shiftY: '-3.6%' },
   '/essen/chiliburger455-nobg.png': { scale: 1.262, shiftX: '2.4%', shiftY: '2.3%' },
   '/essen/kebabburger658-nobg.png': { scale: 1.23, shiftX: '1%', shiftY: '-3.3%' },

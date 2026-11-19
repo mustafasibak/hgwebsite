@@ -21,6 +21,7 @@ const STATIC_DISH_PHOTOS: { itemNumber: string; path: string; alt: string }[] = 
   { itemNumber: '7', path: '/essen/schnitzel7-nobg.png', alt: 'Schnitzel Balkan Art' },
   { itemNumber: '12', path: '/essen/schaschlik12-nobg.png', alt: 'Schaschlik Pute' },
   { itemNumber: '49', path: '/essen/bolognese49.png', alt: 'Spaghetti Bolognese' },
+  { itemNumber: '56', path: '/essen/bighamburger56-nobg.png', alt: 'Big Hamburger' },
   { itemNumber: '80', path: '/essen/haehnchenspezial80.png', alt: '1/2 Grill Hähnchen Spezial' },
   { itemNumber: '126', path: '/essen/leberkaese126.png', alt: 'Leberkäse mit Spiegelei und Bratkartoffeln' },
   { itemNumber: '213', path: '/essen/schnitzel213-nobg.png', alt: 'Schnitzel Hamburger Art' },

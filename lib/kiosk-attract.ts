@@ -9,7 +9,7 @@ const ATTRACT_PHOTO_PATHS = [
   '/kiosk-attract/404-falafelteller.jpg',
   '/kiosk-attract/116-schnitzel.jpg',
   '/kiosk-attract/51-chickenburger.jpg',
-  '/kiosk-attract/2-halbespommes.jpg',
+  '/kiosk-attract/56-bighamburger.jpg',
   '/kiosk-attract/455-chiliburger.jpg',
   '/kiosk-attract/111-ganzhaehnchen.jpg',
 ] as const
