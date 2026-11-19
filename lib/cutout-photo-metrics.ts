@@ -22,7 +22,7 @@ export const cutoutPhotoMetrics: Record<string, CutoutPhotoMetrics> = {
   '/essen/grillplatter666-removebg-preview-removebg-preview.png': { scale: 1.18, shiftX: '0.1%', shiftY: '-2.2%' },
   '/essen/hotdog4.png': { scale: 0.911, shiftX: '0.5%', shiftY: '-10.6%' },
   '/essen/chickenburger51-nobg.png': { scale: 1.08, shiftX: '0.8%', shiftY: '8.1%' },
-  '/essen/bigcheeseburger58-removebg-preview-removebg-preview.png': { scale: 1.213, shiftX: '1.8%', shiftY: '-3.6%' },
+  '/essen/bigcheeseburger58-nobg.png': { scale: 0.88, shiftX: '0.1%', shiftY: '0.1%' },
   '/essen/chiliburger455-nobg.png': { scale: 1.262, shiftX: '2.4%', shiftY: '2.3%' },
   '/essen/chiliburger758-nobg.png': { scale: 0.88, shiftX: '0%', shiftY: '0.1%' },
   '/essen/kebabburger658-nobg.png': { scale: 1.23, shiftX: '1%', shiftY: '-3.3%' },
@@ -48,5 +48,6 @@ export const cutoutPhotoMetrics: Record<string, CutoutPhotoMetrics> = {
   '/essen/grosserchefsalat44.png': { scale: 1.28, shiftX: '-0.9%', shiftY: '2.3%' },
   '/essen/grosserfitnesssalat144.png': { scale: 0.88, shiftX: '-0.7%', shiftY: '-0.3%' },
   '/essen/grosserweisskaesesalat444.png': { scale: 0.986, shiftX: '-4.1%', shiftY: '-9.5%' },
+  '/essen/chiliburger758-open-nobg.png': { scale: 0.88, shiftX: '0.1%', shiftY: '0%' },
   '/essen/rotegruetzemitvanillensauce-removebg-preview.png': { scale: 0.919, shiftX: '0.1%', shiftY: '5.7%' },
 }

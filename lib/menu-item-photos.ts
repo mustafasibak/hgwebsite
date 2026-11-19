@@ -24,7 +24,7 @@ export const menuItemPhotos: Record<string, string> = {
   // Snacks
   '4': '/essen/hotdog4.png',
   '51': '/essen/chickenburger51-nobg.png',
-  '58': '/essen/bigcheeseburger58-removebg-preview-removebg-preview.png',
+  '58': '/essen/bigcheeseburger58-nobg.png',
   '455': '/essen/chiliburger455-nobg.png',
   '758': '/essen/chiliburger758-nobg.png',
   '658': '/essen/kebabburger658-nobg.png',
@@ -65,6 +65,7 @@ export const menuItemPhotos: Record<string, string> = {
  * Only items listed here get left/right arrows in the item modal.
  */
 export const menuItemPhotoExtras: Record<string, string[]> = {
+  '758': ['/essen/chiliburger758-open-nobg.png'],
 }
 
 import { cutoutPhotoMetrics, type CutoutPhotoMetrics } from '@/lib/cutout-photo-metrics'
