@@ -50,20 +50,29 @@ export default function MittagstischWeekView({
               </span>
             </div>
             <div className="mittagstisch-day-meals">
-              {todayPlan.meals.map((meal, i) => (
-                <div key={`${todayPlan.date}-${i}`} className="mittagstisch-meal">
-                  <div className="mittagstisch-meal-info">
-                    <div className="mittagstisch-meal-name">
-                      <span className="mittagstisch-meal-roman">{ROMAN[i] ?? i + 1}.</span>
-                      {meal.name}
+              {todayPlan.meals.map((meal, i) => {
+                const soldOut = meal.available === false
+                return (
+                  <div
+                    key={`${todayPlan.date}-${i}`}
+                    className={`mittagstisch-meal${soldOut ? ' mittagstisch-meal--sold-out' : ''}`}
+                  >
+                    <div className="mittagstisch-meal-info">
+                      <div className="mittagstisch-meal-name">
+                        <span className="mittagstisch-meal-roman">{ROMAN[i] ?? i + 1}.</span>
+                        {meal.name}
+                        {soldOut ? (
+                          <span className="mittagstisch-meal-sold-out"> Ausverkauft</span>
+                        ) : null}
+                      </div>
+                      {meal.desc && (
+                        <div className="mittagstisch-meal-desc">{meal.desc}</div>
+                      )}
                     </div>
-                    {meal.desc && (
-                      <div className="mittagstisch-meal-desc">{meal.desc}</div>
-                    )}
+                    <div className="mittagstisch-meal-price">{formatPrice(meal.price)}</div>
                   </div>
-                  <div className="mittagstisch-meal-price">{formatPrice(meal.price)}</div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}
