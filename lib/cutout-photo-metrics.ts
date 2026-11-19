@@ -20,7 +20,7 @@ export const cutoutPhotoMetrics: Record<string, CutoutPhotoMetrics> = {
   '/essen/chiliburger455-nobg.png': { scale: 1.262, shiftX: '2.4%', shiftY: '2.3%' },
   '/essen/kebabburger658-nobg.png': { scale: 1.23, shiftX: '1%', shiftY: '-3.3%' },
   '/essen/gyrospita127.png': { scale: 0.95, shiftX: '2.3%', shiftY: '13.4%' },
-  '/essen/croquehawaii63-nobg.png': { scale: 0.88, shiftX: '0%', shiftY: '0.3%' },
+  '/essen/croquehawaii63-nobg.png': { scale: 0.88, shiftX: '0%', shiftY: '0%' },
   '/essen/croquegyros68.png': { scale: 0.958, shiftX: '0.1%', shiftY: '2.2%' },
   '/essen/bolognese49.png': { scale: 1.083, shiftX: '-5.6%', shiftY: '1.9%' },
   '/essen/makaronipfanne249.png': { scale: 0.934, shiftX: '3.2%', shiftY: '-1.6%' },
