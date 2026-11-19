@@ -23,6 +23,7 @@ export const menuItemPhotos: Record<string, string> = {
   '658': '/essen/kebabburger658-nobg.png',
   '127': '/essen/gyrospita127.png',
   // Croque
+  '63': '/essen/croquehawaii63-nobg.png',
   '68': '/essen/croquegyros68.png',
   // Pasta
   '49': '/essen/bolognese49.png',
