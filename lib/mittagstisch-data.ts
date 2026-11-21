@@ -2,6 +2,8 @@ export type LunchMeal = {
   name: string
   desc?: string
   price: number
+  /** false = marked sold out on the restaurant lunch board */
+  available?: boolean
 }
 
 export type LunchDay = {
@@ -10,7 +12,8 @@ export type LunchDay = {
   meals: LunchMeal[]
 }
 
-// Offline fallback only — live site always uses api.hhansegrill-halal.de/weekplan.
+// Offline fallback only. Live site uses ONLY api.hhansegrill-halal.de/api/menu_items
+// (daily board, every day Mo–So). Weekly Speise-Plan API is forbidden — see mittagstisch.ts.
 export const fallbackWeekPlan: LunchDay[] = [
   {
     day: 'Montag',

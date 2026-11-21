@@ -1,11 +1,17 @@
 /** Item photos in public/essen – keyed by menu item id */
 export const menuItemPhotos: Record<string, string> = {
   // Klassiker
+  '1': '/essen/halbeshaehnchen1-nobg.png',
   '80': '/essen/haehnchenspezial80.png',
-  '2': '/essen/halbespommes2.png',
+  '2': '/essen/halbespommes2-nobg.png',
   '111': '/essen/ganzgrillhaehnchen111.png',
+  '5': '/essen/schnitzel5-nobg.png',
+  '7': '/essen/schnitzel7-nobg.png',
+  '12': '/essen/schaschlik12-nobg.png',
+  '14': '/essen/currywurst14-nobg.png',
   '116': '/essen/schnitzel116-nobg.png',
-  '213': '/essen/schnitzel213-removebg-preview.png',
+  '117': '/essen/schnitzel117-nobg.png',
+  '213': '/essen/schnitzel213-nobg.png',
   '404': '/essen/falafelteller404-nobg.png',
   // Grillgerichte
   '54': '/essen/putensteak54.png',
@@ -18,11 +24,13 @@ export const menuItemPhotos: Record<string, string> = {
   // Snacks
   '4': '/essen/hotdog4.png',
   '51': '/essen/chickenburger51-nobg.png',
-  '58': '/essen/bigcheeseburger58-removebg-preview-removebg-preview.png',
+  '58': '/essen/bigcheeseburger58-nobg.png',
   '455': '/essen/chiliburger455-nobg.png',
+  '758': '/essen/chiliburger758-nobg.png',
   '658': '/essen/kebabburger658-nobg.png',
   '127': '/essen/gyrospita127.png',
   // Croque
+  '63': '/essen/croquehawaii63-nobg.png',
   '68': '/essen/croquegyros68.png',
   // Pasta
   '49': '/essen/bolognese49.png',
@@ -37,6 +45,7 @@ export const menuItemPhotos: Record<string, string> = {
   '112': '/essen/fitpfanne112.png',
   '129': '/essen/bauernfruehstuck129-removebg-preview.png',
   '252': '/essen/mixgrill252.png',
+  '253': '/essen/grilltellerpute253.png',
   '312': '/essen/adana312.png',
   // Menü mit Pommes + Getränk
   '257': '/essen/cheeseburgermenu257.png',
@@ -52,6 +61,14 @@ export const menuItemPhotos: Record<string, string> = {
   '444': '/essen/grosserweisskaesesalat444.png',
 }
 
+/**
+ * Extra detail-only slides after the primary photo.
+ * Only items listed here get left/right arrows in the item modal.
+ */
+export const menuItemPhotoExtras: Record<string, string[]> = {
+  '758': ['/essen/chiliburger758-open-nobg.png'],
+}
+
 import { cutoutPhotoMetrics, type CutoutPhotoMetrics } from '@/lib/cutout-photo-metrics'
 
 export const defaultCutoutMetrics: CutoutPhotoMetrics = {
@@ -63,6 +80,7 @@ export const defaultCutoutMetrics: CutoutPhotoMetrics = {
 /** Full-frame scene photos that must not be auto-zoomed by cutout metrics. */
 const cutoutPhotoOverrides: Record<string, CutoutPhotoMetrics> = {
   '/essen/ganzgrillhaehnchen111.png': { scale: 1, shiftX: '0%', shiftY: '0%' },
+  '/essen/grilltellerpute253.png': { scale: 1, shiftX: '0%', shiftY: '0%' },
 }
 
 function photoBasename(src: string): string {
@@ -79,22 +97,27 @@ function photoBasename(src: string): string {
 
 /** Resolve metrics key for /essen/ paths, blob URLs, and Vercel random suffixes. */
 export function resolveCutoutMetricsKey(src: string, itemId?: string): string | undefined {
-  if (itemId && menuItemPhotos[itemId]) {
-    return menuItemPhotos[itemId].split('?')[0]
+  const basename = photoBasename(src)
+  if (basename) {
+    const direct = `/essen/${basename}`
+    if (cutoutPhotoMetrics[direct]) return direct
+
+    const baseStem = basename.replace(/\.[a-z]+$/i, '')
+    for (const key of Object.keys(cutoutPhotoMetrics)) {
+      const stem = key.replace('/essen/', '').replace(/\.[a-z]+$/i, '')
+      if (baseStem === stem || baseStem.startsWith(`${stem}-`) || stem.startsWith(baseStem)) {
+        return key
+      }
+    }
+
+    // Prefer the actual slide path (incl. gallery extras) over the item primary.
+    if (src.includes('/essen/') || direct.startsWith('/essen/')) {
+      return direct
+    }
   }
 
-  const basename = photoBasename(src)
-  if (!basename) return undefined
-
-  const direct = `/essen/${basename}`
-  if (cutoutPhotoMetrics[direct]) return direct
-
-  const baseStem = basename.replace(/\.[a-z]+$/i, '')
-  for (const key of Object.keys(cutoutPhotoMetrics)) {
-    const stem = key.replace('/essen/', '').replace(/\.[a-z]+$/i, '')
-    if (baseStem === stem || baseStem.startsWith(`${stem}-`) || stem.startsWith(baseStem)) {
-      return key
-    }
+  if (itemId && menuItemPhotos[itemId]) {
+    return menuItemPhotos[itemId].split('?')[0]
   }
 
   return undefined

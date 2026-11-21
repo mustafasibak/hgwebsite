@@ -64,31 +64,41 @@ export default async function MittagstischPage() {
             </div>
 
             <div>
-              {todayPlan.meals.map((meal, i) => (
-                <div key={i} style={{
-                  display: 'flex', justifyContent: 'space-between', gap: 16,
-                  padding: '12px 20px',
-                  borderBottom: i < todayPlan.meals.length - 1 ? '1px solid var(--border)' : 'none',
-                }}>
-                  <div>
-                    <div style={{ fontWeight: 600 }}>
-                      <span style={{ color: 'var(--accent-dark)', marginRight: 8 }}>{ROMAN[i] ?? i + 1}.</span>
-                      {meal.name}
-                    </div>
-                    {meal.desc && (
-                      <div style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: 2 }}>
-                        {meal.desc}
-                      </div>
-                    )}
-                  </div>
-                  <div style={{
-                    fontWeight: 700, whiteSpace: 'nowrap',
-                    color: 'var(--accent-dark)', fontSize: '1.02rem',
+              {todayPlan.meals.map((meal, i) => {
+                const soldOut = meal.available === false
+                return (
+                  <div key={i} style={{
+                    display: 'flex', justifyContent: 'space-between', gap: 16,
+                    padding: '12px 20px',
+                    borderBottom: i < todayPlan.meals.length - 1 ? '1px solid var(--border)' : 'none',
+                    textDecoration: soldOut ? 'line-through' : undefined,
+                    opacity: soldOut ? 0.7 : undefined,
                   }}>
-                    {formatPrice(meal.price)}
+                    <div>
+                      <div style={{ fontWeight: 600 }}>
+                        <span style={{ color: 'var(--accent-dark)', marginRight: 8 }}>{ROMAN[i] ?? i + 1}.</span>
+                        {meal.name}
+                        {soldOut ? (
+                          <span style={{ textDecoration: 'none', marginLeft: 8, fontSize: '0.85rem', color: 'var(--muted)' }}>
+                            Ausverkauft
+                          </span>
+                        ) : null}
+                      </div>
+                      {meal.desc && (
+                        <div style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: 2 }}>
+                          {meal.desc}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{
+                      fontWeight: 700, whiteSpace: 'nowrap',
+                      color: 'var(--accent-dark)', fontSize: '1.02rem',
+                    }}>
+                      {formatPrice(meal.price)}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}

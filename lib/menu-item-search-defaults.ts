@@ -5,6 +5,7 @@
 export const menuItemSearchDefaults: Record<string, string[]> = {
   '47': ['knobi', 'knoblauch brot', 'knoblauchbrot'],
   '80': ['hähnchen spezial', 'spezial', 'knobi', 'halbes spezial'],
+  '81': ['spezial menü', 'spezial menu', 'hähnchen spezial menü', 'halbes spezial', 'knobi'],
   '49': ['bolognese', 'spaghetti'],
   '1': ['halbes', 'halbes hähnchen', 'half chicken'],
   '2': ['halbes', 'halbes hähnchen', 'half chicken', 'hähnchen pommes'],
