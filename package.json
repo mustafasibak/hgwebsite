@@ -11,7 +11,8 @@
     "payload": "payload",
     "generate:importmap": "payload generate:importmap",
     "generate:types": "payload generate:types",
-    "seed:menu": "node --import ./scripts/load-env-local.mjs ./node_modules/.bin/tsx scripts/seed-menu-to-payload.ts"
+    "seed:menu": "node --import ./scripts/load-env-local.mjs ./node_modules/.bin/tsx scripts/seed-menu-to-payload.ts",
+    "check:mittagstisch": "node scripts/check-mittagstisch.mjs"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.85.2",

@@ -12,7 +12,8 @@ export type LunchDay = {
   meals: LunchMeal[]
 }
 
-// Offline fallback only — live site uses api.hhansegrill-halal.de/api/menu_items.
+// Offline fallback only. Live site MUST use api.hhansegrill-halal.de/api/menu_items
+// (daily board, Mo–So). Never treat weekplan/0 as primary — it is Mo–Fr only.
 export const fallbackWeekPlan: LunchDay[] = [
   {
     day: 'Montag',
