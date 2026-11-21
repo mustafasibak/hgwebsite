@@ -9,9 +9,9 @@ import type { LunchDay, LunchMeal } from '@/lib/mittagstisch-data'
  *
  * This works every calendar day (Montag–Sonntag).
  *
- * NEVER call the weekly Speise-Plan endpoint (…/api/weekplan/…). That feed is
- * Mo–Fr only and previously made Samstag/Sonntag look broken even when the
- * owner had already published today’s dishes on the daily board.
+ * NEVER call the weekly Speise-Plan API. That feed is Mo–Fr only and previously
+ * made Samstag/Sonntag look broken even when the owner had already published
+ * today’s dishes on the daily board.
  */
 export const MITTAGSTISCH_DAILY_API_URL =
   'https://api.hhansegrill-halal.de/api/menu_items'
@@ -130,7 +130,7 @@ export function groupDailyBoard(items: ApiMealItem[]): LunchDay[] {
 
 /**
  * Live Mittagstisch for every calendar day (Mo–So).
- * Only the daily board — never weekplan/0.
+ * Only the daily board — never the weekly Speise-Plan API.
  */
 export async function getWeekPlan(): Promise<{ week: LunchDay[]; live: boolean }> {
   try {
