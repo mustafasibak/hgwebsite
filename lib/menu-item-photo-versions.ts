@@ -37,6 +37,7 @@ export const menuItemPhotoVersions: Record<string, string> = {
   '/essen/fitpfanne112.png': '1795032510571',
   '/essen/bauernfruehstuck129-removebg-preview.png': '1795032510495',
   '/essen/mixgrill252.png': '1795032510487',
+  '/essen/grilltellerpute253.png': '1795262248250',
   '/essen/adana312.png': '1795032510491',
   '/essen/cheeseburgermenu257.png': '1795032510499',
   '/essen/currywurstpommes314.png': '1795032510531',

@@ -39,6 +39,7 @@ export const cutoutPhotoMetrics: Record<string, CutoutPhotoMetrics> = {
   '/essen/fitpfanne112.png': { scale: 1.12, shiftX: '3.1%', shiftY: '7%' },
   '/essen/bauernfruehstuck129-removebg-preview.png': { scale: 0.992, shiftX: '-0.8%', shiftY: '-5.1%' },
   '/essen/mixgrill252.png': { scale: 0.924, shiftX: '0.1%', shiftY: '2.7%' },
+  '/essen/grilltellerpute253.png': { scale: 0.88, shiftX: '0%', shiftY: '0%' },
   '/essen/adana312.png': { scale: 0.948, shiftX: '-1.9%', shiftY: '0.5%' },
   '/essen/cheeseburgermenu257.png': { scale: 1.336, shiftX: '-3.2%', shiftY: '-7.9%' },
   '/essen/currywurstpommes314.png': { scale: 1.04, shiftX: '-1.7%', shiftY: '0.6%' },

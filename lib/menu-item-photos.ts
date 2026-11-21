@@ -45,6 +45,7 @@ export const menuItemPhotos: Record<string, string> = {
   '112': '/essen/fitpfanne112.png',
   '129': '/essen/bauernfruehstuck129-removebg-preview.png',
   '252': '/essen/mixgrill252.png',
+  '253': '/essen/grilltellerpute253.png',
   '312': '/essen/adana312.png',
   // Menü mit Pommes + Getränk
   '257': '/essen/cheeseburgermenu257.png',
@@ -79,6 +80,7 @@ export const defaultCutoutMetrics: CutoutPhotoMetrics = {
 /** Full-frame scene photos that must not be auto-zoomed by cutout metrics. */
 const cutoutPhotoOverrides: Record<string, CutoutPhotoMetrics> = {
   '/essen/ganzgrillhaehnchen111.png': { scale: 1, shiftX: '0%', shiftY: '0%' },
+  '/essen/grilltellerpute253.png': { scale: 1, shiftX: '0%', shiftY: '0%' },
 }
 
 function photoBasename(src: string): string {
