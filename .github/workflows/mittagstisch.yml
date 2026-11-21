@@ -1,0 +1,38 @@
+name: Mittagstisch lock
+
+# Fails the PR if anyone points Mittagstisch back at Mo–Fr weekplan/0.
+on:
+  push:
+    paths:
+      - 'lib/mittagstisch.ts'
+      - 'lib/mittagstisch.test.mjs'
+      - 'scripts/check-mittagstisch.mjs'
+      - '.github/workflows/mittagstisch.yml'
+  pull_request:
+    paths:
+      - 'lib/mittagstisch.ts'
+      - 'lib/mittagstisch.test.mjs'
+      - 'scripts/check-mittagstisch.mjs'
+      - '.github/workflows/mittagstisch.yml'
+
+jobs:
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install tsx for .ts test imports
+        run: npm install --no-save tsx
+      - name: Regression — daily board only (incl. weekends)
+        run: node --import tsx --test lib/mittagstisch.test.mjs
+      - name: Guard — source must not mention weekplan
+        run: |
+          if grep -E 'weekplan' lib/mittagstisch.ts; then
+            echo "lib/mittagstisch.ts must not reference weekplan (Mo–Fr only)."
+            exit 1
+          fi
+          grep -q 'api/menu_items' lib/mittagstisch.ts
+      - name: Live smoke (owner daily board)
+        run: node scripts/check-mittagstisch.mjs

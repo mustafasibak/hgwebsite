@@ -1,19 +1,20 @@
 import type { LunchDay, LunchMeal } from '@/lib/mittagstisch-data'
 
 /**
- * Mittagstisch source of truth = the owner's DAILY lunch board.
+ * INVARIANT — do not change without updating lib/mittagstisch.test.mjs + CI:
  *
- * ✅ ALWAYS use:  https://api.hhansegrill-halal.de/api/menu_items
- *    Same feed as https://hhansegrill-halal.de/mittagstisch (incl. Sa/So).
+ * Mittagstisch ALWAYS comes from the owner's daily lunch board:
+ *   https://api.hhansegrill-halal.de/api/menu_items
+ * (= same feed as https://hhansegrill-halal.de/mittagstisch)
  *
- * ❌ Do NOT use weekplan/0 as primary — it is Mo–Fr only and makes weekends
- *    look "broken" even when the owner has published today's dishes.
+ * This works every calendar day (Montag–Sonntag).
  *
- * weekplan/0 is only a last-resort fallback when the daily board is down AND
- * it happens to contain today's date (typical for some weekdays).
+ * NEVER use /api/weekplan/0 as the source of truth. That endpoint is Mo–Fr
+ * only and previously made Samstag/Sonntag look broken even when the owner
+ * had already published today’s dishes on the daily board.
  */
-const DAILY_API_URL = 'https://api.hhansegrill-halal.de/api/menu_items'
-const WEEKPLAN_API_URL = 'https://api.hhansegrill-halal.de/api/weekplan/0'
+export const MITTAGSTISCH_DAILY_API_URL =
+  'https://api.hhansegrill-halal.de/api/menu_items'
 
 type ApiIngredient = { ingredient: string | null }
 type ApiMealItem = {
@@ -24,17 +25,6 @@ type ApiMealItem = {
   available?: number | boolean | null
   meal: { name: string }
   ingredients?: ApiIngredient[]
-}
-type ApiWeekDay = {
-  day: string
-  date: string
-  meals: Array<{
-    row_order: number | null
-    price: string
-    available?: number | boolean | null
-    meal: { name: string }
-    ingredients?: ApiIngredient[]
-  }>
 }
 
 const WEEKDAY_DE: Record<number, string> = {
@@ -102,7 +92,8 @@ function toLunchMeal(item: {
       .map(s => s.charAt(0).toUpperCase() + s.slice(1))
       .join(', '),
   )
-  const available = item.available === 1 || item.available === true || item.available == null
+  const available =
+    item.available === 1 || item.available === true || item.available == null
   return {
     name,
     ...(desc ? { desc } : {}),
@@ -137,75 +128,27 @@ export function groupDailyBoard(items: ApiMealItem[]): LunchDay[] {
     .filter(d => d.meals.length > 0)
 }
 
-function weekPlanToLunchDays(weekPlan: ApiWeekDay[]): LunchDay[] {
-  return weekPlan
-    .map(d => {
-      const meals = [...(d.meals ?? [])]
-        .sort((a, b) => (a.row_order ?? 0) - (b.row_order ?? 0))
-        .map(toLunchMeal)
-        .filter((m): m is LunchMeal => Boolean(m))
-      return {
-        day: d.day || weekdayNameForDate(d.date),
-        date: d.date,
-        meals,
-      }
-    })
-    .filter(d => d.date && d.meals.length > 0)
-}
-
-async function fetchDailyBoard(): Promise<LunchDay[] | null> {
-  try {
-    const res = await fetch(DAILY_API_URL, {
-      signal: AbortSignal.timeout(5000),
-      next: { revalidate: 60 },
-    })
-    if (!res.ok) return null
-    const data: unknown = await res.json()
-    if (!Array.isArray(data)) return null
-    return groupDailyBoard(data as ApiMealItem[])
-  } catch {
-    return null
-  }
-}
-
-async function fetchWeekPlanFallback(): Promise<LunchDay[] | null> {
-  try {
-    const res = await fetch(WEEKPLAN_API_URL, {
-      signal: AbortSignal.timeout(5000),
-      next: { revalidate: 60 },
-    })
-    if (!res.ok) return null
-    const data: { weekPlan?: ApiWeekDay[] } = await res.json()
-    return weekPlanToLunchDays(data.weekPlan ?? [])
-  } catch {
-    return null
-  }
-}
-
 /**
  * Live Mittagstisch for every calendar day (Mo–So).
- * Prefers the daily board; falls back to weekplan only if daily is empty/unavailable
- * and weekplan already contains today's date (never invents weekend dishes).
+ * Only the daily board — never weekplan/0.
  */
 export async function getWeekPlan(): Promise<{ week: LunchDay[]; live: boolean }> {
-  const today = todayIsoDate()
-  const daily = await fetchDailyBoard()
+  try {
+    const res = await fetch(MITTAGSTISCH_DAILY_API_URL, {
+      signal: AbortSignal.timeout(5000),
+      next: { revalidate: 60 },
+    })
+    if (!res.ok) throw new Error(`API ${res.status}`)
+    const data: unknown = await res.json()
+    if (!Array.isArray(data)) throw new Error('menu_items is not an array')
 
-  if (daily && daily.length > 0) {
-    // Prefer today's row when the board returns multiple dates.
-    const todayRow = daily.find(d => d.date === today)
+    const week = groupDailyBoard(data as ApiMealItem[])
+    const today = todayIsoDate()
+    const todayRow = week.find(d => d.date === today)
+    // Prefer a single today card when the board returns multiple dates.
     if (todayRow) return { week: [todayRow], live: true }
-    return { week: daily, live: true }
+    return { week, live: true }
+  } catch {
+    return { week: [], live: false }
   }
-
-  const weekly = await fetchWeekPlanFallback()
-  if (weekly && weekly.length > 0) {
-    const todayRow = weekly.find(d => d.date === today)
-    if (todayRow) return { week: [todayRow], live: true }
-    // Daily empty + today not in weekplan (typical weekend): show nothing,
-    // do not invent stale dishes.
-    return { week: [], live: true }
-  }
-
-  return { week: [], live: false }
 }
