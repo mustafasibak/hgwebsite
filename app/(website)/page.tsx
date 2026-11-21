@@ -88,34 +88,44 @@ export default async function HomePage() {
         <section className="container" style={{ padding: '36px 20px 0' }}>
           <div className="section-title">Mittagstisch heute · {todayPlan.day}</div>
           <div className="info-box" style={{ borderTop: 'none', padding: 0, overflow: 'hidden' }}>
-            {todayPlan.meals.map((meal, i) => (
-              <div key={i} style={{
-                display: 'flex', justifyContent: 'space-between', gap: 16,
-                padding: '12px 20px',
-                borderBottom: '1px solid var(--border)',
-              }}>
-                <div>
-                  <div style={{ fontWeight: 600 }}>
-                    <span style={{ color: 'var(--accent-dark)', marginRight: 8 }}>{ROMAN[i] ?? i + 1}.</span>
-                    {meal.name}
-                  </div>
-                  {meal.desc && (
-                    <div style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: 2 }}>
-                      {meal.desc}
+            {todayPlan.meals.map((meal, i) => {
+              const soldOut = meal.available === false
+              return (
+                <div key={i} style={{
+                  display: 'flex', justifyContent: 'space-between', gap: 16,
+                  padding: '12px 20px',
+                  borderBottom: '1px solid var(--border)',
+                  textDecoration: soldOut ? 'line-through' : undefined,
+                  opacity: soldOut ? 0.7 : undefined,
+                }}>
+                  <div>
+                    <div style={{ fontWeight: 600 }}>
+                      <span style={{ color: 'var(--accent-dark)', marginRight: 8 }}>{ROMAN[i] ?? i + 1}.</span>
+                      {meal.name}
+                      {soldOut ? (
+                        <span style={{ textDecoration: 'none', marginLeft: 8, fontSize: '0.85rem', color: 'var(--muted)' }}>
+                          Ausverkauft
+                        </span>
+                      ) : null}
                     </div>
-                  )}
+                    {meal.desc && (
+                      <div style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: 2 }}>
+                        {meal.desc}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ fontWeight: 700, whiteSpace: 'nowrap', color: 'var(--accent-dark)' }}>
+                    {formatPrice(meal.price)}
+                  </div>
                 </div>
-                <div style={{ fontWeight: 700, whiteSpace: 'nowrap', color: 'var(--accent-dark)' }}>
-                  {formatPrice(meal.price)}
-                </div>
-              </div>
-            ))}
+              )
+            })}
             <div style={{ padding: '12px 20px', background: 'var(--surface2)' }}>
               <Link href="/mittagstisch" style={{ fontWeight: 700, fontSize: '0.9rem' }}>
-                Ganze Woche ansehen →
+                Mittagstisch ansehen →
               </Link>
               <span style={{ marginLeft: 12, fontSize: '0.85rem', color: 'var(--muted)' }}>
-                Mo – So ab 11:00 Uhr, solange der Vorrat reicht
+                Mo – So ab 11:30 Uhr, solange der Vorrat reicht
               </span>
             </div>
           </div>
