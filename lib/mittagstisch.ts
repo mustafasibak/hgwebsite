@@ -9,9 +9,9 @@ import type { LunchDay, LunchMeal } from '@/lib/mittagstisch-data'
  *
  * This works every calendar day (Montag–Sonntag).
  *
- * NEVER use /api/weekplan/0 as the source of truth. That endpoint is Mo–Fr
- * only and previously made Samstag/Sonntag look broken even when the owner
- * had already published today’s dishes on the daily board.
+ * NEVER call the weekly Speise-Plan endpoint (…/api/weekplan/…). That feed is
+ * Mo–Fr only and previously made Samstag/Sonntag look broken even when the
+ * owner had already published today’s dishes on the daily board.
  */
 export const MITTAGSTISCH_DAILY_API_URL =
   'https://api.hhansegrill-halal.de/api/menu_items'

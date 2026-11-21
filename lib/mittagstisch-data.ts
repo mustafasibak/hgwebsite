@@ -13,7 +13,7 @@ export type LunchDay = {
 }
 
 // Offline fallback only. Live site uses ONLY api.hhansegrill-halal.de/api/menu_items
-// (daily board, every day Mo–So). weekplan/0 is forbidden — see lib/mittagstisch.ts.
+// (daily board, every day Mo–So). Weekly Speise-Plan API is forbidden — see mittagstisch.ts.
 export const fallbackWeekPlan: LunchDay[] = [
   {
     day: 'Montag',

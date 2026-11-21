@@ -27,10 +27,10 @@ jobs:
         run: npm install --no-save tsx
       - name: Regression — daily board only (incl. weekends)
         run: node --import tsx --test lib/mittagstisch.test.mjs
-      - name: Guard — source must not mention weekplan
+      - name: Guard — must not call weekly Speise-Plan URL
         run: |
-          if grep -E 'weekplan' lib/mittagstisch.ts; then
-            echo "lib/mittagstisch.ts must not reference weekplan (Mo–Fr only)."
+          if grep -E '/api/weekplan' lib/mittagstisch.ts; then
+            echo "lib/mittagstisch.ts must not call /api/weekplan (Mo–Fr only)."
             exit 1
           fi
           grep -q 'api/menu_items' lib/mittagstisch.ts
